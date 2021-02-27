@@ -1,0 +1,559 @@
+
+.question_box {
+    position: absolute;
+    width: 884px;
+    height: 558px;
+    left: 10px;
+    top: 70px;
+}
+
+
+
+.rectangle {
+    position: absolute;
+    width: 700px;
+    height: 500px;
+    left: 10px;
+    top: 74px;
+}
+
+
+.rectangle {
+    position: absolute;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+
+    background: #FFFFFF;
+    border: 3px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.question {
+    position: absolute;
+    width: 782px;
+    height: 75px;
+    left: 60px;
+    top: 120px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+
+
+.answer {
+    position: absolute;
+    width: 174px;
+    height: 46px;
+    left: 60px;
+    top: 425px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+
+
+.input {
+    position: absolute;
+    width: 440px;
+    height: 43px;
+    left: 423px;
+    top: 549px;
+}
+
+
+
+.input {
+    position: absolute;
+    left: 23%;
+    right: 0%;
+    top: 86%;
+    bottom: 0%;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.count {
+    position: absolute;
+    width: 299px;
+    height: 37px;
+    left: 10px;
+    top: 10px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+
+
+.time {
+    position: absolute;
+    width: 299px;
+    height: 37px;
+    left: 485px;
+    top: 10px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+.players {
+    position: absolute;
+    width: 284px;
+    height: 537px;
+    left: 750px;
+    top: -4px;
+}
+
+
+
+.rect6 {
+    position: absolute;
+    width: 284px;
+    height: 450px;
+    right: 20px;
+    top: 74px;
+
+    background: #B5CEF3;
+}
+
+
+.player_one {
+    position: absolute;
+    width: 262px;
+    height: 81px;
+    right: 31px;
+    top: 81px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.player_two{
+    position: absolute;
+    width: 262px;
+    height: 81px;
+    right: 31px;
+    top: 169px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.player_three {
+    position: absolute;
+    width: 262px;
+    height: 81px;
+    right: 31px;
+    top: 257px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.player_four{
+    position: absolute;
+    width: 262px;
+    height: 81px;
+    right: 31px;
+    top: 345px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.player_five {
+    position: absolute;
+    width: 262px;
+    height: 81px;
+    right: 31px;
+    top: 433px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+
+.first_place {
+    position: absolute;
+    width: 57px;
+    height: 45px;
+    right: 10px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    /* identical to box height */
+
+    color: #000000;
+}
+
+
+
+.second_place {
+    position: absolute;
+    width: 59px;
+    height: 45px;
+    right: 10px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    /* identical to box height */
+
+    color: #000000;
+}
+
+
+
+.third_place {
+    position: absolute;
+    width: 57px;
+    height: 45px;
+    right: 10px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    /* identical to box height */
+
+    color: #000000;
+}
+
+
+
+.fourth_place {
+    position: absolute;
+    width: 57px;
+    height: 45px;
+    right: 10px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    /* identical to box height */
+
+    color: #000000;
+}
+
+
+
+.fifth_place {
+    position: absolute;
+    width: 58px;
+    height: 45px;
+    right: 10px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    /* identical to box height */
+
+    color: #000000;
+}
+
+
+
+.circle_one {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: 180px;
+    top: 5px;
+    border-radius: 50%;
+
+    background: #C4C4C4;
+}
+
+
+
+.circle_two {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: 180px;
+    top: 5px;
+    border-radius: 50%;
+
+    background: #C4C4C4;
+}
+
+
+
+.circle_three {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: 180px;
+    top: 5px;
+    border-radius: 50%;
+
+    background: #C4C4C4;
+}
+
+
+
+.circle_four {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: 180px;
+    top: 5px;
+    border-radius: 50%;
+
+    background: #C4C4C4;
+}
+
+
+
+.circle_five {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: 180px;
+    top: 5px;
+    border-radius: 50%;
+
+    background: #C4C4C4;
+}
+
+
+.name_one {
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.name_one {
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.name_two {
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.name_three {
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.name_four {
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.name_five{
+    position: absolute;
+    width: 214px;
+    height: 50px;
+    right: 20px;
+    top: 15px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+
+    color: #000000;
+}
+
+
+
+.chat {
+    position: absolute;
+    width: 1175px;
+    height: 341px;
+    left: -224px;
+    top: -120px;
+}
+
+
+
+
+.chat_border {
+    position: absolute;
+    width: 1005px;
+    height: 340px;
+    left: 234px;
+    top: 700px;
+
+    background: #B5CEF3;
+    border: 2px solid #000000;
+    box-sizing: border-box;
+}
+
+
+
+.chat_display {
+    position: absolute;
+    width: 975px;
+    height: 272px;
+    left: 250px;
+    top: 718px;
+
+    background: #FFFFFF;
+    border: 2px solid #000000;
+}
+
+
+input{
+    position: absolute;
+    width: 975px;
+    height: 40px;
+    left: 250px;
+    top: 980px;
+
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+
+.chat_text {
+    position: absolute;
+    width: 762px;
+    height: 247px;
+    left: 30px;
+    top: 20px;
+
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 25px;
+
+    color: #000000;
+}
+
+
+
+
+
+
