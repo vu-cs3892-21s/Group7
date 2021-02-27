@@ -3,7 +3,7 @@ import webpack from "webpack";
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 const config: webpack.Configuration = {
-  entry: "./src/client/index.tsx",
+  entry: "./src/index.tsx",
   module: {
     rules: [
       {
@@ -38,7 +38,7 @@ const config: webpack.Configuration = {
     new ForkTsCheckerWebpackPlugin({
       async: false,
       eslint: {
-        files: "./src/client/*"
+        files: "./src/*"
       },
     }),
   ],
