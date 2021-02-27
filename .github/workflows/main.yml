@@ -29,11 +29,13 @@ jobs:
       - name: Build the client side
         run: |
           npm install
-          npm run-script start
+          echo Placeholder
+          # npm run-script start
       
       # Setup and run the flask server
       - name: Setup Python
         uses: actions/setup-python@v2.2.1
 
       - name: Start the server
-        run: ./src/server/start.sh
+        run: echo Placeholder
+      #  run: ./src/server/start.sh
