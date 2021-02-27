@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  server:
+    build:
+      context: ./
+      dockerfile: ./server/py.Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./server:/server"
+    depends_on:
+      - "postgres"
+  client:
+    build:
+      context: ./
+      dockerfile: ./client/client.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./client:/client"
+    depends_on:
+      - "server"
+  postgres:
+    build:
+      context: ./
+      dockerfile: ./database/db.Dockerfile
+    volumes:
+      - "./database/data:/data"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+  redis:
+    image: "redis:latest"
+# todo: make networking explicit
