@@ -31,7 +31,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "start": "webpack serve --open",
+    "start": "webpack serve --host 0.0.0.0 --port 8000 --open",
     "build": "webpack --mode production"
   }
 }

@@ -2,28 +2,30 @@ version: "3.9"
 services:
   server:
     build:
-      context: ./
-      dockerfile: ./server/py.Dockerfile
-    ports:
-      - "5000:5000"
+      context: ./server
+      dockerfile: ./py.Dockerfile
     volumes:
       - "./server:/server"
+    environment:
+      - "FLASK_APP=src/main.py"
+    ports:
+      - "5000:5000"
     depends_on:
       - "postgres"
   client:
     build:
-      context: ./
-      dockerfile: ./client/client.Dockerfile
-    ports:
-      - "8000:8000"
+      context: ./client
+      dockerfile: ./client.Dockerfile
     volumes:
       - "./client:/client"
+    ports:
+      - "8000:8000"
     depends_on:
       - "server"
   postgres:
     build:
-      context: ./
-      dockerfile: ./database/db.Dockerfile
+      context: ./database
+      dockerfile: ./db.Dockerfile
     volumes:
       - "./database/data:/data"
     environment:
