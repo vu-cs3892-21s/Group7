@@ -3,6 +3,11 @@
   "github": {
     "client_id": "5f635dbbf813c841603a",
     "client_secret": "c2307406d0aa37e8a7f0d8eaf2d97d547784baed",
-    "scope": "read:user,user:email"
+    "scope": ["read:user", "user:email"]
+  },
+  "google": {
+    "client_id": "490107470306-32jnil1p0nh05ghbcuiro9dgdrulfoo2.apps.googleusercontent.com",
+    "client_secret": "KDejNfmIYTWiElyLlAbuRMZp",
+    "scope": ["profile", "email"]
   }
 }

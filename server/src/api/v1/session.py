@@ -1,7 +1,13 @@
 import json
 import os
-import flask
+from flask import Blueprint, redirect, url_for
 from flask_dance.contrib.github import make_github_blueprint, github
+from flask_dance.contrib.google import make_google_blueprint, google
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError, TokenExpiredError, OAuth2Error
+
+# temporarily allow http and relax scope
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
+os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
 
 SESSION_API_PREFIX = "/v1/session"
@@ -12,8 +18,8 @@ with open(dir_path + "/../../../config/sso_config.json", "r") as sso_config_json
 
 # TODO: Switch to Docker Secret, Github Secret, or GCP Secret
 SECRET_KEY = SSO_CONFIG["secret_key"]
-
 GITHUB_SSO_CONFIG = SSO_CONFIG["github"]  # Github Specific SSO Config
+GOOGLE_SSO_CONFIG = SSO_CONFIG["google"]
 
 github_blueprint = make_github_blueprint(
     client_id=GITHUB_SSO_CONFIG["client_id"],
@@ -22,15 +28,35 @@ github_blueprint = make_github_blueprint(
     redirect_url=SESSION_API_PREFIX + "/github"
 )
 
+google_blueprint = make_google_blueprint(
+    client_id=GOOGLE_SSO_CONFIG["client_id"],
+    client_secret=GOOGLE_SSO_CONFIG["client_secret"],
+    scope=GOOGLE_SSO_CONFIG["scope"],
+    redirect_url=SESSION_API_PREFIX + "/google"
+)
 
-session_api = flask.Blueprint(
+session_api = Blueprint(
     'session_api', __name__, url_prefix=SESSION_API_PREFIX)
 
 
+def create_session(session_handler, token_api, get_api):
+    if not session_handler.authorized:
+        return redirect(url_for(token_api))
+
+    # TODO: Find cleaner way to handle expired tokens
+    try:
+        resp = session_handler.get(get_api)
+        assert resp.ok
+        return resp.json(), resp.text
+    except (InvalidGrantError, TokenExpiredError, OAuth2Error):  # token is expired
+        return redirect(url_for(token_api))
+
+
 @session_api.route("/github")
-def sesssion():
-    if not github.authorized:
-        return flask.redirect(flask.url_for("github.login"))
-    resp = github.get("/user")
-    assert resp.ok
-    return resp.json()
+def github_sesssion():
+    return create_session(github, "github.login", "/user")
+
+
+@session_api.route("/google")
+def google_sesssion():
+    return create_session(google, "google.login", "/oauth2/v1/userinfo")
