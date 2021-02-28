@@ -13,6 +13,9 @@ const AccountOptionsBase = styled.div`
         display: block;
         font-family: revalia;
     }
+    & > a:hover {
+        color: #f1f1f1;
+    }
 `;
 
 const AccountOptions = ({loggedIn}: {loggedIn:boolean}) => {

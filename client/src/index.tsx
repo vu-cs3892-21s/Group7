@@ -1,9 +1,9 @@
 "use strict";
 
 import React from "react";
+import {render} from "react-dom";
 import styled from 'styled-components'
 
-import {render} from "react-dom";
 import {SideBar} from "./components/sidebar";
 import {Profile} from "./components/profile";
 import {GameGen} from "./components/create";
@@ -38,6 +38,7 @@ const App = () => {
 
     return (
         <BrowserRouter>
+        <GridBase>
             <SideBar loggedIn = {loggedIn} username ={username}/>
             <Route
                 path="/login"
@@ -45,28 +46,29 @@ const App = () => {
                     return loggedIn ? (
                         <Redirect to={`/profile/${username}`} />
                     ) : (
-                        <Login {...p}/>
+                        <Login/>
                     );
                 }}
             />
             <Route
                 path="/profile/:username"
-                render = {p => {return <Profile {...p} currentUser:string = {username}/>}}
+                render = {p => {return <Profile currentUser = {username}/>}}
             />
             <Route
                 path="/create"
-                render={p: PropsType => {return loggedIn ? <GameGen{...p} /> : <Redirect to={"/login"} />;
+                render={p => {return loggedIn ? <GameGen /> : <Redirect to={"/login"} />;
                 }}
             />
             <Route
                 path="/game/:id"
-                render={p => {return loggedIn ? <GamePage{...p} /> : <Redirect to={"/login"} />;
+                render={p => {return loggedIn ? <GamePage/> : <Redirect to={"/login"} />;
                 }}
             />
             <Route
                 path="/leadership"
-                render={p:PropType => <LeadershipBoard{...p} currentUser:string={username} />}
+                render={p => <LeadershipBoard currentUser = {username} />}
             />
+        </GridBase>
         </BrowserRouter>
     );
 };

@@ -2,6 +2,6 @@
 
 import React from 'react';
 
-export const LeadershipBoard = () => {
-    return(<h1>Leadership Board</h1>);
+export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
+    return(<h1>Leadership Board for {currentUser}</h1>);
 }
