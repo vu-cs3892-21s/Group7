@@ -1,7 +1,6 @@
 "use strict";
 
 import React from "react";
-import {render} from "react-dom";
 import styled from 'styled-components'
 
 import {SideBar} from "./components/sidebar";
@@ -12,10 +11,12 @@ import {LeadershipBoard} from "./components/leadership";
 import {Login} from "./components/login";
 
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import {render} from "react-dom";
+import {HeaderWrap} from "./components/shared";
 
 const GridBase = styled.div`
   display: grid;
-  grid-template-columns: 180px auto auto auto;
+  grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 30px auto auto;
   grid-template-areas:
       "sb top top"
@@ -31,7 +32,9 @@ const App = () => {
     return (
         <BrowserRouter>
         <GridBase>
+            <HeaderWrap>Multiplayer Math</HeaderWrap>
             <SideBar loggedIn = {loggedIn} username ={username}/>
+            <Route exact path="/" component={Landing} />
             <Route
                 path="/login"
                 render={p => {
@@ -63,6 +66,10 @@ const App = () => {
         </GridBase>
         </BrowserRouter>
     );
+};
+
+const Landing = () => {
+    return(<h1>Hello World</h1>);
 };
 
 render(<App />, document.getElementById("root"));

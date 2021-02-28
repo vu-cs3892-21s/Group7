@@ -11,7 +11,7 @@ import {FormInput, FormLabel} from "./shared";
 //array of players
 //questions from database
 
-//ADD
+// ADD
 // start button
 // how to count down time
 // how to dynamically move users
@@ -131,19 +131,33 @@ const GamePageBase = styled.div`
 
 export const GamePage = () => {
     const gameInfo = {
+        start: false,
         mode: "alone",
         maxTime: 20,
         totalQuestions:20,
         questionNumber: 1,
     }
     const players = ["Tim", "Sam", "Evan", "Irisa"];
-    const question = "How much wood could a wood chuck chuck if a wood chuck could chuck wood?"
+    const question = ["How much wood could a wood chuck chuck if a wood chuck could chuck wood?", 50];
 
     const [answer, setAnswer] = useState('');
+    //const [timeLeft, setTime]
 
     const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
         setAnswer(ev.target.value);
     };
+
+    const onSubmit = () => {
+        //send to server
+    };
+
+    const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            onSubmit;
+        }
+    }
     return(<GamePageBase>
         <QuestionBox gameInfo={gameInfo} question={question} onChange={onChange} answer={answer}/>
         {gameInfo.mode !== "alone" ? (<Players players = {players}/>): null};

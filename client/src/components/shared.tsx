@@ -20,3 +20,14 @@ export const FormInput = styled.input`
   padding-left: 5px;
   color: black;
 `;
+
+export const HeaderWrap = styled.div`
+    gridArea: top;
+    padding: 0px 10px;
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 48px;
+    line-height: 60px;
+    color: #B5CEF3;
+`;
