@@ -10,3 +10,4 @@ RUN npm ci
 COPY . .
 
 EXPOSE 8000
+ENTRYPOINT npm run-script start
