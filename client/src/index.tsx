@@ -15,20 +15,12 @@ import { BrowserRouter, Route, Redirect } from "react-router-dom";
 
 const GridBase = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: 180px auto auto auto;
+  grid-template-rows: 30px auto auto;
   grid-template-areas:
-    "hd"
-    "main"
-    "ft";
-
-  @media (min-width: 500px) {
-    grid-template-columns: 180px auto auto auto;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      "sb top top top"
-      "sb main main main"
-      "sb foot foot foot";
+      "sb top top"
+      "sb main main"
+      "sb main main";
   }
 `;
 
