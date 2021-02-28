@@ -1,1 +1,2 @@
 Flask==1.1.2
+Flask-Dance==3.3.0
