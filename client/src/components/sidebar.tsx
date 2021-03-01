@@ -3,6 +3,7 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { Button } from './shared';
 
 const AccountOptionsBase = styled.div`
     & > a {
@@ -18,15 +19,18 @@ const AccountOptionsBase = styled.div`
     }
 `;
 
-const AccountOptions = ({loggedIn}: {loggedIn:boolean}) => {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const AccountOptions = ({loggedIn, logIn, logOut}) => {
+
     return(<AccountOptionsBase>
             {loggedIn ?
                 (<Fragment>
-                    <Link to="/logout">Log Out</Link>
+                    <Button id="logout" onClick={logOut}>Log Out</Button>
                 </Fragment>)
                 : (<Fragment>
-                    <Link id="googleLink" to={"/googleAuth"}>Google Log In</Link>
-                    <Link id="gitHubLink" to={"/gitHubAuth"}>GitHub Log In</Link>)
+                    <Button id="google" onClick={logIn}>Google Log In</Button>
+                    <Button id="gitHub" onClick={logIn}>GitHub In</Button>
                 </Fragment>)
 
             }
@@ -61,11 +65,13 @@ const SideBarBase = styled.div`
     background-color: #00538f;
     text-align: center;
 `;
-export const SideBar = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const SideBar = ({loggedIn, logIn, logOut, username}) => {
     return(
         <SideBarBase>
             <img style={{"width": 180, "paddingBottom": 200}} src = "images/math.png"/>
             <SideBarOptions loggedIn = {loggedIn} username={username}/>
-            <AccountOptions loggedIn = {loggedIn}/>
+            <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
         </SideBarBase>);
 }

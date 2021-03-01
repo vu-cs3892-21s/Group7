@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {FormInput, FormLabel} from "./shared";
+import {Button, FormInput, FormLabel} from "./shared";
 
 //DATA NEEDED
 //total number of questions
@@ -30,30 +30,46 @@ const QuestionBoxBase = styled.div`
     background: #FFFFFF;
     border: 3px solid #000000;
     box-sizing: border-box;
+
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionBox = ({gameInfo, question, onChange, answer}) => {
-    return (<QuestionBoxBase>
-        <div style={{"gridArea":"top", "display": "flex-container"}}>
-            <div style={{"flex": 1}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
-            <div style={{"flex": 1}}>Time Remaining: {gameInfo.maxTime}</div>
-        </div>
-        <div style={{"gridArea":"main"}}>{question}</div>
-        <AnswerBox onChange={onChange} answer={answer}/>
-    </QuestionBoxBase>);
+const QuestionBox = ({gameInfo, setGameInfo, question, onChange, onKeyDown, answer}) => {
+    const onStart = () => {
+        setGameInfo({
+            ...gameInfo,
+            start: true
+        });
+        //load question in here?
+    };
+
+    return {gameInfo.start? <QuestionBoxBase>
+            <div style={{"gridArea":"top", "display": "flex-container", "flexDirection": "row"}}>
+                <div style={{"flex": 1}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
+                <div style={{"flex": 1}}>Time Remaining: {gameInfo.maxTime}</div>
+            </div>
+            <div style={{"gridArea":"main"}}>{question}</div>
+            <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
+            </QuestionBoxBase>
+                :
+                <div style={{"gridArea": "question", "justifyContent": "center"}}>
+                    <Button onClick={onStart}> Start Game!</Button>
+                </div>
+    };
 };
 
 const AnswerBoxBase = styled.div`
   grid-area: answer;
+  display: flex-container;
+  flex-direction: row;
   border: 3px solid black;
   color: white;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const AnswerBox = ({onChange, answer}) => {
+const AnswerBox = ({onChange, onKeyDown, answer}) => {
     return (
         <AnswerBoxBase>
             <FormLabel>Answer:</FormLabel>
@@ -61,6 +77,7 @@ const AnswerBox = ({onChange, answer}) => {
                 id="answer"
                 name="answer"
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 value={answer}
             />
         </AnswerBoxBase>
@@ -84,6 +101,7 @@ const PlayerBox = styled.div`
     border: 1px solid #000000;
     box-sizing: border-box;
     display: flex-container;
+    flex-direction: column;
 `
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -103,6 +121,7 @@ const Player = ({player}) => {
 const PlayerBase = styled.div`
     grid-area: players;
     background: white;
+    justify-content: center;
     border: 3px solid black;
     box-sizing: border-box;
 `;
@@ -129,37 +148,55 @@ const GamePageBase = styled.div`
     background-color: #00538f;
 `;
 
-export const GamePage = () => {
-    const gameInfo = {
+// @ts-ignore
+export const GamePage = props => {
+    //load in gameInfo
+    const [gameInfo, setGameInfo] = useState({
         start: false,
         mode: "alone",
         maxTime: 20,
-        totalQuestions:20,
+        totalQuestions: 20,
         questionNumber: 1,
-    }
+    });
+
+    //load in players
     const players = ["Tim", "Sam", "Evan", "Irisa"];
-    const question = ["How much wood could a wood chuck chuck if a wood chuck could chuck wood?", 50];
 
-    const [answer, setAnswer] = useState('');
-    //const [timeLeft, setTime]
+    //load in question
+    const [question, setQuestion] = useState({
+        "question": "How much wood could a wood chuck chuck if a wood chuck could chuck wood?",
+        "answer": 50
+    });
 
-    const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
+    //user answer
+    const [answer, setAnswer] = useState(0);
+
+    const onChange = (ev: { target: { value: React.SetStateAction<number>; }; }) => {
         setAnswer(ev.target.value);
     };
 
     const onSubmit = () => {
-        //send to server
+        if(answer === question.answer) {
+            //do something
+        } else{
+            //notify incorrect
+        }
+    };
+
+    const timeOut = () => {
+        //do something to
     };
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();
-            onSubmit;
+            onSubmit();
         }
     }
+
     return(<GamePageBase>
-        <QuestionBox gameInfo={gameInfo} question={question} onChange={onChange} answer={answer}/>
+        <QuestionBox gameInfo={gameInfo} setGameInfo={setGameInfo} question={question.question} onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
         {gameInfo.mode !== "alone" ? (<Players players = {players}/>): null};
         {gameInfo.mode !== "alone" ? (<ChatBox/>): null};
     </GamePageBase>);

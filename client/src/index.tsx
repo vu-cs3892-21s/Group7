@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "react";
+import React, {useState} from "react";
 import styled from 'styled-components'
 
 import {SideBar} from "./components/sidebar";
@@ -8,7 +8,6 @@ import {Profile} from "./components/profile";
 import {GameGen} from "./components/create";
 import {GamePage} from "./components/game";
 import {LeadershipBoard} from "./components/leadership";
-import {Login} from "./components/login";
 
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
@@ -25,43 +24,72 @@ const GridBase = styled.div`
   }
 `;
 
-const App = () => {
-    const loggedIn = true;
-    const username = "nobody";
+const defaultUser = {
+    username: "",
+    first_name: "",
+    last_name: "",
+    primary_email: "",
+    city: "",
+};
 
+const App = () => {
+    // If the user has logged in, grab info from sessionStorage
+    const data = localStorage.getItem("user");
+    const [state, setState] = useState(data ? JSON.parse(data) : defaultUser);
+
+    // Helper to check if the user is logged in or not
+    const loggedIn = () => {
+        return state.username && state.primary_email;
+    };
+
+    const logIn = async (ev: { preventDefault: () => void; target: { id: string; }; }) => {
+        ev.preventDefault();
+        const endpoint = `/v1/session/${ev.target.id}`;
+        try {
+            //use this for SSO so how do we do this...
+            const response = await fetch(endpoint);
+            const user = await response.json();
+            localStorage.setItem("user", JSON.stringify(user));
+            setState(user);
+        } catch (err) {
+            alert("An unexpected error occurred.");
+            logOut();
+        }
+    };
+
+    // Helper for when a user logs out
+    const logOut = () => {
+        // Wipe localStorage
+        localStorage.removeItem("user");
+        // Reset user state
+        setState(defaultUser);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return (
         <BrowserRouter>
         <GridBase>
             <HeaderWrap>Multiplayer Math</HeaderWrap>
-            <SideBar loggedIn = {loggedIn} username ={username}/>
+            <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
             <Route exact path="/" component={Landing} />
             <Route
-                path="/login"
-                render={p => {
-                    return loggedIn ? (
-                        <Redirect to={`/profile/${username}`} />
-                    ) : (
-                        <Login/>
-                    );
-                }}
-            />
-            <Route
                 path="/profile/:username"
-                render = {p => {return <Profile currentUser = {username}/>}}
+                render = {p => {return <Profile currentUser = {state}/>}}
             />
             <Route
                 path="/create"
-                render={p => {return loggedIn ? <GameGen /> : <Redirect to={"/login"} />;
+                render={p => {return loggedIn() ? <GameGen /> : <Redirect to={"/login"} />;
                 }}
             />
             <Route
                 path="/game/:id"
-                render={p => {return loggedIn ? <GamePage/> : <Redirect to={"/login"} />;
+                render={p => {return loggedIn() ? <GamePage {...p}/> : <Redirect to={"/login"} />;
                 }}
             />
             <Route
                 path="/leadership"
-                render={p => <LeadershipBoard currentUser = {username} />}
+                render={p => <LeadershipBoard currentUser = {state.username} />}
             />
         </GridBase>
         </BrowserRouter>
