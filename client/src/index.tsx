@@ -83,7 +83,7 @@ const App = () => {
                 }}
             />
             <Route
-                path="/game/:id"
+                path="/game"
                 render={p => {return <GamePage {...p}/>;
                 }}
             />
