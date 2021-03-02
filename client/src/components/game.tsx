@@ -44,19 +44,19 @@ const QuestionBox = ({gameInfo, setGameInfo, question, onChange, onKeyDown, answ
         //load question in here?
     };
 
-    return {gameInfo.start? <QuestionBoxBase>
+    return (gameInfo.start ? (<QuestionBoxBase>
             <div style={{"gridArea":"top", "display": "flex-container", "flexDirection": "row"}}>
                 <div style={{"flex": 1}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
                 <div style={{"flex": 1}}>Time Remaining: {gameInfo.maxTime}</div>
             </div>
             <div style={{"gridArea":"main"}}>{question}</div>
             <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
-            </QuestionBoxBase>
+            </QuestionBoxBase>)
                 :
-                <div style={{"gridArea": "question", "justifyContent": "center"}}>
+            (<div style={{"gridArea": "question", "justifyContent": "center"}}>
                     <Button onClick={onStart}> Start Game!</Button>
-                </div>
-    };
+                </div>)
+    );
 };
 
 const AnswerBoxBase = styled.div`
@@ -148,15 +148,17 @@ const GamePageBase = styled.div`
     background-color: #00538f;
 `;
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const GamePage = props => {
     //load in gameInfo
+
     const [gameInfo, setGameInfo] = useState({
-        start: false,
-        mode: "alone",
-        maxTime: 20,
-        totalQuestions: 20,
-        questionNumber: 1,
+        "start": false,
+        "mode": "alone",
+        "maxTime": 20,
+        "totalQuestions": 20,
+        "questionNumber": 1,
     });
 
     //load in players
