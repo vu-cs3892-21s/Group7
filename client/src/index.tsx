@@ -39,7 +39,7 @@ const App = () => {
 
     // Helper to check if the user is logged in or not
     const loggedIn = () => {
-        return state.username && state.primary_email;
+        return state.username;
     };
 
     const logIn = async (ev: { preventDefault: () => void; target: { id: string; }; }) => {
@@ -48,7 +48,14 @@ const App = () => {
         try {
             //use this for SSO so how do we do this...
             const response = await fetch(endpoint);
-            const user = await response.json();
+            const data = await response.json();
+            const user = {
+                username: data.login,
+                first_name: "",
+                last_name: "",
+                primary_email: "",
+                city: "",
+            }
             localStorage.setItem("user", JSON.stringify(user));
             setState(user);
         } catch (err) {
@@ -79,7 +86,7 @@ const App = () => {
             />
             <Route
                 path="/create"
-                render={p => {return  <GameGen />;
+                render={p => {return <GameGen />;
                 }}
             />
             <Route
@@ -97,7 +104,7 @@ const App = () => {
 };
 
 const Landing = () => {
-    return(<h1 style={{"gridArea": "main"}}>Welcome to our site!</h1>);
+    return(<h1 style={{"gridArea": "main", "padding": "0px 10px"}}>Welcome to our site!</h1>);
 };
 
 render(<App />, document.getElementById("root"));

@@ -6,6 +6,9 @@ import styled from 'styled-components';
 import { Button } from './shared';
 
 const AccountOptionsBase = styled.div`
+    grid-area: account;
+    position: absolute;
+    bottom: 0;
     & > a {
         padding: 6px 8px 6px 16px;
         text-decoration: none;
@@ -41,6 +44,7 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
 
 const SideBarOptionsBase = styled.div`
     padding: 0 0 50px 0;
+    grid-area: options;
     & > a {
         padding: 6px 8px 6px 16px;
         text-decoration: none;
@@ -64,9 +68,16 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
 
 const SideBarBase = styled.div`
     height: 100%;
+    padding: 0 0 20px 0;
     grid-area: sb;
-    display: flex-container;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 40% 50% 10%;
+    grid-template-areas:
+      "pic"
+      "options"
+      "account";
+    position: relative;
     color: white;
     background-color: #00538f;
     text-align: center;
@@ -76,7 +87,7 @@ const SideBarBase = styled.div`
 export const SideBar = ({loggedIn, logIn, logOut, username}) => {
     return(
         <SideBarBase>
-            <img style={{"width": 180, "paddingBottom": 200}} src = "../../images/math.png"/>
+            <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {`/images/math.png`}/>
             <SideBarOptions loggedIn = {loggedIn} username={username}/>
             <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
         </SideBarBase>);
