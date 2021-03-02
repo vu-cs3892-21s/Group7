@@ -16,7 +16,7 @@ import {HeaderWrap} from "./components/shared";
 const GridBase = styled.div`
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
-  grid-template-rows: 30px auto auto;
+  grid-template-rows: 75px 80% 80%;
   grid-template-areas:
       "sb top top"
       "sb main main"
@@ -44,7 +44,7 @@ const App = () => {
 
     const logIn = async (ev: { preventDefault: () => void; target: { id: string; }; }) => {
         ev.preventDefault();
-        const endpoint = `/v1/session/${ev.target.id}`;
+        const endpoint = `http://localhost:5000/v1/session/${ev.target.id}`;
         try {
             //use this for SSO so how do we do this...
             const response = await fetch(endpoint);
@@ -79,12 +79,12 @@ const App = () => {
             />
             <Route
                 path="/create"
-                render={p => {return loggedIn() ? <GameGen /> : <Redirect to={"/login"} />;
+                render={p => {return  <GameGen />;
                 }}
             />
             <Route
                 path="/game/:id"
-                render={p => {return loggedIn() ? <GamePage {...p}/> : <Redirect to={"/login"} />;
+                render={p => {return <GamePage {...p}/>;
                 }}
             />
             <Route
@@ -97,7 +97,7 @@ const App = () => {
 };
 
 const Landing = () => {
-    return(<h1>Hello World</h1>);
+    return(<h1 style={{"gridArea": "main"}}>Welcome to our site!</h1>);
 };
 
 render(<App />, document.getElementById("root"));

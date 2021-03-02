@@ -39,7 +39,9 @@ export const Button = styled.button`
   background: black;
   border-radius: 5px;
   line-height: 2em;
-  font-size: 0.8em;
+  font-size: 25px;
+  color: white;
+  font-family: revalia;
 `;
 
 export const InfoBlock = styled.div`
