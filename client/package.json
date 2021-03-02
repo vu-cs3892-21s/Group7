@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.1",
@@ -15,6 +17,8 @@
     "@types/fork-ts-checker-webpack-plugin": "^0.4.5",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.7",
     "@types/webpack": "^4.41.26",
     "@types/webpack-dev-server": "^3.11.1",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
@@ -32,6 +36,6 @@
   },
   "scripts": {
     "start": "webpack serve --host 0.0.0.0 --port 8000 --open",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production --watch"
   }
 }
