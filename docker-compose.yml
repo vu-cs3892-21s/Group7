@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   server:
     build:
@@ -6,6 +5,7 @@ services:
       dockerfile: ./py.Dockerfile
     volumes:
       - "./server:/server"
+    container_name: server
     environment:
       - "FLASK_APP=src/main.py"
       - "FLASK_RUN_HOST=0.0.0.0"
@@ -22,6 +22,7 @@ services:
       dockerfile: ./client.Dockerfile
     volumes:
       - "./client:/client"
+    container_name: client
     ports:
       - "8000:8000"
     depends_on:
@@ -30,6 +31,7 @@ services:
     build:
       context: ./database
       dockerfile: ./db.Dockerfile
+    container_name: postgres
     volumes:
       - "./database/data:/data"
     environment:
@@ -39,8 +41,10 @@ services:
     ports:
       - "5432:5432"
   redis:
+    container_name: redis
     image: "redis:latest"
   nginx:
+    container_name: nginx
     image: "nginx:latest"
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
