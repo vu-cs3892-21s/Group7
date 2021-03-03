@@ -5,18 +5,18 @@ import styled from 'styled-components';
 import {Button, FormInput, FormLabel} from "./shared";
 
 //DATA NEEDED
-//total number of questions
-//question they were on
-//total time per round
-//array of players
-//questions from database
+//total number of questions - multiplayer
+//question they were on - multiplayer
+//total time per round - multiplayer
+//array of players - multiplayer
+//questions from database - multiplayer
+//buffer of question
 
 // ADD
 // start button
 // how to count down time
 // how to dynamically move users
 // when to grab questions
-
 
 const QuestionBoxBase = styled.div`
     grid-area: question;

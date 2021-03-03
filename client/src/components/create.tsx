@@ -7,11 +7,9 @@ const Header = styled.h2`
 position: flex;
     padding-left: 75px;
     padding-top: 50px;
-    margin-bottom: -80px;
     font: 70px;
     grid-area: title;
-    font-family: revalia;
-    
+    font-family: revalia;   
 `;
 
 const GameModeBase = styled.div`
@@ -47,8 +45,8 @@ const GameMode = ({gameModes, onClick}) => {
 
 const GameModeBlockBase = styled.button`
   display: grid;
-  // grid-template-rows: 1fr 30px 70px;
-    grid-template-rows: 1fr 40px 90px;
+  max-height: 300px;
+  grid-template-rows: 1fr 40px 90px;
 
   grid-template-areas: 
     'pic'
@@ -93,11 +91,9 @@ const GameInfoBase = styled.div`
   border: 3px solid black;
   color: black;
   background-color: #B5CEF3;
-  // min-height: 90px;
-  max-height: 400px;
-  padding-top: -100px;
+  max-height: 300px;
   width: 40vw;
-  margin:auto;
+  margin-left: 75px;
 `;
 
 const QuestionsBase = styled.div`
@@ -154,35 +150,49 @@ const OperationBase = styled.div`
     padding: 0px;
 `;
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const QuestionButtons = ({questionTypes}) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const questionBoxes = questionTypes.map((questionType, i) => (
+        <QuestionsButton key={i} style = {{"fontWeight": "bold" , "fontSize": "18px"}}>{questionType}</QuestionsButton>
+    ));
+    return( <QuestionsBase>
+        <h5>Question <br/> Type</h5>
+        {questionBoxes}
+    </QuestionsBase>);
+};
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const OperationButtons = ({operationTypes}) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const operationBoxes = operationTypes.map((operationType, i) => (
+        <OperationButton key = {i} style = {{"fontWeight": "bold" , "fontSize": "18px"}}>{operationType}</OperationButton>
+    ));
+    return( <OperationBase>
+        <h5>Operations</h5>
+        {operationBoxes}
+    </OperationBase>);
+};
 
 const GameInfo = ({chosenMode}: {chosenMode:string}) => {
-    // const mode;
-    if(chosenMode === "Solo"){
-        return (<GameInfoBase>
-            <QuestionsBase>
-                <h5>Question <br/> Type</h5>
-                <QuestionsButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}>SAT</QuestionsButton>
-                <QuestionsButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}> ACT</QuestionsButton>
-                <QuestionsButton  style = {{"fontWeight": "bold" , "fontSize": "18px"}}>GRE</QuestionsButton>
-                <QuestionsButton  style = {{ "fontWeight": "bold" , "fontSize": "18px"}}>Normal</QuestionsButton>
-            </QuestionsBase>
-            <DurationBase>
-                <h5 style = {{"paddingTop": "30px"}}>Duration</h5>
-                <DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}></DurationInput>
-                <OperationBase>
-                    <h5>Operations</h5>
-                    <OperationButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}>+</OperationButton>
-                    <OperationButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}>-</OperationButton>
-                    <OperationButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}>*</OperationButton>
-                    <OperationButton style = {{"fontWeight": "bold" , "fontSize": "18px"}}>/</OperationButton>
-                </OperationBase>
-            </DurationBase>
-        </GameInfoBase>);
-    }
-    else
+    const questionType = ["SAT", "ACT", "GRE", "Normal"];
+    const duration = (chosenMode !== "Head to Head");
+    const numberOfQuestions = (chosenMode === "Group Play");
+    const operations = (chosenMode === "Solo") ? ["+", "-", "*", "/"]: null;
+
     return (<GameInfoBase>
-        <h5>WORK IN PROGRESS! Want to play {chosenMode}</h5>
+            {questionType ? (<QuestionButtons questionTypes={questionType}/>): null}
+            <DurationBase>
+                {duration ? <h5 style = {{"paddingTop": "30px"}}>Duration</h5> : null}
+                {duration ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
+                {operations ? (<OperationButtons operationTypes={operations}/>): null}
+                {numberOfQuestions ? (<h5 style = {{"paddingTop": "30px"}}>Number of Questions</h5>) : null}
+                {numberOfQuestions ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
+            </DurationBase>
         </GameInfoBase>);
 };
 
@@ -190,7 +200,7 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: auto;
+  grid-template-rows: 75px 300px 300px;
   grid-template-areas: 
   'title'
     'modes'

@@ -16,7 +16,7 @@ import {HeaderWrap} from "./components/shared";
 const GridBase = styled.div`
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
-  grid-template-rows: 75px 80% 80%;
+  grid-template-rows: 75px 1fr 1fr;
   grid-template-areas:
       "sb top top"
       "sb main main"
