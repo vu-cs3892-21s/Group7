@@ -44,13 +44,15 @@ const App = () => {
 
     const logIn = async (ev: { preventDefault: () => void; target: { id: string; }; }) => {
         ev.preventDefault();
-        const endpoint = `http://localhost:5000/v1/session/${ev.target.id}`;
+        const endpoint = `http://localhost:7070/api/v1/session/${ev.target.id}`;
         try {
             //use this for SSO so how do we do this...
-            const response = await fetch(endpoint);
-            const data = await response.json();
+            window.location.href = endpoint
+            // const data = await response.json();
+            // console.log(data)
+            // console.log(response)
             const user = {
-                username: data.login,
+                // username: data.login,
                 first_name: "",
                 last_name: "",
                 primary_email: "",

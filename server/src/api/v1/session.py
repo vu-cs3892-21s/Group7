@@ -4,6 +4,7 @@ from flask import Blueprint, redirect, url_for
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError, TokenExpiredError, OAuth2Error
+from api.v1.user import create_user
 
 # temporarily allow http and relax scope
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
@@ -47,7 +48,8 @@ def create_session(session_handler, token_api, get_api):
     try:
         resp = session_handler.get(get_api)
         assert resp.ok
-        return resp.json(), resp.text
+        create_user(resp.text)
+        return 'User created'
     except (InvalidGrantError, TokenExpiredError, OAuth2Error):  # token is expired
         return redirect(url_for(token_api))
 
