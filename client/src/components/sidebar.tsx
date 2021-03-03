@@ -35,7 +35,6 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
                 : (<Fragment>
                     <Button id="google" onClick={logIn}>Google Log In</Button>
                     <Button id="gitHub" onClick={logIn}>GitHub Log In</Button>
-                    <Button id="github" onClick={logIn}>GitHub In</Button>
                 </Fragment>)
 
             }
