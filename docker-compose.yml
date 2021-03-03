@@ -48,4 +48,6 @@ services:
     image: "nginx:latest"
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
+    ports:
+        - "7070:7070"
 # todo: make networking explicit

@@ -10,7 +10,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
 
-SESSION_API_PREFIX = "/v1/session"
+SESSION_API_PREFIX = "/api/v1/session"
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 with open(dir_path + "/../../../config/sso_config.json", "r") as sso_config_json:
@@ -47,14 +47,18 @@ def create_session(session_handler, token_api, get_api):
     try:
         resp = session_handler.get(get_api)
         assert resp.ok
-        return resp.json(), resp.text
+        return resp.text
     except (InvalidGrantError, TokenExpiredError, OAuth2Error):  # token is expired
         return redirect(url_for(token_api))
 
 
 @session_api.route("/github")
 def github_sesssion():
-    return create_session(github, "github.login", "/user")
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+    resp = github.get("/user")
+    return resp.json()
+    # return create_session(github, "github.login", "/user")
 
 
 @session_api.route("/google")
