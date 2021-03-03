@@ -104,7 +104,9 @@ const App = () => {
 };
 
 const Landing = () => {
-    return(<h1 style={{"gridArea": "main", "padding": "0px 10px"}}>Welcome to our site!</h1>);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return<h1 style={{"gridArea": "main", "padding": "0px 10px", "padding-left": "50px"}}>Welcome to our site!</h1>;
 };
 
 render(<App />, document.getElementById("root"));

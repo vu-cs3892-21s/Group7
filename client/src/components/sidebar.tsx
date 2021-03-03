@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from './shared';
 
+
 const AccountOptionsBase = styled.div`
     grid-area: account;
     position: absolute;
@@ -33,7 +34,7 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
                 </Fragment>)
                 : (<Fragment>
                     <Button id="google" onClick={logIn}>Google Log In</Button>
-                    <Button id="gitHub" onClick={logIn}>GitHub In</Button>
+                    <Button id="gitHub" onClick={logIn}>GitHub Log In</Button>
                 </Fragment>)
 
             }
@@ -58,16 +59,16 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     return (
         <SideBarOptionsBase>
             <Link id="playLink" style = {{"fontSize": 35}} to="/create">Play!</Link>
-            <Link id="leaderBoard" to="/leadership">Leadership Board</Link>
+            <Link id="leaderBoard" to="/leadership">Leadership <br/> Board </Link>
             {loggedIn ?
             (<Link id="profile" to={`/profile/${username}`}>Profile</Link>)
-            : null}
+            : (<Link id="profile" to={`/profile}`}> Profile </Link>)}
         </SideBarOptionsBase>
     );
 }
 
 const SideBarBase = styled.div`
-    height: 100%;
+    height: 100vh;
     padding: 0 0 20px 0;
     grid-area: sb;
     display: grid;
@@ -77,17 +78,22 @@ const SideBarBase = styled.div`
       "pic"
       "options"
       "account";
-    position: relative;
+    position: absolute;
     color: white;
     background-color: #00538f;
     text-align: center;
+    overflow: auto;
+    box-sizing: border-box;
+    bottom: 0;
 `;
+
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const SideBar = ({loggedIn, logIn, logOut, username}) => {
     return(
         <SideBarBase>
-            <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {`/images/math.png`}/>
+            <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {'../../images/math.png'}/>
             <SideBarOptions loggedIn = {loggedIn} username={username}/>
             <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
         </SideBarBase>);

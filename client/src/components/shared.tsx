@@ -30,6 +30,8 @@ export const HeaderWrap = styled.div`
     font-size: 48px;
     line-height: 60px;
     color: #B5CEF3;
+    padding-left: 50px;
+    padding-top: 20px;
 `;
 
 export const Button = styled.button`

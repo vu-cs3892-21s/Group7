@@ -20,6 +20,16 @@ const config: webpack.Configuration = {
           },
         },
       },
+      // {
+      //   test: /\.(gif|png|jpg|svg)(\?.*$|$)/,
+      //   exclude: /node_modules/,
+      //   use: {
+      //     loader: 'file-loader',
+      //     options: {
+      //       limit: 8192,
+      //     },
+      //   },
+      // },
     ],
   },
   resolve: {
