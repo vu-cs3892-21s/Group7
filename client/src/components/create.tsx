@@ -79,12 +79,13 @@ const GameModeBlock = ({ gameMode, onClick}) => {
 }
 
 const GameInfoBase = styled.div`
+   //grid-area: options;
    display:grid;
    grid-template-columns: 50% 50%;
+   grid-template-rows: 80% 20%;
    grid-template-areas: 
-      'type duration';
-  // grid-area: options;
-  // display: flex-container;
+      'type duration'
+      'start start';
   margin: 0 40px;
   text-align: center;
   justify-content: center;
@@ -106,7 +107,7 @@ const QuestionsBase = styled.div`
 
 
 const QuestionsButton = styled.button`
-    height: 50px;
+    height: 40px;
     width: 100px;
     border: 2px solid black;
     background-color: white; 
@@ -126,7 +127,7 @@ const DurationBase = styled.div`
    grid-template-rows: 50% 25% 25%;
    grid-template-areas: 'duration'
    'operation'
-   'operation'
+   'operation';
    padding-bottom: 10px;
    justify-items: center;
 `;
@@ -144,10 +145,18 @@ const OperationBase = styled.div`
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
     grid-template-areas: 
-        'operation operation'
-        'operation operation'
+        '1 2'
+        '3 4';
     justify-items:center;
     padding: 0px;
+`;
+
+const StartButton = styled.button`
+    height: 30px;
+    width: 200px;
+    border: 2px solid black;
+    background-color: white; 
+   
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -159,7 +168,7 @@ const QuestionButtons = ({questionTypes}) => {
         <QuestionsButton key={i} style = {{"fontWeight": "bold" , "fontSize": "18px"}}>{questionType}</QuestionsButton>
     ));
     return( <QuestionsBase>
-        <h5>Question <br/> Type</h5>
+        <h5>Question Type</h5>
         {questionBoxes}
     </QuestionsBase>);
 };
@@ -187,12 +196,15 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
     return (<GameInfoBase>
             {questionType ? (<QuestionButtons questionTypes={questionType}/>): null}
             <DurationBase>
-                {duration ? <h5 style = {{"paddingTop": "30px"}}>Duration</h5> : null}
+                {duration ? <h5 style = {{"paddingTop": "10px"}}>Duration</h5> : null}
                 {duration ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
                 {operations ? (<OperationButtons operationTypes={operations}/>): null}
-                {numberOfQuestions ? (<h5 style = {{"paddingTop": "30px"}}>Number of Questions</h5>) : null}
+                {numberOfQuestions ? (<h5 style = {{"paddingTop": "10px"}}>Number of Questions</h5>) : null}
                 {numberOfQuestions ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
             </DurationBase>
+        <div style={{"justifyItems":"center", "gridArea": "start", "paddingTop": "20px"}}>
+            <StartButton>Start Game!</StartButton>
+        </div>
         </GameInfoBase>);
 };
 
