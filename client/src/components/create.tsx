@@ -83,7 +83,7 @@ const GameModeBlock = ({ gameMode, onClick}) => {
 const GameInfoBase = styled.div`
    display:grid;
    grid-template-columns: '50% 50%';
-   grid-template-rows: 75% 25%;
+   grid-template-rows: 80% 20%;
    grid-template-areas: 
       'type duration'
       'start start';
@@ -94,8 +94,8 @@ const GameInfoBase = styled.div`
   color: black;
   background-color: #B5CEF3;
   max-height: 400px;
-  width: 40vw;
   margin-left: 75px;
+  padding: 10px;
 `;
 
 const QuestionsBase = styled.div`
@@ -103,13 +103,14 @@ const QuestionsBase = styled.div`
   padding: 10px;
   display: grid;
   justify-items: center;
-  grid-template-rows: 20% 20% 20% 20%;
+  grid-template-rows: 12% 22% 22% 22% 22%;
 `;
 
 
 const QuestionsButton = styled.button`
     height: 40px;
     width: 100px;
+    margin: 5px;
     border: 2px solid black;
     background-color: white; 
 `;
@@ -122,7 +123,6 @@ const DurationInput = styled.input`
 `;
 
 const DurationBase = styled.div`
-   // display:grid;
    grid-area: duration;
    grid-template-rows: 50% 25% 25%;
    grid-template-areas: 'duration'
@@ -153,7 +153,7 @@ const OperationBase = styled.div`
 
 const StartButton = styled.button`
     height: 40px;
-    width: 200px;
+    width: 150px;
     border: 2px solid black;
     background-color: white; 
     justify-items:center;
@@ -162,7 +162,7 @@ const StartButton = styled.button`
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionButtons = ({questionTypes, onChange}) => {
+const QuestionButtons = ({questionTypes, onChange, game}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const questionBoxes = questionTypes.map((questionType, i) => (
@@ -171,7 +171,7 @@ const QuestionButtons = ({questionTypes, onChange}) => {
             value={questionType}
             onClick={onChange}
             key={i}
-            style = {{"fontWeight": "bold" , "fontSize": "18px"}}>
+            style = {{"fontWeight": "bold" , "fontSize": "18px", "border": (questionType === game.questionType) ? "2px solid red": ""}}>
             {questionType}
         </QuestionsButton>
     ));
@@ -183,7 +183,7 @@ const QuestionButtons = ({questionTypes, onChange}) => {
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const OperationButtons = ({operationTypes, onChange}) => {
+const OperationButtons = ({operationTypes, onChange, game}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const operationBoxes = operationTypes.map((operationType, i) => (
@@ -192,7 +192,7 @@ const OperationButtons = ({operationTypes, onChange}) => {
             name = "operations"
             onClick = {onChange}
             key = {i}
-            style = {{"fontWeight": "bold" , "fontSize": "18px"}}>
+            style = {{"fontWeight": "bold" , "fontSize": "18px", "border": (game.operations.includes(operationType)) ? "2px solid red": ""}}>
             {operationType}
         </OperationButton>
     ));
@@ -240,13 +240,11 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
                     ...game,
                     [ev.target.name]: newArr
                 })
-                ev.target.style.border = "";
             } else {
                 setGame({
                     ...game,
                     [ev.target.name]: [...game.operations, ev.target.value]
                 })
-                ev.target.style.border = "2px solid red";
             }
         } else {
             setGame({
@@ -301,7 +299,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
 
 
     return (<GameInfoBase>
-            {questionType ? (<QuestionButtons onChange={onChange} questionTypes={questionType}/>): null}
+            {questionType ? (<QuestionButtons onChange={onChange} game = {game} questionTypes={questionType}/>): null}
             <DurationBase>
                 {duration ? <h5 style = {{"paddingTop": "10px"}}>Duration</h5> : null}
                 {duration ? (
@@ -311,7 +309,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
                         style = {{"fontWeight": "bold" , "fontSize": "18px"}}
                         onChange = {onChange}
                     />) : null}
-                {operations ? (<OperationButtons operationTypes={operations} onChange = {onChange}/>): null}
+                {operations ? (<OperationButtons operationTypes={operations} game = {game} onChange = {onChange}/>): null}
                 {numberOfQuestions ? (<h5 style = {{"paddingTop": "20px"}}>Number of Questions</h5>) : null}
                 {numberOfQuestions ? (
                     <DurationInput
@@ -327,13 +325,71 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
         </GameInfoBase>);
 };
 
+const JoinGameBase = styled.div`
+  text-align: center;
+  justify-content: center;
+  border: 3px solid black;
+  color: black;
+  background-color: #B5CEF3;
+  max-height: 400px;
+  padding: 10px;
+`;
+
+const JoinGame = () => {
+    const [error, setError] = useState("");
+    const [code, setCode] = useState("");
+
+    const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
+        setCode(ev.target.value);
+    }
+
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit!");
+
+        const res = await fetch('/v1/join', {
+            method: 'POST',
+            body: code,
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            history.push(`/game/${data.id}`)
+        } else {
+            setError("Invalid Game Code")
+        }
+
+    }
+
+    return(<JoinGameBase>
+        <DurationBase>
+            <h5 style = {{"paddingTop": "10px"}}>Room Code</h5>
+            <DurationInput
+                value = {code}
+                style = {{"fontWeight": "bold" , "fontSize": "18px" , "paddingBottom": "20px"}}
+                onChange = {onChange}
+            />
+        </DurationBase>
+        <StartButton onClick={onSubmit}>Join Room!</StartButton>
+        <ErrorMessage msg = {error}/>
+    </JoinGameBase>)
+
+
+}
 const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 75px 300px 300px;
   grid-template-areas: 
-  'title'
+    'title'
     'modes'
     'options' 
 `;
@@ -357,7 +413,10 @@ export const GameGen = (props: { history: History; }) => {
     return(
         <GameGenBase>
             <Header> Select Game Mode</Header>
-        <GameMode gameModes = {gameModes} onClick={onClick}/>
-        {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
+            <GameMode gameModes = {gameModes} onClick={onClick}/>
+            <div style={{"gridArea":"options", "display":"flex", "flexDirection":"row"}}>
+                {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
+                {(chosenMode === "Group Play") ? <JoinGame/> : null}
+            </div>
     </GameGenBase>);
 }

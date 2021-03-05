@@ -27,7 +27,7 @@ const GridBase = styled.div`
 `;
 
 const defaultUser = {
-    username: "",
+    username: "nobody",
     first_name: "",
     last_name: "",
     primary_email: "",
@@ -86,7 +86,7 @@ const App = () => {
             <Route exact path="/" component={Landing} />
             <Route
                 path="/profile/:username"
-                render = {p => {return <Profile currentUser = {state}/>}}
+                render = {p => {return <Profile currentUser = {state.username}/>}}
             />
             <Route
                 path="/create"

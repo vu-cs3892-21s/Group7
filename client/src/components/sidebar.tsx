@@ -62,7 +62,7 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
             <Link id="leaderBoard" to="/leadership">Leadership <br/> Board </Link>
             {loggedIn ?
             (<Link id="profile" to={`/profile/${username}`}>Profile</Link>)
-            : (<Link id="profile" to={`/profile}`}> Profile </Link>)}
+            : null}
         </SideBarOptionsBase>
     );
 }
