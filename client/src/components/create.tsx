@@ -2,6 +2,7 @@
 
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import {ErrorMessage} from "./shared";
 
 const Header = styled.h2`
 position: flex;
@@ -71,18 +72,18 @@ const GameModeBlock = ({ gameMode, onClick}) => {
     //make the background the image?
     console.log(gameMode);
     return(
-    <GameModeBlockBase id={gameMode.name} onClick = {onClick}>
+        //how to make it recognize any click?
+    <GameModeBlockBase value={gameMode.name} onClick = {onClick}>
         <GameModeImage src={`images/${gameMode.src}`}/>
         <div style={{"gridArea" : "name", "fontWeight": "bold" , "fontSize": "18px"}}>{gameMode.name}</div>
         <div style={{"gridArea" : "description"}}>{gameMode.description}</div>
     </GameModeBlockBase>);
-}
+};
 
 const GameInfoBase = styled.div`
-   //grid-area: options;
    display:grid;
-   grid-template-columns: 50% 50%;
-   grid-template-rows: 80% 20%;
+   grid-template-columns: '50% 50%';
+   grid-template-rows: 75% 25%;
    grid-template-areas: 
       'type duration'
       'start start';
@@ -92,7 +93,7 @@ const GameInfoBase = styled.div`
   border: 3px solid black;
   color: black;
   background-color: #B5CEF3;
-  max-height: 300px;
+  max-height: 400px;
   width: 40vw;
   margin-left: 75px;
 `;
@@ -118,7 +119,6 @@ const DurationInput = styled.input`
     width: 100px;
     border: 2px solid black;
     background-color: white; 
-    padding-top: 50px;
 `;
 
 const DurationBase = styled.div`
@@ -152,20 +152,28 @@ const OperationBase = styled.div`
 `;
 
 const StartButton = styled.button`
-    height: 30px;
+    height: 40px;
     width: 200px;
     border: 2px solid black;
     background-color: white; 
+    justify-items:center;
    
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionButtons = ({questionTypes}) => {
+const QuestionButtons = ({questionTypes, onChange}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const questionBoxes = questionTypes.map((questionType, i) => (
-        <QuestionsButton key={i} style = {{"fontWeight": "bold" , "fontSize": "18px"}}>{questionType}</QuestionsButton>
+        <QuestionsButton
+            name="questionType"
+            value={questionType}
+            onClick={onChange}
+            key={i}
+            style = {{"fontWeight": "bold" , "fontSize": "18px"}}>
+            {questionType}
+        </QuestionsButton>
     ));
     return( <QuestionsBase>
         <h5>Question Type</h5>
@@ -175,35 +183,146 @@ const QuestionButtons = ({questionTypes}) => {
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const OperationButtons = ({operationTypes}) => {
+const OperationButtons = ({operationTypes, onChange}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const operationBoxes = operationTypes.map((operationType, i) => (
-        <OperationButton key = {i} style = {{"fontWeight": "bold" , "fontSize": "18px"}}>{operationType}</OperationButton>
+        <OperationButton
+            value = {operationType}
+            name = "operations"
+            onClick = {onChange}
+            key = {i}
+            style = {{"fontWeight": "bold" , "fontSize": "18px"}}>
+            {operationType}
+        </OperationButton>
     ));
     return( <OperationBase>
-        <h5>Operations</h5>
+        <h5 style = {{"paddingTop": "20px"}}>Operations</h5>
         {operationBoxes}
     </OperationBase>);
 };
 
-const GameInfo = ({chosenMode}: {chosenMode:string}) => {
+const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string}) => {
     const questionType = ["SAT", "ACT", "GRE", "Normal"];
     const duration = (chosenMode !== "Head to Head");
     const numberOfQuestions = (chosenMode === "Group Play");
     const operations = (chosenMode === "Solo") ? ["+", "-", "*", "/"]: null;
 
+    const [error, setError] = useState("");
+    const [game, setGame] = useState({
+        mode: chosenMode,
+        questionType: "",
+        duration: 0,
+        operations: [],
+        numberOfQuestions: 0,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const onChange = (ev) => {
+        setError('');
+
+        if(ev.target.name === "questionType" && ev.target.value === game.questionType) {
+            setGame({
+                ...game,
+                questionType: ""
+            })
+        } else if(ev.target.name === "operations") {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (game.operations.includes(ev.target.value)) {
+                console.log("already includes");
+                const newArr = [...game.operations];
+                console.log(newArr);
+                newArr.splice(newArr.findIndex(item => item === ev.target.value), 1)
+                console.log("removed");
+                setGame({
+                    ...game,
+                    [ev.target.name]: newArr
+                })
+                ev.target.style.border = "";
+            } else {
+                setGame({
+                    ...game,
+                    [ev.target.name]: [...game.operations, ev.target.value]
+                })
+                ev.target.style.border = "2px solid red";
+            }
+        } else {
+            setGame({
+                ...game,
+                [ev.target.name]: ev.target.value
+            });
+        }
+
+
+        console.log(game);
+    }
+
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit!");
+
+        if(game.questionType === "") {
+            setError("Select question type");
+            return;
+        } else if(chosenMode === "Solo" && game.operations === []) {
+            setError("Select operation types");
+            return;
+        } else if(chosenMode !== "Head To Head" && game.duration === 0) {
+            setError("Enter > 0 duration");
+            return;
+        } else if (chosenMode === "Group Play" && game.numberOfQuestions === 0) {
+            setError("Enter > 0 number of questions");
+            return;
+        }
+
+        console.log(game);
+
+        const res = await fetch('/v1/create', {
+            method: 'POST',
+            body: JSON.stringify(game),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            history.push(`/game/${data.id}`)
+        }
+
+    }
+
+
+
     return (<GameInfoBase>
-            {questionType ? (<QuestionButtons questionTypes={questionType}/>): null}
+            {questionType ? (<QuestionButtons onChange={onChange} questionTypes={questionType}/>): null}
             <DurationBase>
                 {duration ? <h5 style = {{"paddingTop": "10px"}}>Duration</h5> : null}
-                {duration ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
-                {operations ? (<OperationButtons operationTypes={operations}/>): null}
-                {numberOfQuestions ? (<h5 style = {{"paddingTop": "10px"}}>Number of Questions</h5>) : null}
-                {numberOfQuestions ? (<DurationInput style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
+                {duration ? (
+                    <DurationInput
+                        name = "duration"
+                        value = {game.duration}
+                        style = {{"fontWeight": "bold" , "fontSize": "18px"}}
+                        onChange = {onChange}
+                    />) : null}
+                {operations ? (<OperationButtons operationTypes={operations} onChange = {onChange}/>): null}
+                {numberOfQuestions ? (<h5 style = {{"paddingTop": "20px"}}>Number of Questions</h5>) : null}
+                {numberOfQuestions ? (
+                    <DurationInput
+                        name ="numberOfQuestions"
+                        value = {game.numberOfQuestions}
+                        onChange = {onChange}
+                        style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
             </DurationBase>
-        <div style={{"justifyItems":"center", "gridArea": "start", "paddingTop": "20px"}}>
-            <StartButton>Start Game!</StartButton>
+        <div style={{"justifyItems":"center", "gridArea": "start"}}>
+            <StartButton onClick={onSubmit}>Start Game!</StartButton>
+            <ErrorMessage msg = {error}/>
         </div>
         </GameInfoBase>);
 };
@@ -220,25 +339,25 @@ const GameGenBase = styled.div`
 `;
 
 
-export const GameGen = () => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-unused-vars
+export const GameGen = (props: { history: History; }) => {
     //get game modes from database
-
     const [chosenMode, setMode] = useState("");
 
-    const onClick = (event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }) => {
+    const onClick = (event: { preventDefault: () => void; target: { value: React.SetStateAction<string>; }; }) => {
         event.preventDefault();
         console.log("calling onClick");
-        console.log(event.target.id);
-        setMode(event.target.id);
+        console.log(event.target.value);
+        setMode(event.target.value);
         console.log(chosenMode);
     };
 
-    console.log(gameModes);
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return(
         <GameGenBase>
             <Header> Select Game Mode</Header>
         <GameMode gameModes = {gameModes} onClick={onClick}/>
-        {chosenMode ? (<GameInfo chosenMode = {chosenMode}/>) : null}
+        {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
     </GameGenBase>);
 }

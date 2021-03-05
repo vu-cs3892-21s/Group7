@@ -4,6 +4,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+const ErrorBase = styled.div`
+  font-family: Revalia;
+  color: red;
+  display: flex;
+  justify-content: center;
+  min-height: 1.2em;
+`;
+
+export const ErrorMessage = ({ msg = '', hide = false }) => {
+    return (
+        <ErrorBase style={{ display: hide ? 'none' : 'inherit' }}>{msg}</ErrorBase>
+    );
+};
+
+ErrorMessage.propTypes = {
+    msg: PropTypes.string,
+    hide: PropTypes.bool
+};
+
 export const FormLabel = styled.label`
     font-family: Revalia;
     font-style: normal;

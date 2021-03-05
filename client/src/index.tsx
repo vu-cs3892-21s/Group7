@@ -13,6 +13,8 @@ import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
 import {HeaderWrap} from "./components/shared";
 
+
+
 const GridBase = styled.div`
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
@@ -88,7 +90,10 @@ const App = () => {
             />
             <Route
                 path="/create"
-                render={p => {return <GameGen />;
+                render={p => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    return <GameGen {...p.history} />;
                 }}
             />
             <Route
