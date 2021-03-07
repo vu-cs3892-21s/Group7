@@ -3,6 +3,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Button, FormInput, FormLabel} from "./shared";
+import Timer from 'react-compound-timer';
 
 //DATA NEEDED
 //total number of questions - multiplayer
@@ -47,7 +48,18 @@ const QuestionBox = ({gameInfo, setGameInfo, question, onChange, onKeyDown, answ
     return (gameInfo.start ? (<QuestionBoxBase>
             <div style={{"gridArea":"top", "display": "flex-container", "flexDirection": "row"}}>
                 <div style={{"flex": 1}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
-                <div style={{"flex": 1}}>Time Remaining: {gameInfo.maxTime}</div>
+                <Timer
+                    initialTime={gameInfo.maxTime}
+                    lastUnit="s"
+                    direction="backward"
+                    startImmediately={false}
+                >
+                    {() => (
+                        <React.Fragment>
+                            Time Remaining: <Timer.Seconds /> seconds
+                        </React.Fragment>
+                    )}
+                </Timer>
             </div>
             <div style={{"gridArea":"main"}}>{question}</div>
             <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
@@ -55,7 +67,7 @@ const QuestionBox = ({gameInfo, setGameInfo, question, onChange, onKeyDown, answ
                 :
             (<div style={{"gridArea": "question", "justifyContent": "center"}}>
                     <Button onClick={onStart}> Start Game!</Button>
-                </div>)
+            </div>)
     );
 };
 
@@ -154,7 +166,7 @@ export const GamePage = props => {
     //load in gameInfo
 
     const [gameInfo, setGameInfo] = useState({
-        "start": false,
+        start: false,
         "mode": "alone",
         "maxTime": 20,
         "totalQuestions": 20,
@@ -164,11 +176,10 @@ export const GamePage = props => {
     //load in players
     const players = ["Tim", "Sam", "Evan", "Irisa"];
 
-    //load in question
-    const [question, setQuestion] = useState({
-        "question": "How much wood could a wood chuck chuck if a wood chuck could chuck wood?",
-        "answer": 50
-    });
+    //load in first question
+    const [question, setQuestion] = useState([
+        {"question": "How much wood could a wood chuck chuck if a wood chuck could chuck wood?", "answer": 50}
+    ]);
 
     //user answer
     const [answer, setAnswer] = useState(0);
@@ -178,15 +189,12 @@ export const GamePage = props => {
     };
 
     const onSubmit = () => {
-        if(answer === question.answer) {
+        if(answer === question[0].answer) {
             //do something
+            question.pop();
         } else{
             //notify incorrect
         }
-    };
-
-    const timeOut = () => {
-        //do something to
     };
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -198,7 +206,7 @@ export const GamePage = props => {
     }
 
     return(<GamePageBase>
-        <QuestionBox gameInfo={gameInfo} setGameInfo={setGameInfo} question={question.question} onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
+        <QuestionBox gameInfo={gameInfo} setGameInfo={setGameInfo} question={question[0].question} onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
         {gameInfo.mode !== "alone" ? (<Players players = {players}/>): null};
         {gameInfo.mode !== "alone" ? (<ChatBox/>): null};
     </GamePageBase>);

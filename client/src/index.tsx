@@ -85,7 +85,7 @@ const App = () => {
             <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
             <Route exact path="/" component={Landing} />
             <Route
-                path="/profile/:username"
+                path="/profile"
                 render = {p => {return <Profile currentUser = {state.username}/>}}
             />
             <Route
@@ -97,7 +97,7 @@ const App = () => {
                 }}
             />
             <Route
-                path="/game"
+                path="/game/:id"
                 render={p => {return <GamePage {...p}/>;
                 }}
             />
