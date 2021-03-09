@@ -13,6 +13,8 @@ import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
 import {HeaderWrap} from "./components/shared";
 
+
+
 const GridBase = styled.div`
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
@@ -25,7 +27,7 @@ const GridBase = styled.div`
 `;
 
 const defaultUser = {
-    username: "",
+    username: "nobody",
     first_name: "",
     last_name: "",
     primary_email: "",
@@ -83,16 +85,19 @@ const App = () => {
             <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
             <Route exact path="/" component={Landing} />
             <Route
-                path="/profile/:username"
-                render = {p => {return <Profile currentUser = {state}/>}}
+                path="/profile"
+                render = {p => {return <Profile currentUser = {state.username}/>}}
             />
             <Route
                 path="/create"
-                render={p => {return <GameGen />;
+                render={p => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    return <GameGen {...p.history} />;
                 }}
             />
             <Route
-                path="/game"
+                path="/game/:id"
                 render={p => {return <GamePage {...p}/>;
                 }}
             />
