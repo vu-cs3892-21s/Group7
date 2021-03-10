@@ -59,6 +59,7 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     return (
         <SideBarOptionsBase>
             <Link id="playLink" style = {{"fontSize": 35}} to="/create">Play!</Link>
+            <Link id="gamePage" to="/game/123">Game Page</Link>
             <Link id="leaderBoard" to="/leadership">Leadership <br/> Board </Link>
             {loggedIn ?
             (<Link id="profile" to={`/profile/${username}`}>Profile</Link>)

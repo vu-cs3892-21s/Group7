@@ -40,6 +40,23 @@ export const FormInput = styled.input`
   color: black;
 `;
 
+export const AnswerLabel = styled.label`
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+    align-items: center;
+    color: #000000;
+    padding-right: 1em;
+`;
+
+export const AnswerInput = styled.input`
+  padding-left: 5px;
+  color: black;
+`;
+
+
 export const HeaderWrap = styled.div`
     grid-area: top;
     padding: 0px 10px;
