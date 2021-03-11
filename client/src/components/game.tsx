@@ -37,37 +37,120 @@ const QuestionBoxBase = styled.div`
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionBox = ({gameInfo, setGameInfo, question, onChange, onKeyDown, answer}) => {
+const QuestionBox = ({me, gameInfo, setGameInfo}) => {
+
+    //user answer
+    const [answer, setAnswer] = useState<number>(0);
+    //button state
+    const [buttonText, setButtonText] = useState("Start Game!");
+
     const onStart = () => {
         setGameInfo({
             ...gameInfo,
             start: true
         });
-        //load question in here?
     };
 
-    console.log(gameInfo);
-    console.log(gameInfo.start);
+    //load in first question
+    const [question, setQuestions] = useState<{question:string, answer: number}[]>([
+        {"question": "How much wood could a wood chuck chuck if a wood chuck could chuck wood?", "answer": 50},
+        {"question": "3 times 5", "answer": 15},
+        {"question": "3 plus 5", "answer": 8},
+    ]);
+
+    const getMoreQs = async () => {
+        const res = await fetch('v1/questions');
+        if(res.ok) {
+            const data = await res.json();
+            setQuestions([...question, data])
+        }
+    }
+
+    //load question in here?
+    if (question.length < 20) {
+        getMoreQs();
+    }
+
+    const onChange = (ev: { target: { value: string; }; }) => {
+        setAnswer(parseInt(ev.target.value));
+        console.log("Changing value!")
+        console.log(answer);
+    };
+
+    const onSubmit = () => {
+        console.log("Trying submit")
+        if(answer === question[0].answer) {
+            console.log("Correct Answer");
+            setQuestions(question.slice(1));
+            setGameInfo({
+                ...gameInfo,
+                start: false,
+                questionNumber: ++gameInfo.questionNumber
+            });
+            //will be a call to update score
+            me.score++;
+            setAnswer(0);
+            setButtonText("Next Question!");
+            return true;
+        } else {
+            console.log("Incorrect");
+            return false;
+        }
+    };
+
+    const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            onSubmit();
+        }
+    }
+
+    const timeFinish = () => {
+        console.log("Out of Time!");
+
+        setGameInfo({
+            ...gameInfo,
+            start: false,
+            questionNumber: ++gameInfo.questionNumber
+        });
+        //will check the current answer and get ready for the next question
+        if(!onSubmit()) {
+            const newQ = question.slice(1);
+            setQuestions(newQ);
+            console.log(newQ);
+            setButtonText("Next Question!");
+            setAnswer(0);
+        }
+    };
 
     return (<QuestionBoxBase>
             <div style={{"gridArea":"topQ"}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
             <div style={{"gridArea":"topT"}}>
-                <Timer
-                    initialTime={gameInfo.maxTime}
-                    lastUnit="s"
-                    direction="backward"
-                    startImmediately={false}
-                >
+                {gameInfo.start ? (
+                    <Timer
+                        initialTime={gameInfo.maxTime*1000}
+                        direction="backward"
+                        checkpoints={[
+                            {
+                                time: 0 ,
+                                callback: () => timeFinish(),
+                            }
+                        ]}
+                    >
                     {() => (
                         <React.Fragment>
                             Time Remaining: <Timer.Seconds /> seconds
                         </React.Fragment>
                     )}
-                </Timer>
+                </Timer>): (
+                        <React.Fragment>
+                            Time Remaining: {gameInfo.maxTime} seconds
+                        </React.Fragment>) }
             </div>
-            {gameInfo.start ? (<div style={{"gridArea":"main"}}>{question}</div>) :
-                (<div style={{"gridArea": "main", "alignItems": "center"}}>
-                    <Button onClick={onStart}> Start Game!</Button>
+            {gameInfo.start ? (<div style={{"gridArea":"main"}}>{question[0].question}</div>) :
+                (<div style={{"gridArea": "main", "alignItems": "center","paddingLeft": "35%", "paddingTop": "15%"}}>
+                    <Button style={{"background":"#00538f"}} onClick={onStart}>{buttonText}</Button>
                 </div>)
             }
             {gameInfo.start ? (<AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>) : null}
@@ -90,6 +173,7 @@ const AnswerBox = ({onChange, onKeyDown, answer}) => {
             <AnswerLabel>Answer:</AnswerLabel>
             <AnswerInput
                 id="answer"
+                type="number"
                 name="answer"
                 onChange={onChange}
                 onKeyDown={onKeyDown}
@@ -113,7 +197,7 @@ const ChatBox = () => {
 
 const PlayerBox = styled.div`
     margin: 5px;
-    background: #00538f;
+    background: #B5CEF3;
     border: 1px solid #000000;
     box-sizing: border-box;
     display: grid;
@@ -129,10 +213,10 @@ const Player = ({player, rank}) => {
         <PlayerBox>
             <img style={{"gridArea": "img"}}/>
             <div style={{"gridArea": "player", "textAlign": "center", "margin": "20%"}}>
-                <div>{player.name}</div>
+                <div style={{"fontWeight": "bold","fontSize": "20px"}}>{player.name}</div>
                 <div>{player.score}</div>
             </div>
-            <div style={{"fontSize": "48px", "gridArea": "rank"}}>#{rank}</div>
+            <div style={{"fontSize": "40px", "gridArea": "rank"}}>#{rank}</div>
         </PlayerBox>)
 };
 
@@ -148,7 +232,7 @@ const PlayerBase = styled.div`
 const Players = ({players}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    players.sort((a,b) => b.score - a.score);
+    // players.sort((a,b) => b.score - a.score);
     const playerBoxes = players.map((player: any, i: number) => (
         <Player key={i} player={player} rank={i+1}/>
     ));
@@ -171,16 +255,7 @@ const GamePageBase = styled.div`
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const GamePage = props => {
-    const getMoreQs = async () => {
-        const res = await fetch('v1/questions');
-        if(res.ok) {
-            const data = await res.json();
-            setQuestions([...question, data])
-        }
-    }
-
     //useEffect to load in gameInfo & players
-
     //load in gameInfo
     const [gameInfo, setGameInfo] = useState({
         "start": false,
@@ -190,57 +265,22 @@ export const GamePage = props => {
         "questionNumber": 1,
     });
 
-    //load in players
-    const players = [
+    //load in my info players
+    const me = {name: "Sam", score: 0};
+
+    //load in my opponents info players
+    const opponents = (gameInfo.mode !== "alone") ? [
         {name: "Tim", score: 0},
-        {name: "Sam", score: 10},
         {name: "Evan", score: 0},
-        {name: "Irisa", score: 7}
-    ]
+        {name: "Irisa", score: 0}
+    ] : [];
 
-    //load in first question
-    const [question, setQuestions] = useState([
-        {"question": "How much wood could a wood chuck chuck if a wood chuck could chuck wood?", "answer": 50},
-        {"question": "3 times 5", "answer": 15},
-        {"question": "3 plus 5", "answer": 8},
-    ]);
-
-    if (question.length < 5) {
-        getMoreQs();
-    }
-
-    //user answer
-    const [answer, setAnswer] = useState(0);
-
-    const onChange = (ev: { target: { value: React.SetStateAction<number>; }; }) => {
-        setAnswer(ev.target.value);
-        console.log("Changing value!")
-        console.log(answer);
-    };
-
-    const onSubmit = () => {
-        console.log("trying submit")
-        console.log(answer);
-        console.log(question[0].answer);
-        if(answer === question[0].answer) {
-            //do something
-            console.log("Correct Answer");
-            question.pop();
-        } else{
-            //notify incorrect
-        }
-    };
-
-    const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            event.stopPropagation();
-            onSubmit();
-        }
-    }
+    const players = opponents.push(me);
+    console.log(players);
+    console.log(opponents);
 
     return(<GamePageBase>
-        <QuestionBox gameInfo={gameInfo} setGameInfo={setGameInfo} question={question[0].question} onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>
+        <QuestionBox me={me} gameInfo={gameInfo} setGameInfo={setGameInfo}/>
         {gameInfo.mode !== "alone" ? (<Players players = {players}/>): null}
         {gameInfo.mode !== "alone" ? (<ChatBox/>): null}
     </GamePageBase>);

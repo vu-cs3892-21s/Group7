@@ -38,6 +38,7 @@ export const FormInput = styled.input`
   margin: 0.5em 0;
   padding-left: 5px;
   color: black;
+  align-items: center;
 `;
 
 export const AnswerLabel = styled.label`
