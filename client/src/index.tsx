@@ -11,11 +11,12 @@ import {LeadershipBoard} from "./components/leadership";
 
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
-import {HeaderWrap} from "./components/shared";
+import {CenteredDiv, HeaderWrap} from "./components/shared";
 
 
 
 const GridBase = styled.div`
+  positive: relative;
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 75px 1fr 1fr;
@@ -113,7 +114,7 @@ const App = () => {
 const Landing = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return<h1 style={{"gridArea": "main", "padding": "0px 10px", "padding-left": "50px"}}>Welcome to our site!</h1>;
+    return <CenteredDiv style={{"gridArea": "main", "fontSize" : "60px"}}>Welcome to our site!</CenteredDiv>;
 };
 
 render(<App />, document.getElementById("root"));
