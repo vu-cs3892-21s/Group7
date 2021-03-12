@@ -7,20 +7,6 @@ import Timer from 'react-compound-timer';
 import PersonIcon from '@material-ui/icons/Person';
 
 
-//DATA NEEDED
-//total number of questions - multiplayer
-//question they were on - multiplayer
-//total time per round - multiplayer
-//array of players - multiplayer
-//questions from database - multiplayer
-//buffer of question
-
-// ADD
-// start button
-// how to count down time
-// how to dynamically move users
-// when to grab questions
-
 const QuestionBoxBase = styled.div`
     position: relative;
     padding: 1em;
@@ -36,6 +22,7 @@ const QuestionBoxBase = styled.div`
     min-height: 400px;
     border: 3px solid #000000;
     box-sizing: border-box;
+
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -203,9 +190,6 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
                 (endGame ? (<CenteredDiv style={{"gridArea":"main", "fontWeight": "bold", "fontSize": "32px"}}>
                         Game Over! <br/> Your Score: {me.score} </CenteredDiv>) :
                         (<CenteredDiv style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
-                            {/*<ListItem button key = {"startGame"} className = {classes.tr} onClick={onStart}>*/}
-                            {/*    <ListItemText classes = {{primary: classes.buttonFormat, secondary: classes.centeredFormat}} primary={buttonText}/>*/}
-                            {/*</ListItem>*/}
                             <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
                         </CenteredDiv>))
             }
@@ -215,10 +199,11 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
 const AnswerBoxBase = styled.div`
   grid-area: answer;
-  display: flex-container;
-  flex-direction: row;
+  position: relative;F
   border: 3px solid black;
   color: white;
+  background-color: #00538f;
+  padding: 10px;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -342,8 +327,10 @@ const PlayerBox = styled.div`
     position: relative;
     border: 3px solid #000000;
     box-sizing: border-box;
-    display: flex-container;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 25% 45% 30%;
+    grid-template-areas:
+        'img player rank';
 `
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -352,10 +339,8 @@ const Player = ({player, rank}) => {
     return(
         <PlayerBox>
             <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": player.color }}/>
-            <CenteredDiv style={{"gridArea": "player"}}>
-                <div style={{"fontWeight": "bold","fontSize": "20px"}}>{player.name}: {player.score}</div>
-            </CenteredDiv>
-            <div style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right"}}>#{rank}</div>
+            <CenteredDiv style={{"gridArea": "player", "fontWeight": "bold","fontSize": "20px"}}>{player.name}: {player.score}</CenteredDiv>
+            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "100%"}}>#{rank}</CenteredDiv>
         </PlayerBox>)
 };
 
@@ -383,12 +368,13 @@ const GamePageBase = styled.div`
     grid-area: main;
     display: grid;
     grid-template-columns: 3fr 1fr;
-    grid-template-rows: 60% 40%;
+    grid-template-rows: 2fr 250px;
     grid-gap: 20px;
     grid-template-areas:
-        question players
-        chat chat
-    background-color: #00538f;
+       'question players'
+        'chat players';
+    padding-left: 1em;
+    padding-top: 1em;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
