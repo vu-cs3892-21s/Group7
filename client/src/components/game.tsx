@@ -2,8 +2,9 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {Button, AnswerInput, AnswerLabel, CenteredDiv, CenteredButton} from "./shared";
+import {Button, AnswerInput, AnswerLabel, CenteredDiv, CenteredButton, useSharedStyles} from "./shared";
 import Timer from 'react-compound-timer';
+
 
 //DATA NEEDED
 //total number of questions - multiplayer
@@ -40,6 +41,7 @@ const QuestionBoxBase = styled.div`
 // @ts-ignore
 const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
+    const classes = useSharedStyles();
     const [answer, setAnswer] = useState<number>(NaN); //user answer
     const [buttonText, setButtonText] = useState("Start Game!"); //button state
     const [endGame, setEndGame] = useState<boolean>(false); //game state
@@ -196,12 +198,15 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
                             Time Remaining: {gameInfo.maxTime} seconds
                         </React.Fragment>) }
             </div>
-            {gameInfo.start ? (<div style={{"gridArea":"main"}}>{question[0].question}</div>) :
-                (endGame ? (<CenteredDiv style={{"gridArea":"main", "fontWeight": "bold"}}>
+            {gameInfo.start ? (<div style={{"gridArea":"main", "textAlign": "center", "fontSize": "18px"}}>{question[0].question}</div>) :
+                (endGame ? (<CenteredDiv style={{"gridArea":"main", "fontWeight": "bold", "fontSize": "32px"}}>
                         Game Over! <br/> Your Score: {me.score} </CenteredDiv>) :
-                        (<div style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
+                        (<CenteredDiv style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
+                            {/*<ListItem button key = {"startGame"} className = {classes.tr} onClick={onStart}>*/}
+                            {/*    <ListItemText classes = {{primary: classes.buttonFormat, secondary: classes.centeredFormat}} primary={buttonText}/>*/}
+                            {/*</ListItem>*/}
                             <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
-                        </div>))
+                        </CenteredDiv>))
             }
             {gameInfo.start ? (<AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>) : null}
         </QuestionBoxBase>);
@@ -209,6 +214,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
 const AnswerBoxBase = styled.div`
   grid-area: answer;
+  position: relative;
   border: 3px solid black;
   color: white;
   background-color: #00538f;
@@ -234,16 +240,100 @@ const AnswerBox = ({onChange, onKeyDown, answer}) => {
 }
 
 const ChatBase = styled.div`
+    max-height: 300px;
     grid-area: chat;
+    display: grid;
+    grid-template-rows: 75% 20%;
+    grid-gap: 5%;
+    grid-template-columns: 100%;
+    grid-template-areas:
+        'chat'
+        'type';
     background: white;
+    padding: 10px;
     border: 3px solid black;
     box-sizing: border-box;
 `;
 const ChatBox = () => {
+    const [messages, setMessages] = useState<{sender:string, text:string}[]>([]);
+    const [myMessage, updateMessage] = useState<string>("");
+
+    useEffect(() => {
+        setMessages([
+                {sender: "Tim", text: "Hi"},
+                {sender: "Sam", text: "Hi"},
+                {sender: "Irisa", text: "Sup"},
+                {sender: "Evan", text: "Hello"},
+                {sender: "Tim", text: "You're going down!"},
+                {sender: "Sam", text: "No YOU"},
+                {sender: "Evan", text: "Calm down..."},
+            ]
+        );
+    }, []);
+
+    const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
+        updateMessage(ev.target.value);
+    }
+
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+
+        const body = {
+            username: "Sam",
+            message: myMessage,
+        };
+
+        const res = await fetch('/v1/message', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        if(res.ok) {
+            setMessages([...messages, {sender: "Sam", text: myMessage}])
+        } else {
+            updateMessage("");
+            setMessages([...messages, {sender: "Sam", text: myMessage}])
+        }
+    }
+
+
+
     return(<ChatBase>
-        Question Box
+        <MessageList messages={messages} />
+        <SendMessageForm onChange={onChange} onSubmit={onSubmit} myMessage={myMessage}/>
     </ChatBase>);
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const MessageList = ({messages}) => {
+    const messageBox = messages.map((message: {sender:string, text:string}, i:number) => (
+        <div style ={{"backgroundColor": "#B5CEF3", "borderRadius": "5px", "margin": "5px", "maxWidth": "25%"}}key={i}>
+            {message.sender}: {message.text}
+        </div>
+    ));
+    return(<div style={{"overflow": "scroll", "gridArea":"chat"}}>{messageBox}</div>);
+
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const SendMessageForm = ({onChange, onSubmit, myMessage}) => {
+    return (
+        <form style ={{"position": "relative", "backgroundColor": "#B5CEF3","gridArea":"type"}}
+            onSubmit={onSubmit}
+            className="send-message-form">
+            <AnswerInput
+                onChange={onChange}
+                value={myMessage}
+                placeholder="Type your message and hit ENTER"
+                type="text" />
+        </form>
+    );
+};
 
 const PlayerBox = styled.div`
     margin: 5px;
@@ -252,7 +342,7 @@ const PlayerBox = styled.div`
     border: 3px solid #000000;
     box-sizing: border-box;
     display: grid;
-    grid-template-columns: 33% 33% 33%;
+    grid-template-columns: 25% 40% 35%;
     grid-template-areas:
         'img player rank';
 `
@@ -263,10 +353,9 @@ const Player = ({player, rank}) => {
     return(
         <PlayerBox>
             <img style={{"gridArea": "img"}}/>
-            <div style={{"gridArea": "player", "textAlign": "center"}}>
-                <div style={{"fontWeight": "bold","fontSize": "20px"}}>{player.name}</div>
-                <div>{player.score}</div>
-            </div>
+            <CenteredDiv style={{"gridArea": "player"}}>
+                <div style={{"fontWeight": "bold","fontSize": "20px"}}>{player.name}: {player.score}</div>
+            </CenteredDiv>
             <div style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right"}}>#{rank}</div>
         </PlayerBox>)
 };
@@ -277,6 +366,7 @@ const PlayerBase = styled.div`
     justify-content: center;
     position: relative;
     box-sizing: border-box;
+    border-radius: 5px;
 `;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -294,7 +384,7 @@ const GamePageBase = styled.div`
     grid-area: main;
     display: grid;
     grid-template-columns: 3fr 1fr;
-    grid-template-rows: 2fr 1fr;
+    grid-template-rows: 60% 40%;
     grid-gap: 20px;
     grid-template-areas:
         'question players'
@@ -329,7 +419,7 @@ export const GamePage = props => {
         "start": false,
         "mode": "head",
         "maxTime": 20,
-        "totalQuestions": 2,
+        "totalQuestions": 20,
         "questionNumber": 1,
     });
 
