@@ -337,7 +337,7 @@ const JoinGameBase = styled.div`
 
 const JoinGame = () => {
     const [error, setError] = useState("");
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState<string>("");
 
     const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
         setCode(ev.target.value);
@@ -361,7 +361,7 @@ const JoinGame = () => {
             console.log(data);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            history.push(`/game/${data.id}`)
+            history.pushState(`/game/${data.id}`);
         } else {
             setError("Invalid Game Code")
         }

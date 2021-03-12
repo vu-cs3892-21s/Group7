@@ -72,6 +72,8 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const AccountOptions = ({loggedIn, logIn, logOut}) => {
     const classes = useStyles();
     return(<List>
@@ -95,6 +97,8 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const SideBar = ({loggedIn, logIn, logOut, username}) => {
     const classes = useStyles();
     return (
