@@ -28,15 +28,15 @@ const GameModeBase = styled.div`
   padding-bottom: 0px;
 `;
 
-const gameModes: { name: string, description: string, icon: any }[] = [
-    { name: "Solo", "description": "Practice Math On Your Own", "icon": <PersonIcon style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
-    { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "icon": <GroupIcon style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
-    { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "icon": <GroupAddIcon style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
-];
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameMode = ({gameModes, onClick}) => {
+const GameMode = ({onClick}) => {
+    const gameModes: { name: string, description: string, icon: any }[] = [
+        { name: "Solo", "description": "Practice Math On Your Own", "icon": <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
+        { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "icon": <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
+        { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "icon": <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
+    ];
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const modeBoxes = gameModes.map((gameMode, i) => (
@@ -62,11 +62,6 @@ const GameModeBlockBase = styled.button`
   text-align: center;
 `;
 
-const GameModeImage = styled.img`
-  grid-area: pic;
-  max-width: 150px;
-  padding: 1em;
-`;
 //gameMode: { name: string, description: string, src: string }
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -77,8 +72,8 @@ const GameModeBlock = ({ gameMode, onClick}) => {
         //how to make it recognize any click?
     <GameModeBlockBase value={gameMode.name} onClick = {onClick}>
         {gameMode.icon}
-        <div style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
-        <div style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
+        <div onClick = {onClick} style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
+        <div onClick = {onClick} style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
     </GameModeBlockBase>);
 };
 
@@ -134,7 +129,6 @@ const DurationBase = styled.div`
    justify-items: center;
 `;
 
-
 const OperationButton = styled.button`
     height: 50px;
     width: 50px;
@@ -151,15 +145,6 @@ const OperationBase = styled.div`
         '3 4';
     justify-items:center;
     padding: 0px;
-`;
-
-const StartButton = styled.button`
-    height: 40px;
-    width: 150px;
-    border: 2px solid black;
-    background-color: white; 
-    justify-items:center;
-   
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -416,7 +401,7 @@ export const GameGen = (props: { history: History; }) => {
     return(
         <GameGenBase>
             <Header> Select Game Mode</Header>
-            <GameMode gameModes = {gameModes} onClick={onClick}/>
+            <GameMode onClick={onClick}/>
             <div style={{"gridArea":"options", "display":"flex", "flexDirection":"row"}}>
                 {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
                 {(chosenMode === "Group Play") ? <JoinGame/> : null}

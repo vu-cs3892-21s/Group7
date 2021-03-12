@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {Button, AnswerInput, AnswerLabel, CenteredDiv, CenteredButton, useSharedStyles} from "./shared";
+import {AnswerInput, AnswerLabel, CenteredDiv, CenteredButton} from "./shared";
 import Timer from 'react-compound-timer';
 import PersonIcon from '@material-ui/icons/Person';
 
@@ -12,7 +12,7 @@ const QuestionBoxBase = styled.div`
     padding: 1em;
     grid-area: question;
     display: grid;
-    grid-template-rows: 20% 65% 15%;
+    grid-template-rows: 20% 60% 15%;
     grid-template-columns: auto;
     grid-template-areas:
         'topQ topT'
@@ -29,8 +29,8 @@ const QuestionBoxBase = styled.div`
 // @ts-ignore
 const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
-    const classes = useSharedStyles();
-    const [answer, setAnswer] = useState<number>(NaN); //user answer
+    const [status, setStatus] = useState<string>("");
+    const [answer, setAnswer] = useState<string>(""); //user answer
     const [buttonText, setButtonText] = useState("Start Game!"); //button state
     const [endGame, setEndGame] = useState<boolean>(false); //game state
 
@@ -85,22 +85,31 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
     }
 
     const onChange = (ev: { target: { value: string; }; }) => {
-        setAnswer(parseInt(ev.target.value));
+        setStatus("");
+        setAnswer((ev.target.value.replace(/ /g,'')));
         console.log("Changing value!")
         console.log(answer);
     };
 
     const resetAfterQuestion = () => {
         setQuestions(question.slice(1));
-        if(question === [] || (gameInfo.questionNumber >= gameInfo.totalQuestions)) {
-            return endOfGame();
+
+        if(gameInfo.mode !== "alone") {
+            if(question === [] || (gameInfo.questionNumber >= gameInfo.totalQuestions)) {
+                return endOfGame();
+            }
+            setGameInfo({
+                ...gameInfo,
+                start: false,
+                questionNumber: ++gameInfo.questionNumber
+            });
+        } else {
+            setGameInfo({
+                ...gameInfo,
+                questionNumber: ++gameInfo.questionNumber
+            });
         }
-        setGameInfo({
-            ...gameInfo,
-            start: false,
-            questionNumber: ++gameInfo.questionNumber
-        });
-        setAnswer(NaN);
+        setAnswer("");
         setButtonText("Next Question!");
     }
 
@@ -131,8 +140,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
     const onSubmit = () => {
         console.log("Trying submit")
-        if(answer === question[0].answer) {
-            console.log("Correct Answer");
+        if(parseInt(answer) === question[0].answer) {
             updateMe({
                 ...me,
                 score: ++me.score
@@ -141,7 +149,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
             resetAfterQuestion();
             return true;
         } else {
-            console.log("Incorrect");
+            setStatus("Incorrect!");
             return false;
         }
     };
@@ -162,7 +170,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
         }
     };
 
-    return (<QuestionBoxBase>
+    return (gameInfo.mode !== "alone") ? (<QuestionBoxBase>
             <div style={{"gridArea":"topQ"}}>Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}</div>
             <div style={{"gridArea":"topT", "textAlign": "right"}}>
                 {gameInfo.start ? (
@@ -193,17 +201,35 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
                             <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
                         </CenteredDiv>))
             }
-            {gameInfo.start ? (<AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>) : null}
-        </QuestionBoxBase>);
+            <Status>{status}</Status>
+            {gameInfo.start ? (<AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />) : null}
+        </QuestionBoxBase>) :
+        (
+            <QuestionBoxBase>
+                <div style={{"gridArea":"topQ"}}>Question {gameInfo.questionNumber}</div>
+                <div style={{"gridArea":"topT", "textAlign": "right"}}>Number Correct: {me.score}</div>
+                {gameInfo.start ? (<div style={{"gridArea":"main", "textAlign": "center", "fontSize": "18px"}}>{question[0].question}</div>) :
+                    (<CenteredDiv style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
+                        <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
+                    </CenteredDiv>)}
+                <Status>{status}</Status>
+                {gameInfo.start ? (<AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer}/>) : null}
+            </QuestionBoxBase>
+    )
 };
 
 const AnswerBoxBase = styled.div`
   grid-area: answer;
-  position: relative;F
+  position: relative;
   border: 3px solid black;
   color: white;
   background-color: #00538f;
   padding: 10px;
+`;
+
+const Status = styled.div`
+    color: #00538f;
+    font-size: 20px;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -214,11 +240,11 @@ const AnswerBox = ({onChange, onKeyDown, answer}) => {
             <AnswerLabel>Answer:</AnswerLabel>
             <AnswerInput
                 id="answer"
-                type="number"
+                type="text"
                 name="answer"
                 onChange={onChange}
                 onKeyDown={onKeyDown}
-                value={(answer !== NaN) ? answer: ""}
+                value={answer}
             />
         </AnswerBoxBase>
     );
@@ -339,8 +365,8 @@ const Player = ({player, rank}) => {
     return(
         <PlayerBox>
             <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": player.color }}/>
-            <CenteredDiv style={{"gridArea": "player", "fontWeight": "bold","fontSize": "20px"}}>{player.name}: {player.score}</CenteredDiv>
-            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "100%"}}>#{rank}</CenteredDiv>
+            <CenteredDiv style={{"gridArea": "player", "fontWeight": "bold","fontSize": "20px", "position": "relative"}}>{player.name}: {player.score}</CenteredDiv>
+            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "100%", "position": "relative"}}>#{rank}</CenteredDiv>
         </PlayerBox>)
 };
 
@@ -401,7 +427,7 @@ export const GamePage = props => {
 
     const [gameInfo, setGameInfo] = useState({
         "start": false,
-        "mode": "head",
+        "mode": "alone",
         "maxTime": 20,
         "totalQuestions": 20,
         "questionNumber": 1,
