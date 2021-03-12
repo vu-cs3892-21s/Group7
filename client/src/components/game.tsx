@@ -215,11 +215,10 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
 
 const AnswerBoxBase = styled.div`
   grid-area: answer;
-  position: relative;
+  display: flex-container;
+  flex-direction: row;
   border: 3px solid black;
   color: white;
-  background-color: #B5CEF3;
-  padding: 10px;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -343,10 +342,8 @@ const PlayerBox = styled.div`
     position: relative;
     border: 3px solid #000000;
     box-sizing: border-box;
-    display: grid;
-    grid-template-columns: 25% 40% 35%;
-    grid-template-areas:
-        'img player rank';
+    display: flex-container;
+    flex-direction: column;
 `
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -389,10 +386,9 @@ const GamePageBase = styled.div`
     grid-template-rows: 60% 40%;
     grid-gap: 20px;
     grid-template-areas:
-        'question players'
-        'chat players';
-    padding-left: 1em;
-    padding-top: 1em;
+        question players
+        chat chat
+    background-color: #00538f;
 `;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

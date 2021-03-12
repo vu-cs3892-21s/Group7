@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 
 const ErrorBase = styled.div`
+  font-family: Revalia;
   color: red;
   display: flex;
   justify-content: center;
