@@ -80,7 +80,7 @@ export const CenteredDiv = styled.div`
 export const AnswerLabel = styled.label`
     font-size: 24px;
     line-height: 30px;
-    align-items: center;
+    text-align: right;
     color: #000000;
     padding-right: 1em;
 `;
@@ -90,7 +90,7 @@ export const AnswerInput = styled.input`
     color: black;
     width: 50%;
     height: 70%;
-    overflow: auto;
+    overflow: scroll;
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
@@ -124,7 +124,6 @@ export const CenteredButton = styled.button`
   max-height: 2em;
   background:#00538f;
   border-radius: 5px;
-  line-height: 2em;
   font-size: 25px;
   color: white;
   width: 50%;

@@ -2,12 +2,15 @@
 
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {ErrorMessage} from "./shared";
+import {CenteredButton, ErrorMessage} from "./shared";
+import GroupIcon from '@material-ui/icons/Group';
+import PersonIcon from '@material-ui/icons/Person';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 const Header = styled.h2`
-position: flex;
+    position: flex;
     padding-left: 75px;
-    padding-top: 50px;
+    padding-top: 30px;
     font: 70px;
     grid-area: title;
     font-family: revalia;   
@@ -15,21 +18,20 @@ position: flex;
 
 const GameModeBase = styled.div`
   grid-area: modes;
-  padding: 60px;
+  padding-left: 60px;
   display: grid;
   grid-template-columns: 33% 33% 33%;
   grid-template-rows: auto
   grid-template-areas: "1 2 3"
   max-height: 250px;
-  // padding-top: 160px;
   padding-top: 0px;
   padding-bottom: 0px;
 `;
 
-const gameModes: { name: string, description: string, src: string }[] = [
-    { name: "Solo", "description": "Practice Math On Your Own", "src": "/images/solo.png" },
-    { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "src": "head.png" },
-    { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "src": "group.png"  }
+const gameModes: { name: string, description: string, icon: any }[] = [
+    { name: "Solo", "description": "Practice Math On Your Own", "icon": <PersonIcon style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
+    { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "icon": <GroupIcon style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
+    { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "icon": <GroupAddIcon style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
 ];
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -47,7 +49,7 @@ const GameMode = ({gameModes, onClick}) => {
 const GameModeBlockBase = styled.button`
   display: grid;
   max-height: 300px;
-  grid-template-rows: 1fr 40px 90px;
+  grid-template-rows: 65% 10% 25%;
 
   grid-template-areas: 
     'pic'
@@ -55,7 +57,7 @@ const GameModeBlockBase = styled.button`
     'description';
   margin: 1em;
   border: 3px solid black;
-  color: black;
+  color: "#00538F";
   background-color: #B5CEF3;
   text-align: center;
 `;
@@ -74,9 +76,9 @@ const GameModeBlock = ({ gameMode, onClick}) => {
     return(
         //how to make it recognize any click?
     <GameModeBlockBase value={gameMode.name} onClick = {onClick}>
-        <GameModeImage src={`images/${gameMode.src}`}/>
-        <div style={{"gridArea" : "name", "fontWeight": "bold" , "fontSize": "18px"}}>{gameMode.name}</div>
-        <div style={{"gridArea" : "description"}}>{gameMode.description}</div>
+        {gameMode.icon}
+        <div style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
+        <div style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
     </GameModeBlockBase>);
 };
 
@@ -107,7 +109,7 @@ const QuestionsBase = styled.div`
 `;
 
 
-const QuestionsButton = styled.button`
+const QuestionButton = styled.button`
     height: 40px;
     width: 100px;
     margin: 5px;
@@ -166,14 +168,14 @@ const QuestionButtons = ({questionTypes, onChange, game}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const questionBoxes = questionTypes.map((questionType, i) => (
-        <QuestionsButton
+        <QuestionButton
             name="questionType"
             value={questionType}
             onClick={onChange}
             key={i}
             style = {{"fontWeight": "bold" , "fontSize": "18px", "border": (questionType === game.questionType) ? "2px solid red": ""}}>
             {questionType}
-        </QuestionsButton>
+        </QuestionButton>
     ));
     return( <QuestionsBase>
         <h5>Question Type</h5>
@@ -318,8 +320,8 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
                         onChange = {onChange}
                         style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
             </DurationBase>
-        <div style={{"justifyItems":"center", "gridArea": "start"}}>
-            <StartButton onClick={onSubmit}>Start Game!</StartButton>
+        <div style={{"gridArea": "start", "position": "relative"}}>
+            <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Start Game!</CenteredButton>
             <ErrorMessage msg = {error}/>
         </div>
         </GameInfoBase>);
@@ -327,6 +329,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
 
 const JoinGameBase = styled.div`
   text-align: center;
+  position: relative;
   justify-content: center;
   border: 3px solid black;
   color: black;
@@ -369,7 +372,7 @@ const JoinGame = () => {
     }
 
     return(<JoinGameBase>
-        <DurationBase>
+        <DurationBase >
             <h5 style = {{"paddingTop": "10px"}}>Room Code</h5>
             <DurationInput
                 value = {code}
@@ -377,7 +380,7 @@ const JoinGame = () => {
                 onChange = {onChange}
             />
         </DurationBase>
-        <StartButton onClick={onSubmit}>Join Room!</StartButton>
+        <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Join!</CenteredButton>
         <ErrorMessage msg = {error}/>
     </JoinGameBase>)
 
@@ -387,7 +390,7 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 300px 300px;
+  grid-template-rows: 75px 330px 300px;
   grid-template-areas: 
     'title'
     'modes'

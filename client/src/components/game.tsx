@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Button, AnswerInput, AnswerLabel, CenteredDiv, CenteredButton, useSharedStyles} from "./shared";
 import Timer from 'react-compound-timer';
+import PersonIcon from '@material-ui/icons/Person';
 
 
 //DATA NEEDED
@@ -217,7 +218,7 @@ const AnswerBoxBase = styled.div`
   position: relative;
   border: 3px solid black;
   color: white;
-  background-color: #00538f;
+  background-color: #B5CEF3;
   padding: 10px;
 `;
 
@@ -249,7 +250,7 @@ const ChatBase = styled.div`
     grid-template-areas:
         'chat'
         'type';
-    background: white;
+    background-color: #B5CEF3;
     padding: 10px;
     border: 3px solid black;
     box-sizing: border-box;
@@ -311,7 +312,7 @@ const ChatBox = () => {
 // @ts-ignore
 const MessageList = ({messages}) => {
     const messageBox = messages.map((message: {sender:string, text:string}, i:number) => (
-        <div style ={{"backgroundColor": "#B5CEF3", "borderRadius": "5px", "margin": "5px", "maxWidth": "25%"}}key={i}>
+        <div style ={{"backgroundColor": "white", "borderRadius": "5px", "margin": "5px", "maxWidth": "50%"}}key={i}>
             {message.sender}: {message.text}
         </div>
     ));
@@ -323,10 +324,11 @@ const MessageList = ({messages}) => {
 // @ts-ignore
 const SendMessageForm = ({onChange, onSubmit, myMessage}) => {
     return (
-        <form style ={{"position": "relative", "backgroundColor": "#B5CEF3","gridArea":"type"}}
+        <form style ={{"position": "relative","gridArea":"type", "alignContent":"right"}}
             onSubmit={onSubmit}
             className="send-message-form">
             <AnswerInput
+                style={{"textAlign": "right", "width": "100%"}}
                 onChange={onChange}
                 value={myMessage}
                 placeholder="Type your message and hit ENTER"
@@ -352,7 +354,7 @@ const PlayerBox = styled.div`
 const Player = ({player, rank}) => {
     return(
         <PlayerBox>
-            <img style={{"gridArea": "img"}}/>
+            <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": player.color }}/>
             <CenteredDiv style={{"gridArea": "player"}}>
                 <div style={{"fontWeight": "bold","fontSize": "20px"}}>{player.name}: {player.score}</div>
             </CenteredDiv>
@@ -362,7 +364,7 @@ const Player = ({player, rank}) => {
 
 const PlayerBase = styled.div`
     grid-area: players;
-    background: white;
+    background:#00538f;
     justify-content: center;
     position: relative;
     box-sizing: border-box;
@@ -388,7 +390,7 @@ const GamePageBase = styled.div`
     grid-gap: 20px;
     grid-template-areas:
         'question players'
-        'chat chat';
+        'chat players';
     padding-left: 1em;
     padding-top: 1em;
 `;
@@ -424,7 +426,7 @@ export const GamePage = props => {
     });
 
     //load in my info
-    const [me, updateMe] = useState<{name: string, score: number}>({name: "Sam", score: 0});
+    const [me, updateMe] = useState<{name: string, score: number, color: string}>({name: "Sam", score: 0, color: "red"});
 
     const loadInPlayerInfo = async () => {
         const res = await fetch('/v1/players', {
@@ -443,11 +445,11 @@ export const GamePage = props => {
     }
 
     //load in my opponents info players
-    const [players, updatePlayers] = useState<{name: string, score: number}[]>((gameInfo.mode !== "alone") ? [
+    const [players, updatePlayers] = useState<{name: string, score: number, color: string}[]>((gameInfo.mode !== "alone") ? [
         me,
-        {name: "Tim", score: 0},
-        {name: "Evan", score: 0},
-        {name: "Irisa", score: 0}
+        {name: "Tim", score: 0, color: "pink"},
+        {name: "Evan", score: 0, color: "blue"},
+        {name: "Irisa", score: 0, color: "green"}
     ] : [me]);
 
     return(<GamePageBase>
