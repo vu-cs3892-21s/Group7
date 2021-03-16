@@ -27,7 +27,7 @@ const QuestionBoxBase = styled.div`
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
+const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
 
     const [status, setStatus] = useState<string>("");
     const [answer, setAnswer] = useState<string>(""); //user answer
@@ -113,13 +113,14 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
         setButtonText("Next Question!");
     }
 
-    const updateUserStats = async ({question, correct, time}: {question:string, correct: boolean, time:number}) => {
+    const updateUserStats = async ({question, correct, time} : {question:string, correct: boolean, time:number}) => {
 
         const userInfo = {
-            username: "Sam",
+            score: ++players[0].score,
             question: question,
             correct: correct,
-            time: time
+            time: time,
+            gameId: gameInfo.id
         };
 
         const res = await fetch('/v1/userStats', {
@@ -138,14 +139,33 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
         }
     }
 
-    const onSubmit = () => {
+    const getScores = async () => {
+
+        const res = await fetch('/v1/updatedScores', {
+            method: 'GET',
+            body: gameInfo.id,
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+
+        if(res.ok) {
+            console.log("Updated Stats");
+        } else {
+            console.log("Error: could not update user stats");
+        }
+    }
+
+    const onSubmit = async () => {
         console.log("Trying submit")
         if(parseInt(answer) === question[0].answer) {
-            updateMe({
-                ...me,
-                score: ++me.score
-            })
-
+            const newPlayers = players;
+            newPlayers[0].score = ++newPlayers[0].score;
+            updatePlayers(newPlayers);
+            // await updateUserStats(question[0].question, true, 10);
+            // let newPlayers = getScores();
+            // updatePlayers(newPlayers);
             resetAfterQuestion();
             return true;
         } else {
@@ -196,7 +216,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
             </div>
             {gameInfo.start ? (<div style={{"gridArea":"main", "textAlign": "center", "fontSize": "18px"}}>{question[0].question}</div>) :
                 (endGame ? (<CenteredDiv style={{"gridArea":"main", "fontWeight": "bold", "fontSize": "32px"}}>
-                        Game Over! <br/> Your Score: {me.score} </CenteredDiv>) :
+                        Game Over! <br/> Your Score: {players[0].score} </CenteredDiv>) :
                         (<CenteredDiv style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
                             <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
                         </CenteredDiv>))
@@ -207,7 +227,7 @@ const QuestionBox = ({me, updateMe, gameInfo, setGameInfo}) => {
         (
             <QuestionBoxBase>
                 <div style={{"gridArea":"topQ"}}>Question {gameInfo.questionNumber}</div>
-                <div style={{"gridArea":"topT", "textAlign": "right"}}>Number Correct: {me.score}</div>
+                <div style={{"gridArea":"topT", "textAlign": "right"}}>Number Correct: {players[0].score}</div>
                 {gameInfo.start ? (<div style={{"gridArea":"main", "textAlign": "center", "fontSize": "18px"}}>{question[0].question}</div>) :
                     (<CenteredDiv style={{"position": "relative", "gridArea": "main", "alignItems": "center"}}>
                         <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
@@ -309,8 +329,6 @@ const ChatBox = () => {
             setMessages([...messages, {sender: "Sam", text: myMessage}])
         }
     }
-
-
 
     return(<ChatBase>
         <MessageList messages={messages} />
@@ -426,6 +444,7 @@ export const GamePage = props => {
     }
 
     const [gameInfo, setGameInfo] = useState({
+        "id": props.$id,
         "start": false,
         "mode": "head",
         "maxTime": 20,
@@ -461,7 +480,7 @@ export const GamePage = props => {
     ] : [me]);
 
     return(<GamePageBase>
-        <QuestionBox me={me} updateMe={updateMe} gameInfo={gameInfo} setGameInfo={setGameInfo}/>
+        <QuestionBox players={players} updatePlayers={updatePlayers} gameInfo={gameInfo} setGameInfo={setGameInfo}/>
         {gameInfo.mode !== "alone" ? (<Players players = {players}/>): null}
         {gameInfo.mode !== "alone" ? (<ChatBox/>): null}
     </GamePageBase>);
