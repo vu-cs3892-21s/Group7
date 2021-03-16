@@ -1,6 +1,6 @@
 'use strict';
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Button, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
 
@@ -24,17 +24,19 @@ const ProfileBlock = ({userInfo}) => {
         </div>
         <InfoBlock style={{"flex" : 2}}>
             <InfoLabels>
-                <p>Username:</p>
+                {/* <p>Username:</p>
                 <p>First Name:</p>
                 <p>Last Name:</p>
-                <p>City:</p>
+                <p>City:</p> */}
+                <p>Name:</p>
                 <p>Email Address:</p>
             </InfoLabels>
             <InfoData>
-                <ShortP>{userInfo.username ? userInfo.username :"--"}</ShortP>
+                {/* <ShortP>{userInfo.username ? userInfo.username :"--"}</ShortP>
                 <ShortP>{userInfo.first_name ? userInfo.first_name: "--"}</ShortP>
                 <ShortP>{userInfo.last_name ? userInfo.last_name: "--"}</ShortP>
-                <ShortP>{userInfo.city ? userInfo.city: "--"}</ShortP>
+                <ShortP>{userInfo.city ? userInfo.city: "--"}</ShortP> */}
+                <ShortP>{userInfo.name ? userInfo.name: "--"}</ShortP>
                 <ShortP>{userInfo.primary_email ? userInfo.primary_email: "--"}</ShortP>
             </InfoData>
         </InfoBlock>
@@ -131,9 +133,14 @@ const ProfilePageBase = styled.div`
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const Profile = ({currentUser}) => {
+export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedIn}) => {
     const defaultMode = "Normal";
     const [mode, setMode] = useState(defaultMode);
+
+    useEffect(() => {
+        onLoggedIn();
+    }, [])
+
 
     return(<ProfilePageBase>
         <ProfileBlock userInfo={currentUser}/>
