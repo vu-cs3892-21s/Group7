@@ -85,43 +85,43 @@ const ModeButtonsBase = styled.div`
   justify-content: center;
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-// @ts-ignore
-const StatsBlock = ({username, mode, setMode}) => {
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
+// // @ts-ignore
+// const StatsBlock = ({username, mode, setMode}) => {
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const changeMode = (ev) => {
-        setMode(ev.target.id);
-    };
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     const changeMode = (ev) => {
+//         setMode(ev.target.id);
+//     };
 
-    //grab the modes
-    const modes = ["Normal", "GRE", "ACT"];
+//     //grab the modes
+//     const modes = ["Normal", "GRE", "ACT"];
 
-    //grab all the user stats from given mode!
-    const stats = {
-        "Average Speed": 20,
-        "Level": 30,
-        "Ranking" : 20,
-        "Win Rate" : 20,
-        "Accuracy" : 20,
-    };
+//     //grab all the user stats from given mode!
+//     const stats = {
+//         "Average Speed": 20,
+//         "Level": 30,
+//         "Ranking" : 20,
+//         "Win Rate" : 20,
+//         "Accuracy" : 20,
+//     };
 
-    const modeButtons = modes.map((mode, i) => (
-        <Button onClick={changeMode} key={i} id={mode}>{mode}</Button>
-    ));
+//     const modeButtons = modes.map((mode, i) => (
+//         <Button onClick={changeMode} key={i} id={mode}>{mode}</Button>
+//     ));
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const statsBoxes = stats.map((stat, i) => (
-        <StatBox key={i} stat={stat}/>
-    ));
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     const statsBoxes = stats.map((stat, i) => (
+//         <StatBox key={i} stat={stat}/>
+//     ));
 
-    return(<StatsBlockBase>
-        <ModeButtonsBase>{modeButtons}</ModeButtonsBase>
-        {statsBoxes}
-    </StatsBlockBase>);
-}
+//     return(<StatsBlockBase>
+//         <ModeButtonsBase>{modeButtons}</ModeButtonsBase>
+//         {statsBoxes}
+//     </StatsBlockBase>);
+// }
 
 const ProfilePageBase = styled.div`
   grid-area: main;
@@ -144,6 +144,6 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
 
     return(<ProfilePageBase>
         <ProfileBlock userInfo={currentUser}/>
-        <StatsBlock username={currentUser.username} mode={mode} setMode={setMode}/>
+        {/* <StatsBlock username={currentUser.username} mode={mode} setMode={setMode}/> */}
     </ProfilePageBase>);
 }
