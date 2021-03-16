@@ -19,6 +19,8 @@ import {CenteredDiv, HeaderWrap} from "./components/shared";
 
 const GridBase = styled.div`
   positive: relative;
+  font-family: Revalia, Sans-Serif;
+  font-size: 1rem;
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 75px 1fr 1fr;
@@ -116,7 +118,7 @@ const App = () => {
 const Landing = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return <CenteredDiv style={{"gridArea": "main", "fontSize" : "60px"}}>Welcome to our site!</CenteredDiv>;
+    return <h1 style={{"gridArea": "main", "paddingTop": "20px", "paddingLeft": "50px"}}>Welcome to our site!</h1>;
 };
 
 render(<App />, document.getElementById("root"));

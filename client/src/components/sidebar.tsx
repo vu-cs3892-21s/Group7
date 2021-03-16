@@ -2,8 +2,6 @@
 
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { Button } from './shared';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -14,9 +12,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Box from '@material-ui/core/Box';
 
-const drawerWidth = 200;
+const drawerWidth = 180;
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         drawer: {
             width: drawerWidth,
@@ -49,11 +47,16 @@ const useStyles = makeStyles((theme: Theme) =>
 const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
     const classes = useStyles();
     return (
-        <Box mt={20} mb={32}>
+        <Box mt={10} mb={28}>
             <Link to={"/create"}>
-            <ListItem button key = {"playlink"} className = {classes.tr}>
+            <ListItem button key = {"createlink"} className = {classes.tr}>
                 <ListItemText classes = {{primary: classes.playFormat}} primary={"Play!"}/>
             </ListItem>
+            </Link>
+            <Link to={"/game/123"}>
+                <ListItem button key = {"gamelink"} className = {classes.tr}>
+                    <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>
+                </ListItem>
             </Link>
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"} className = {classes.tr}>
@@ -113,7 +116,7 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                 anchor="left"
             >
                 <div className={classes.toolbar} />
-                <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {'../../images/math.png'}/>
+                <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 50}} src = {'../../images/math.png'}/>
 
                 <SideBarOptions loggedIn = {loggedIn} username={username}/>
 
