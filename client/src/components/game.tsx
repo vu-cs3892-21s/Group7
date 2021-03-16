@@ -427,7 +427,7 @@ export const GamePage = props => {
 
     const [gameInfo, setGameInfo] = useState({
         "start": false,
-        "mode": "alone",
+        "mode": "head",
         "maxTime": 20,
         "totalQuestions": 20,
         "questionNumber": 1,

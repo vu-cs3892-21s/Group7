@@ -19,7 +19,7 @@ import {CenteredDiv, HeaderWrap} from "./components/shared";
 
 const GridBase = styled.div`
   positive: relative;
-  font-family: Revalia;
+  font-family: Revalia, Sans-Serif;
   font-size: 1rem;
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
