@@ -51,6 +51,8 @@ const landingStyleTop = {
 
 const GridBase = styled.div`
   positive: relative;
+  font-family: Revalia, Sans-Serif;
+  font-size: 1rem;
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 75px 1fr 1fr;
@@ -161,6 +163,7 @@ const Landing = () => {
         <CenteredDiv style = {landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
     </div>
     // <CenteredDiv style={{"gridArea": "main", "fontSize" : "100px"}}>Welcome to our site!</CenteredDiv>;
+
 
 };
 

@@ -2,8 +2,10 @@
 
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+
 // import styled from 'styled-components';
 // import { Button } from './shared';
+
 
 import { createStyles, Theme, makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -23,9 +25,13 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 
+
 const drawerWidth = "100%";
 
-const useStyles = makeStyles((theme: Theme) =>
+//const drawerWidth = 180;
+
+
+export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
     //     drawer: {
     //         width: drawerWidth,
@@ -160,12 +166,24 @@ const useStyles = makeStyles((theme: Theme) =>
 const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
     const classes = useStyles();
     return (
+
         <Box mt={35} mb={32}>
             <Link to={"/create"}>
             {/*<ListItem button key = {"playlink"} className = {classes.tr}>*/}
-            <ListItem button key = {"playlink"}>
+            <ListItem button key = {"createLink"}>
                 <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
+
+        //<Box mt={10} mb={28}>
+         //   <Link to={"/create"}>
+         //   <ListItem button key = {"createlink"} className = {classes.tr}>
+         //       <ListItemText classes = {{primary: classes.playFormat}} primary={"Play!"}/>
+
             </ListItem>
+            </Link>
+            <Link to={"/game/123"}>
+                <ListItem button key = {"gamelink"} className = {classes.tr}>
+                    <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>
+                </ListItem>
             </Link>
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"}>
@@ -269,12 +287,17 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                     paper: classes.drawerPaper,
                 }}
             >
+
                 <div className={classes.drawerHeader}>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronRightIcon className = {classes.chevronIcon}/> : <ChevronLeftIcon />}
                     </IconButton>
                     {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {require('/images/math.png')}/>*/}
                 </div>
+
+                //<div className={classes.toolbar} />
+               // <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 50}} src = {'../../images/math.png'}/>
+
 
                 <button onClick = {handleDrawerClose} className = {classes.buttonFormat}>
                     <SideBarOptions loggedIn = {loggedIn} username={username}/>
