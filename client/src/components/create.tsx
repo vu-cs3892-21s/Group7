@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {ErrorMessage} from "./shared";
+import {CenteredDiv, ErrorMessage} from "./shared";
 
 const Header = styled.h2`
 position: flex;
@@ -54,10 +54,12 @@ const GameModeBlockBase = styled.button`
     'name'
     'description';
   margin: 1em;
-  border: 3px solid black;
+  border: 3px solid white;
   color: black;
-  background-color: #B5CEF3;
+  // background-color: #B5CEF3;
+  background-color: #D3D3D3;
   text-align: center;
+
 `;
 
 const GameModeImage = styled.img`
@@ -92,10 +94,9 @@ const GameInfoBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #B5CEF3;
+  // background-color: #B5CEF3;
+    background-color: #D3D3D3;
   max-height: 400px;
-  margin-left: 75px;
-  padding: 10px;
 `;
 
 const QuestionsBase = styled.div`
@@ -322,7 +323,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
             <StartButton onClick={onSubmit}>Start Game!</StartButton>
             <ErrorMessage msg = {error}/>
         </div>
-        </GameInfoBase>);
+    </GameInfoBase>);
 };
 
 const JoinGameBase = styled.div`
@@ -330,7 +331,8 @@ const JoinGameBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #B5CEF3;
+  // background-color: #B5CEF3;
+    background-color: #D3D3D3;
   max-height: 400px;
   padding: 10px;
 `;

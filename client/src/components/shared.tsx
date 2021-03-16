@@ -1,3 +1,4 @@
+
 'use strict';
 
 import React from 'react';
@@ -38,7 +39,35 @@ export const FormInput = styled.input`
   margin: 0.5em 0;
   padding-left: 5px;
   color: black;
+  align-items: center;
 `;
+
+export const CenteredDiv = styled.div`
+    width: 50%;
+    height: 50%;
+    overflow: auto;
+    margin: auto;
+    text-align: center;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+`;
+
+export const AnswerLabel = styled.label`
+    font-family: Revalia;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+    align-items: center;
+    color: #000000;
+    padding-right: 1em;
+`;
+
+export const AnswerInput = styled.input`
+  padding-left: 5px;
+  color: black;
+`;
+
 
 export const HeaderWrap = styled.div`
     grid-area: top;
@@ -63,6 +92,24 @@ export const Button = styled.button`
   font-size: 25px;
   color: white;
   font-family: revalia;
+`;
+
+export const CenteredButton = styled.button`
+  max-width: 200px;
+  min-width: 150px;
+  max-height: 2em;
+  background:#00538f;
+  border-radius: 5px;
+  line-height: 2em;
+  font-size: 25px;
+  color: white;
+  font-family: revalia;
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
 `;
 
 export const InfoBlock = styled.div`

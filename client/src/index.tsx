@@ -11,8 +11,45 @@ import {LeadershipBoard} from "./components/leadership";
 
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
-import {HeaderWrap} from "./components/shared";
 
+import {CenteredDiv, HeaderWrap} from "./components/shared";
+
+import CssBaseline from "@material-ui/core/CssBaseline";
+import {MuiThemeProvider, createMuiTheme, Theme} from "@material-ui/core/styles";
+import {AppBar} from "@material-ui/core";
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+
+
+// const themeLight = createMuiTheme({
+//     palette: {
+//         background: {
+//             default: "#f4f7fc"
+//         }
+//     }
+// });
+
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        header:{
+            backgroundColor: "#B5CEF3",
+            minHeight: "100px",
+            margin: "0px",
+            width: "100vw",
+            position: "fixed",
+            // position: "relative",
+            // zIndex: theme.zIndex.drawer + 1,
+        },
+    }),
+);
+
+const landingStyleTop = {
+    lineHeight: "40vh",
+    fontSize: "60px",
+    fontFamily: "neuemachina-ultrabold",
+    color: "white",
+    width: "100vw",
+}
 
 
 const GridBase = styled.div`
@@ -76,12 +113,19 @@ const App = () => {
         setState(defaultUser);
     };
 
+    const classes = useStyles();
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return (
         <BrowserRouter>
         <GridBase>
-            <HeaderWrap>Multiplayer Math</HeaderWrap>
+            {/*<MuiThemeProvider theme={themeLight}>*/}
+            {/*    <CssBaseline />*/}
+                {/*<AppBar  className={classes.header}>*/}
+                {/*    Multiplayer Math*/}
+                {/*</AppBar>*/}
+            {/*<HeaderWrap>Multiplayer Math</HeaderWrap>*/}
             <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
             <Route exact path="/" component={Landing} />
             <Route
@@ -105,6 +149,7 @@ const App = () => {
                 path="/leadership"
                 render={p => <LeadershipBoard currentUser = {state.username} />}
             />
+            {/*</MuiThemeProvider>*/}
         </GridBase>
         </BrowserRouter>
     );
@@ -113,7 +158,12 @@ const App = () => {
 const Landing = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return<h1 style={{"gridArea": "main", "padding": "0px 10px", "padding-left": "50px"}}>Welcome to our site!</h1>;
+
+    return <div>
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
+        <CenteredDiv style = {landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
+    </div>
+    // <CenteredDiv style={{"gridArea": "main", "fontSize" : "100px"}}>Welcome to our site!</CenteredDiv>;
 };
 
 render(<App />, document.getElementById("root"));
