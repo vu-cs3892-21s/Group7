@@ -274,14 +274,11 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                         {theme.direction === 'ltr' ? <ChevronRightIcon className = {classes.chevronIcon}/> : <ChevronLeftIcon />}
                     </IconButton>
                     {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {require('/images/math.png')}/>*/}
-                    {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = "https://hdwallpaperim.com/wp-content/uploads/2017/09/16/50906-low_poly-wireframe-poly.jpg"/>*/}
                 </div>
 
                 <button onClick = {handleDrawerClose} className = {classes.buttonFormat}>
                     <SideBarOptions loggedIn = {loggedIn} username={username}/>
 
-
-                {/*<Divider />*/}
                 <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
                 </button>
             </Drawer>

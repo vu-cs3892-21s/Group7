@@ -8,12 +8,9 @@ import {Profile} from "./components/profile";
 import {GameGen} from "./components/create";
 import {GamePage} from "./components/game";
 import {LeadershipBoard} from "./components/leadership";
-
 import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
-
 import {CenteredDiv, HeaderWrap} from "./components/shared";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {MuiThemeProvider, createMuiTheme, Theme} from "@material-ui/core/styles";
 import {AppBar} from "@material-ui/core";
@@ -53,6 +50,7 @@ const landingStyleTop = {
 
 
 const GridBase = styled.div`
+  positive: relative;
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 75px 1fr 1fr;
@@ -158,12 +156,12 @@ const App = () => {
 const Landing = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-
     return <div>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         <CenteredDiv style = {landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
     </div>
     // <CenteredDiv style={{"gridArea": "main", "fontSize" : "100px"}}>Welcome to our site!</CenteredDiv>;
+
 };
 
 render(<App />, document.getElementById("root"));
