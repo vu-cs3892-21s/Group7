@@ -6,6 +6,9 @@ import {CenteredButton, ErrorMessage} from "./shared";
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import {SvgIconComponent} from "@material-ui/icons";
+import {Icon, SvgIcon, SvgIconTypeMap} from "@material-ui/core";
+import {OverridableComponent} from "@material-ui/core/OverridableComponent";
 
 const Header = styled.h2`
     position: flex;
@@ -26,6 +29,7 @@ const GameModeBase = styled.div`
   padding-top: 0px;
   padding-bottom: 0px;
 `;
+
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

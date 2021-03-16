@@ -149,7 +149,6 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
                 'content-type': 'application/json'
             }
         });
-
         if(res.ok) {
             console.log("Updated Stats");
         } else {
@@ -329,7 +328,6 @@ const ChatBox = () => {
             setMessages([...messages, {sender: "Sam", text: myMessage}])
         }
     }
-
     return(<ChatBase>
         <MessageList messages={messages} />
         <SendMessageForm onChange={onChange} onSubmit={onSubmit} myMessage={myMessage}/>
