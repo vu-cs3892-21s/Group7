@@ -90,7 +90,7 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
                     <ListItem button key = {"google"} className = {classes.tr} onClick = {logIn}>
                         <ListItemText classes = {{primary: classes.listFormat}} primary={"Google Log In"} />
                     </ListItem>
-                    <ListItem button key = {"github"} className = {classes.tr} onClick={logIn}>
+                    <ListItem button key = {"github"} id = {"github"} className = {classes.tr} onClick={logIn}>
                         <ListItemText classes = {{primary: classes.listFormat}} primary={"Github Log In"} />
                     </ListItem>
                 </Fragment>)
