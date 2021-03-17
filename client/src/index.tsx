@@ -54,12 +54,12 @@ const GridBase = styled.div`
   font-family: Revalia, Sans-Serif;
   font-size: 1rem;
   display: grid;
-  grid-template-columns: 180px 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 75px 1fr 1fr;
   grid-template-areas:
-      "sb top top"
-      "sb main main"
-      "sb main main";
+      "top top"
+      "main main"
+      "main main";
   }
 `;
 
