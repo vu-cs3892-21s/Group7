@@ -30,14 +30,17 @@ const GameModeBase = styled.div`
   padding-bottom: 0px;
 `;
 
+
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const GameMode = ({onClick}) => {
+    // type Icon = typeof PersonIcon | typeof GroupIcon | typeof GroupAddIcon;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const gameModes: { name: string, description: string, icon: any}[] = [
-        { name: "Solo", "description": "Practice Math On Your Own", "icon": <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
-        { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "icon": <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
-        { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "icon": <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
+        { name: "Solo", description: "Practice Math On Your Own", icon: <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
+        { name: "Head to Head", description: "Play With A Randomly Matched Foe", icon: <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
+        { name: "Group Play", description: "Play With 2+ Friends In A Private Room", icon: <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
     ];
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
