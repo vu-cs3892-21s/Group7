@@ -8,7 +8,7 @@ import {Profile} from "./components/profile";
 import {GameGen} from "./components/create";
 import {GamePage} from "./components/game";
 import {LeadershipBoard} from "./components/leadership";
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { HashRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
 import {CenteredDiv, HeaderWrap} from "./components/shared";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -64,11 +64,8 @@ const GridBase = styled.div`
 `;
 
 const defaultUser = {
-    username: "nobody",
-    first_name: "",
-    last_name: "",
+    name: "",
     primary_email: "",
-    city: "",
 };
 
 const App = () => {
@@ -78,12 +75,12 @@ const App = () => {
 
     // Helper to check if the user is logged in or not
     const loggedIn = () => {
-        return state.username;
+        return state.primary_email;
     };
 
-    const logIn = async (ev: { preventDefault: () => void; target: { id: string; }; }) => {
+    const logIn = async (ev: { preventDefault: () => void; target: { offsetParent: {id: string}}; }) => {
         ev.preventDefault();
-        const endpoint = `http://localhost:7070/api/v1/session/${ev.target.id}`;
+        const endpoint = `/api/login/${ev.target.offsetParent.id}`;
         try {
             //use this for SSO so how do we do this...
             window.location.href = endpoint
@@ -104,6 +101,15 @@ const App = () => {
             logOut();
         }
     };
+    
+    const onLoggedIn = () => {
+        fetch("/api/v1/session/profile")
+            .then(res => res.json())
+            .then(data => {
+                setState(data);
+            })
+            .catch(err => alert(err))
+    }
 
     // Helper for when a user logs out
     const logOut = () => {
@@ -118,7 +124,7 @@ const App = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return (
-        <BrowserRouter>
+        <HashRouter>
         <GridBase>
             {/*<MuiThemeProvider theme={themeLight}>*/}
             {/*    <CssBaseline />*/}
@@ -130,7 +136,7 @@ const App = () => {
             <Route exact path="/" component={Landing} />
             <Route
                 path="/profile"
-                render = {p => {return <Profile currentUser = {state.username}/>}}
+                render = {p => {return <Profile currentUser = {state} onLoggedIn={onLoggedIn}/>}}
             />
             <Route
                 path="/create"
@@ -151,7 +157,7 @@ const App = () => {
             />
             {/*</MuiThemeProvider>*/}
         </GridBase>
-        </BrowserRouter>
+        </HashRouter>
     );
 };
 
