@@ -211,7 +211,6 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
         onLoggedIn();
     }, []);
 
-
     return(<ProfilePageBase>
         <ProfileBlock userInfo={currentUser}/>
         <div style={{"marginTop": "50px", "display": "flex", "flexDirection": "row"}}>{modeButtons}</div>

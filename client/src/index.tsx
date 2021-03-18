@@ -90,6 +90,7 @@ const App = () => {
             .then(res => res.json())
             .then(data => {
                 setState(data);
+                console.log(data);
             })
             .catch(err => alert(err))
     }

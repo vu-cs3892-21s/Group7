@@ -327,7 +327,7 @@ const JoinGameBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #D3D3D3;
+  background-color: #B5CEF3;
   max-height: 300px;
   padding: 10px;
   margin: 20px;
