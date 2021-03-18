@@ -3,7 +3,7 @@
 import React, {Component, useState} from 'react';
 import styled from 'styled-components';
 
-import {CenteredDiv, ErrorMessage} from "./shared";
+import {CenteredButton, ErrorMessage} from "./shared";
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
@@ -18,11 +18,12 @@ const Header = styled.h2`
     padding-top: 30px;
     font: 70px;
     grid-area: title;  
+    color: white;
 `;
 
 const GameModeBase = styled.div`
   grid-area: modes;
-  padding-left: 60px;
+  padding: 60px;
   display: grid;
   grid-template-columns: 33% 33% 33%;
   grid-template-rows: auto
@@ -40,7 +41,7 @@ const GameMode = ({onClick}) => {
     // type Icon = typeof PersonIcon | typeof GroupIcon | typeof GroupAddIcon;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const gameModes: { name: string, description: string, icon: any}[] = [
-        { name: "Solo", description: "Practice Math On Your Own", icon: <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
+        { name: "Solo", description: "Practice Math On Your Own", icon: <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"70%"}}/> },
         { name: "Head to Head", description: "Play With A Randomly Matched Foe", icon: <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
         { name: "Group Play", description: "Play With 2+ Friends In A Private Room", icon: <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
     ];
@@ -82,11 +83,10 @@ const GameModeBlock = ({ gameMode, onClick}) => {
     //make the background the image?
     console.log(gameMode);
     return(
-        //how to make it recognize any click?
-    <GameModeBlockBase value={gameMode.name} onClick = {onClick}>
+    <GameModeBlockBase id={gameMode.name} onClick = {onClick}>
         {gameMode.icon}
-        <div onClick = {onClick} style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
-        <div onClick = {onClick} style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
+        <div id={gameMode.name} onClick = {onClick} style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
+        <div id={gameMode.name} onClick = {onClick} style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
     </GameModeBlockBase>);
 };
 
@@ -97,14 +97,15 @@ const GameInfoBase = styled.div`
    grid-template-areas: 
       'type duration'
       'start start';
-  margin: 0 40px;
+  padding: 10px;
+  margin: 20px;
   text-align: center;
   justify-content: center;
   border: 3px solid black;
   color: black;
-  // background-color: #B5CEF3;
-    background-color: #D3D3D3;
-  max-height: 400px;
+  background-color: #D3D3D3;
+  max-height: 300px;
+  width: fit-content;
 `;
 
 const QuestionsBase = styled.div`
@@ -330,10 +331,11 @@ const JoinGameBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  // background-color: #B5CEF3;
-    background-color: #D3D3D3;
-  max-height: 400px;
+  background-color: #D3D3D3;
+  max-height: 300px;
   padding: 10px;
+  margin: 20px;
+  width: fit-content;
 `;
 
 const JoinGame = () => {
@@ -395,17 +397,24 @@ const GameGenBase = styled.div`
     'options' 
 `;
 
+const OptionsBase = styled.div`
+    gridArea: options;
+    display: grid; 
+    grid-template-areas: '1 2';
+    grid-template-columns: 50% 50%;
+    padding-left: 60px;
+`;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-unused-vars
 export const GameGen = (props: { history: History; }) => {
     //get game modes from database
     const [chosenMode, setMode] = useState("");
 
-    const onClick = (event: { preventDefault: () => void; target: { value: React.SetStateAction<string>; }; }) => {
+    const onClick = (event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }) => {
         event.preventDefault();
         console.log("calling onClick");
-        console.log(event.target.value);
-        setMode(event.target.value);
+        console.log(event.target.id);
+        setMode(event.target.id);
         console.log(chosenMode);
     };
 
@@ -415,9 +424,9 @@ export const GameGen = (props: { history: History; }) => {
         <GameGenBase>
             <Header> Select Game Mode</Header>
             <GameMode onClick={onClick}/>
-            <div style={{"gridArea":"options", "display":"flex", "flexDirection":"row"}}>
+            <OptionsBase>
                 {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
                 {(chosenMode === "Group Play") ? <JoinGame/> : null}
-            </div>
+            </OptionsBase>
     </GameGenBase>);
 }

@@ -167,33 +167,33 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     const classes = useStyles();
     return (
 
-        <Box mt={35} mb={32}>
+        <Box mt={20} mb={20}>
             <Link to={"/create"}>
             {/*<ListItem button key = {"playlink"} className = {classes.tr}>*/}
             <ListItem button key = {"createLink"}>
                 <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
 
-        //<Box mt={10} mb={28}>
-         //   <Link to={"/create"}>
-         //   <ListItem button key = {"createlink"} className = {classes.tr}>
-         //       <ListItemText classes = {{primary: classes.playFormat}} primary={"Play!"}/>
+        {/*<Box mt={10} mb={28}>*/}
+        {/*    <Link to={"/create"}>*/}
+        {/*    <ListItem button key = {"createlink"} className = {classes.tr}>*/}
+        {/*       <ListItemText classes = {{primary: classes.playFormat}} primary={"Play!"}/>*/}
 
             </ListItem>
             </Link>
             <Link to={"/game/123"}>
-                <ListItem button key = {"gamelink"} className = {classes.tr}>
+                <ListItem button key = {"gamelink"}>
                     <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>
                 </ListItem>
             </Link>
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"}>
-                <ListItemText classes = {{primary: classes.listFormat}} primary={"LEADERSHIP BOARD"} />
+                <ListItemText classes = {{primary: classes.listFormat}} primary={"Leadership Board"} />
             </ListItem>
             </Link>
             {loggedIn ?
                 <Link to={`/profile/${username}`}>
                     <ListItem button key = {"profile"}>
-                        <ListItemText classes = {{primary: classes.listFormat}} primary={"PROFILE"} />
+                        <ListItemText classes = {{primary: classes.listFormat}} primary={"Profile"} />
                     </ListItem>
                 </Link>
                 : null
@@ -202,6 +202,8 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const AccountOptions = ({loggedIn, logIn, logOut}) => {
     const classes = useStyles();
     return(<List>
@@ -225,6 +227,8 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const SideBar = ({loggedIn, logIn, logOut, username}) => {
     const classes = useStyles();
     const theme = useTheme();
@@ -295,8 +299,8 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                     {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {require('/images/math.png')}/>*/}
                 </div>
 
-                //<div className={classes.toolbar} />
-               // <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 50}} src = {'../../images/math.png'}/>
+               {/* <div className={classes.toolbar} />*/}
+               {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 50}} src = {'../../images/math.png'}/>*/}
 
 
                 <button onClick = {handleDrawerClose} className = {classes.buttonFormat}>

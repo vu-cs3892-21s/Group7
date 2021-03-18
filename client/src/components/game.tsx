@@ -110,6 +110,7 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
             });
         }
         setAnswer("");
+        setStatus("");
         setButtonText("Next Question!");
     }
 
@@ -156,7 +157,7 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
         }
     }
 
-    const onSubmit = async () => {
+    const onSubmit = () => {
         console.log("Trying submit")
         if(parseInt(answer) === question[0].answer) {
             const newPlayers = players;
@@ -240,7 +241,8 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
 const AnswerBoxBase = styled.div`
   grid-area: answer;
   position: relative;
-  border: 3px solid black;
+  border: 3px solid white;
+  border-radius: 10px;
   color: white;
   background-color: #00538f;
   padding: 10px;
@@ -256,7 +258,7 @@ const Status = styled.div`
 const AnswerBox = ({onChange, onKeyDown, answer}) => {
     return (
         <AnswerBoxBase>
-            <AnswerLabel>Answer:</AnswerLabel>
+            <AnswerLabel style = {{"textAlign": "right", "color": "white"}}>Answer:</AnswerLabel>
             <AnswerInput
                 id="answer"
                 type="text"
@@ -279,9 +281,8 @@ const ChatBase = styled.div`
     grid-template-areas:
         'chat'
         'type';
-    background-color: #B5CEF3;
     padding: 10px;
-    border: 3px solid black;
+    border: 5px solid white;
     box-sizing: border-box;
 `;
 const ChatBox = () => {
@@ -294,9 +295,6 @@ const ChatBox = () => {
                 {sender: "Sam", text: "Hi"},
                 {sender: "Irisa", text: "Sup"},
                 {sender: "Evan", text: "Hello"},
-                {sender: "Tim", text: "You're going down!"},
-                {sender: "Sam", text: "No YOU"},
-                {sender: "Evan", text: "Calm down..."},
             ]
         );
     }, []);
@@ -322,10 +320,10 @@ const ChatBox = () => {
             }
         });
         if(res.ok) {
-            setMessages([...messages, {sender: "Sam", text: myMessage}])
+            setMessages([{sender: "Sam", text: myMessage}, ...messages])
         } else {
             updateMessage("");
-            setMessages([...messages, {sender: "Sam", text: myMessage}])
+            setMessages([{sender: "Sam", text: myMessage}, ...messages])
         }
     }
     return(<ChatBase>
@@ -338,11 +336,11 @@ const ChatBox = () => {
 // @ts-ignore
 const MessageList = ({messages}) => {
     const messageBox = messages.map((message: {sender:string, text:string}, i:number) => (
-        <div style ={{"backgroundColor": "white", "borderRadius": "5px", "margin": "5px", "maxWidth": "50%"}}key={i}>
+        <div style ={{"backgroundColor": "white", "borderRadius": "5px", "margin": "2px", "maxWidth": "95%"}}key={i}>
             {message.sender}: {message.text}
         </div>
     ));
-    return(<div style={{"overflow": "scroll", "gridArea":"chat"}}>{messageBox}</div>);
+    return(<div style={{"overflow": "scroll", "gridArea":"chat", "display":"flex", "flexDirection": "column-reverse"}}>{messageBox}</div>);
 
 };
 
@@ -365,9 +363,11 @@ const SendMessageForm = ({onChange, onSubmit, myMessage}) => {
 
 const PlayerBox = styled.div`
     margin: 5px;
+    padding-right: 30px;
     background: #B5CEF3;
     position: relative;
-    border: 3px solid #000000;
+    border: 3px solid white;
+    border-radius: 5px;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 25% 45% 30%;
@@ -382,13 +382,12 @@ const Player = ({player, rank}) => {
         <PlayerBox>
             <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": player.color }}/>
             <CenteredDiv style={{"gridArea": "player", "fontWeight": "bold","fontSize": "20px", "position": "relative"}}>{player.name}: {player.score}</CenteredDiv>
-            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "100%", "position": "relative"}}>#{rank}</CenteredDiv>
+            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "75%", "position": "relative"}}>#{rank}</CenteredDiv>
         </PlayerBox>)
 };
 
 const PlayerBase = styled.div`
     grid-area: players;
-    background:#00538f;
     justify-content: center;
     position: relative;
     box-sizing: border-box;
@@ -409,6 +408,7 @@ const Players = ({players}) => {
 const GamePageBase = styled.div`
     grid-area: main;
     display: grid;
+    padding: 30px;
     grid-template-columns: 3fr 1fr;
     grid-template-rows: 2fr 250px;
     grid-gap: 20px;
