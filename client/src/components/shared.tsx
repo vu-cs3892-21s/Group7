@@ -98,7 +98,6 @@ export const AnswerInput = styled.input`
     top: 0; left: 0; bottom: 0; right: 0;
 `;
 
-
 export const HeaderWrap = styled.div`
     grid-area: top;
     padding: 0px 10px;
@@ -118,6 +117,28 @@ export const Button = styled.button`
   line-height: 2em;
   font-size: 25px;
   color: white;
+`;
+
+export const FunButton = styled.button`
+  max-width: 300px;
+  min-width: 150px;
+  max-height: 2em;
+  background:#00538f;
+  border-radius: 5px;
+  font-size: 20px;
+  color: white;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  box-shadow: 0 9px #999;
+  &:hover {
+    background-color: #B5CEF3;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+  &:active{
+    background-color: #B5CEF3;
+  }
 `;
 
 export const CenteredButton = styled.button`
@@ -171,12 +192,12 @@ export const InfoLabels = styled(InfoData)`
   grid-area: labels;
   align-items: flex-end;
   font-weight: bold;
-  color: black;
+  color: white;
 `;
 
 export const ShortP = styled.p`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: black;
+  color: white;
 `;

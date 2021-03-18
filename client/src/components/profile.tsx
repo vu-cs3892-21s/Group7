@@ -2,130 +2,184 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {Button, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
+import {AnswerInput, FunButton, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
+import PersonIcon from "@material-ui/icons/Person";
 
 
 
 const ProfileBlockBase = styled.div`
-  flex: 1;
-  display: flex-container;
+  display: flex;
   flex-direction: row;
   justify-content: center;
+  color: white;
 `;
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const ProfileBlock = ({userInfo}) => {
+
+    console.log(userInfo);
+    const [edit, setEdit] = useState(false);
+    const [editText, setEditText] = useState("Edit Profile");
+    const [profile, updateProfile] = useState(userInfo);
+
+    const onChange = (ev: { target: { id: string; value: any; }; }) => {
+        updateProfile({
+            ...profile,
+            [ev.target.id] : ev.target.value
+        })
+    }
+
+    const saveProfile = async () => {
+        const body = {
+            id: profile.id,
+            name: profile.name,
+            primary_email: profile.primary_email,
+            color: profile.color,
+        };
+        const res = await fetch('/v1/updateInfo', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        if(!res.ok) {
+            console.log("Could not update info");
+        }
+    }
+
+    const onClick = () => {
+        if(edit) {
+            saveProfile().then(r => console.log("Tried to save profile"));
+            setEdit(false);
+            setEditText("Edit Profile")
+        } else {
+            setEdit(true);
+            setEditText("Save Profile");
+        }
+    }
+
     return(
     <ProfileBlockBase>
-        <div style={{"flex" : 1}}>
-            PROFILE PICTURE
+        <div style={{"flex" : 1, "position": "relative"}}>
+            <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": (profile.color)? (profile.color) : "white" }}/>
+            <FunButton style={{"position": "absolute", "bottom": -20, "right": 0}}onClick={onClick}>{editText}</FunButton>
         </div>
-        <InfoBlock style={{"flex" : 2}}>
+        <InfoBlock style={{"flex" : 5, "position": "relative"}}>
             <InfoLabels>
-                {/* <p>Username:</p>
-                <p>First Name:</p>
-                <p>Last Name:</p>
-                <p>City:</p> */}
                 <p>Name:</p>
                 <p>Email Address:</p>
+                <p>Color:</p>
             </InfoLabels>
-            <InfoData>
-                {/* <ShortP>{userInfo.username ? userInfo.username :"--"}</ShortP>
-                <ShortP>{userInfo.first_name ? userInfo.first_name: "--"}</ShortP>
-                <ShortP>{userInfo.last_name ? userInfo.last_name: "--"}</ShortP>
-                <ShortP>{userInfo.city ? userInfo.city: "--"}</ShortP> */}
-                <ShortP>{userInfo.name ? userInfo.name: "--"}</ShortP>
-                <ShortP>{userInfo.primary_email ? userInfo.primary_email: "--"}</ShortP>
+            <InfoData style={{"position": "relative"}}>
+                {edit ?
+                    (<AnswerInput
+                    id="name"
+                    type="text"
+                    name="name"
+                    onChange={onChange}
+                    value={profile.name}
+                    style = {{"margin": "0.5em", "height": "1.5em", "position": "relative"}}
+                />) : <ShortP>{profile.name ? profile.name: "--"}</ShortP>}
+                <ShortP>{profile.primary_email ? profile.primary_email: "--"}</ShortP>
+                {edit ?
+                <AnswerInput
+                    id="color"
+                    type="text"
+                    name="color"
+                    onChange={onChange}
+                    value={profile.color}
+                    style = {{"margin": "0.5em", "height": "1.5em", "position": "relative"}}
+                /> : <ShortP>{profile.color ? profile.color: "--"}</ShortP>}
             </InfoData>
         </InfoBlock>
     </ProfileBlockBase>);
 }
 
 const StatsBoxBase = styled.div`
-  grid-area: stats;
+  flex: 1;
   padding: 1em;
+  margin: 1em;
   display: flex-container;
   justify-content: center;
+  text-align: center;
   background: white;
   justify-content: center;
   border: 3px solid black;
+  border-radius: 100px;
 `;
 
 // TO DO: add circle for the stat
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const StatBox = ({stat}) => {
+const StatBox = ({stat}:{stat: (string | number)[]}) => {
+
     return(<StatsBoxBase>
-        <div style={{"flex": 1}}>
-            {[stat]}
+        <div style={{"flex": 1, "fontWeight": "bold"}}>
+            {stat[0]}
         </div>
         <div style={{"flex": 2}}>
-            {stat}
+            {stat[1]}
         </div>
     </StatsBoxBase>)
 }
 const StatsBlockBase = styled.div`
   flex: 2;
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: 75px auto;
-  grid-template-areas: 
-  'button' 
-  'stats'
+  display: flex;
   padding: 1em;
   justify-content: center;
+  margin-top: 1em;
 `;
 
-const ModeButtonsBase = styled.div`
-  grid-area: button;
-  display: flex-container;
-  flex-direction: row;
-  justify-content: center;
-`;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
+// @ts-ignore
+const StatsBlock = ({userInfo, mode}) => {
 
-// // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-// // @ts-ignore
-// const StatsBlock = ({username, mode, setMode}) => {
+    const getStats = async () => {
+        const body = {
+            primary_email: userInfo.primary_email,
+            mode: mode
+        };
+        const res = await fetch('/v1/userStats', {
+            method: 'GET',
+            body: JSON.stringify(body),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        if(res.ok) {
+            const data = await res.json();
+            return data;
+        }
+    }
 
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     const changeMode = (ev) => {
-//         setMode(ev.target.id);
-//     };
+    //grab all the user stats from given mode!
+    const stats = [
+        ["Average Speed", 20],
+        ["Level", 30],
+        ["Ranking", 20],
+        ["Win Rate", 20],
+        ["Accuracy", 20]
+    ];
 
-//     //grab the modes
-//     const modes = ["Normal", "GRE", "ACT"];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const statsBoxes = stats.map((stat, i) => (
+        <StatBox key={i} stat={stat}/>
+    ));
 
-//     //grab all the user stats from given mode!
-//     const stats = {
-//         "Average Speed": 20,
-//         "Level": 30,
-//         "Ranking" : 20,
-//         "Win Rate" : 20,
-//         "Accuracy" : 20,
-//     };
-
-//     const modeButtons = modes.map((mode, i) => (
-//         <Button onClick={changeMode} key={i} id={mode}>{mode}</Button>
-//     ));
-
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     const statsBoxes = stats.map((stat, i) => (
-//         <StatBox key={i} stat={stat}/>
-//     ));
-
-//     return(<StatsBlockBase>
-//         <ModeButtonsBase>{modeButtons}</ModeButtonsBase>
-//         {statsBoxes}
-//     </StatsBlockBase>);
-// }
+    return(<StatsBlockBase>
+        {statsBoxes}
+    </StatsBlockBase>);
+}
 
 const ProfilePageBase = styled.div`
   grid-area: main;
-  display: flex-container;;
+  display: flex-container;
   flex-direction: column;
   justify-content: center;
   padding: 1em;
@@ -135,15 +189,28 @@ const ProfilePageBase = styled.div`
 // @ts-ignore
 export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedIn}) => {
     const defaultMode = "Normal";
+    const modes = ["Normal", "ACT", "GRE", "SAT"];
     const [mode, setMode] = useState(defaultMode);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const modeChange = (ev) => {
+        setMode(ev.target.id);
+    }
+
+    const modeButtons = modes.map(m =>
+        <FunButton style={{"backgroundColor": (mode === m) ? "#B5CEF3" : "#00538f"}} key={m} onClick={modeChange} id={m}>
+            {m}
+        </FunButton>);
 
     useEffect(() => {
         onLoggedIn();
-    }, [])
+    }, []);
 
 
     return(<ProfilePageBase>
         <ProfileBlock userInfo={currentUser}/>
-        {/* <StatsBlock username={currentUser.username} mode={mode} setMode={setMode}/> */}
+        <div style={{"marginTop": "50px", "display": "flex", "flexDirection": "row"}}>{modeButtons}</div>
+        <StatsBlock userInfo={currentUser} mode={mode}/>
     </ProfilePageBase>);
 }

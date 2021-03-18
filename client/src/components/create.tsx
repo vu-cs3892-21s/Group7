@@ -7,9 +7,6 @@ import {CenteredButton, ErrorMessage} from "./shared";
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import {SvgIconComponent} from "@material-ui/icons";
-import {Icon, SvgIcon, SvgIconTypeMap} from "@material-ui/core";
-import {OverridableComponent} from "@material-ui/core/OverridableComponent";
 
 
 const Header = styled.h2`
@@ -64,9 +61,6 @@ const GameModeBlockBase = styled.button`
     'name'
     'description';
   margin: 1em;
-  //border: 3px solid white;
-  // background-color: #B5CEF3;
-  //background-color: #D3D3D3;
 
   border: 3px solid black;
   color: "#00538F";
@@ -103,7 +97,7 @@ const GameInfoBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #D3D3D3;
+  background-color: #B5CEF3;
   max-height: 300px;
   width: fit-content;
 `;
@@ -331,7 +325,7 @@ const JoinGameBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #D3D3D3;
+  background-color: #B5CEF3;
   max-height: 300px;
   padding: 10px;
   margin: 20px;
