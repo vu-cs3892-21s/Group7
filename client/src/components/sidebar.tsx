@@ -214,10 +214,10 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
                     </ListItem>
                 </Fragment>)
                 : (<Fragment>
-                    <ListItem button key = {"google"} onClick = {logIn}>
+                    <ListItem id = {"google"} button key = {"google"} onClick = {logIn}>
                         <ListItemText classes = {{primary: classes.listFormat}} primary={"GOOGLE LOG IN"} />
                     </ListItem>
-                    <ListItem button key = {"github"} onClick={logIn}>
+                    <ListItem id = {"github"} button key = {"github"} onClick={logIn}>
                         <ListItemText classes = {{primary: classes.listFormat}} primary={"GITHUB LOG IN"} />
                     </ListItem>
                 </Fragment>)
