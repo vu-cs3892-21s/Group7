@@ -19,10 +19,11 @@ const ProfileBlockBase = styled.div`
 // @ts-ignore
 const ProfileBlock = ({userInfo}) => {
 
-    console.log(userInfo);
     const [edit, setEdit] = useState(false);
     const [editText, setEditText] = useState("Edit Profile");
     const [profile, updateProfile] = useState(userInfo);
+
+    useEffect(() => updateProfile(userInfo), [userInfo]);
 
     const onChange = (ev: { target: { id: string; value: any; }; }) => {
         updateProfile({
@@ -35,10 +36,10 @@ const ProfileBlock = ({userInfo}) => {
         const body = {
             id: profile.id,
             name: profile.name,
-            primary_email: profile.primary_email,
+            primary_email: userInfo.primary_email,
             color: profile.color,
         };
-        const res = await fetch('/v1/updateInfo', {
+        const res = await fetch('localhost:7070/api/v1/updateInfo', {
             method: 'POST',
             body: JSON.stringify(body),
             credentials: 'include',
@@ -138,33 +139,57 @@ const StatsBlockBase = styled.div`
 // @ts-ignore
 const StatsBlock = ({userInfo, mode}) => {
 
+    useEffect(() => {
+        getStats().then(r=>
+            updateStats(r)
+        );
+    }, [mode]);
+
     const getStats = async () => {
-        const body = {
-            primary_email: userInfo.primary_email,
-            mode: mode
-        };
-        const res = await fetch('/v1/userStats', {
-            method: 'GET',
-            body: JSON.stringify(body),
-            credentials: 'include',
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if(res.ok) {
-            const data = await res.json();
-            return data;
-        }
-    }
+        console.log("changing stats");
+        return ([
+            ["Average Speed", (Math.random()*100).toPrecision(3)],
+            ["Level", (Math.random()*100).toPrecision(3)],
+            ["Ranking", (Math.random()*100).toPrecision(3)],
+            ["Win Rate", (Math.random()*100).toPrecision(3)],
+            ["Accuracy", (Math.random()*100).toPrecision(3)]
+        ]);
+        // const body = {
+        //     primary_email: userInfo.primary_email,
+        //     mode: mode
+        // };
+        // const res = await fetch('/v1/gameStats', {
+        //     method: 'GET',
+        //     body: JSON.stringify(body),
+        //     credentials: 'include',
+        //     headers: {
+        //         'content-type': 'application/json'
+        //     }
+        // });
+        // if(res.ok) {
+        //     const data = await res.json();
+        //     return data;
+        // } else {
+        //     console.log("Did not work!");
+        //     return ([
+        //         ["Average Speed", Math.random()*100],
+        //         ["Level", Math.random()*100],
+        //         ["Ranking", Math.random()*100],
+        //         ["Win Rate", Math.random()*100],
+        //         ["Accuracy", Math.random()*100]
+        //     ]);
+        // }
+    };
 
     //grab all the user stats from given mode!
-    const stats = [
-        ["Average Speed", 20],
-        ["Level", 30],
-        ["Ranking", 20],
-        ["Win Rate", 20],
-        ["Accuracy", 20]
-    ];
+    const [stats, updateStats] = useState(
+        [
+            ["Average Speed", 20],
+            ["Level", 30],
+            ["Ranking", 20],
+            ["Win Rate", 20],
+            ["Accuracy", 20]
+        ]);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

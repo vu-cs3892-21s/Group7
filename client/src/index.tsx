@@ -89,10 +89,9 @@ const App = () => {
             // console.log(response)
             const user = {
                 // username: data.login,
-                first_name: "",
-                last_name: "",
+                name: "",
                 primary_email: "",
-                city: "",
+                color: "",
             }
             localStorage.setItem("user", JSON.stringify(user));
             setState(user);
@@ -107,6 +106,7 @@ const App = () => {
             .then(res => res.json())
             .then(data => {
                 setState(data);
+                console.log("fetched profile info");
                 console.log(data);
             })
             .catch(err => alert(err))
