@@ -24,8 +24,8 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
         if operation == "+" or operation == "-":
             operand_range = 100
 
-        operand1: int = random.randrange(operand_range)
-        operand2: int = random.randrange(operand_range)
+        operand1: int = random.randint(1, operand_range)
+        operand2: int = random.randint(1, operand_range)
         if operation == "/":
             operand1 = operand2 * operand1
         question: str = f"{operand1} {operation} {operand2}"
