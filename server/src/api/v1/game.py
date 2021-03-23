@@ -29,7 +29,7 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
         if operation == "/":
             operand1 = operand2 * operand1
         question: str = f"{operand1} {operation} {operand2}"
-        answer: int = eval(question)
+        answer: int = int(eval(question))
         questions.append((question, str(answer)))
     return questions
 
