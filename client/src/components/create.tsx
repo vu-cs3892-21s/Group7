@@ -1,6 +1,7 @@
 'use strict';
 
-import React, {Component, useState} from 'react';
+import React, {useState} from 'react';
+import {useHistory} from 'react-router';
 import styled from 'styled-components';
 
 import {CenteredButton, ErrorMessage} from "./shared";
@@ -196,7 +197,7 @@ const OperationButtons = ({operationTypes, onChange, game}) => {
     </OperationBase>);
 };
 
-const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string}) => {
+const GameInfo = ({chosenMode}: {chosenMode:string}) => {
     const questionType = ["SAT", "ACT", "GRE", "Normal"];
     const duration = (chosenMode !== "Head to Head");
     const numberOfQuestions = (chosenMode === "Group Play");
@@ -208,8 +209,10 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
         questionType: "",
         duration: 0,
         operations: [],
-        numberOfQuestions: 0,
+        numberOfQuestions: 20,
     });
+
+    const history = useHistory()
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -271,7 +274,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
 
         console.log(game);
 
-        const res = await fetch('/v1/create', {
+        const res = await fetch('/api/v1/game/create', {
             method: 'POST',
             body: JSON.stringify(game),
             credentials: 'include',
@@ -339,6 +342,7 @@ const JoinGame = () => {
     const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
         setCode(ev.target.value);
     }
+    const history = useHistory()
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
@@ -358,7 +362,7 @@ const JoinGame = () => {
             console.log(data);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            history.pushState(`/game/${data.id}`);
+            history.push(`/game/${data.id}`);
         } else {
             setError("Invalid Game Code")
         }
@@ -419,7 +423,7 @@ export const GameGen = (props: { history: History; }) => {
             <Header> Select Game Mode</Header>
             <GameMode onClick={onClick}/>
             <OptionsBase>
-                {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
+                {chosenMode ? (<GameInfo chosenMode = {chosenMode}/>) : null}
                 {(chosenMode === "Group Play") ? <JoinGame/> : null}
             </OptionsBase>
     </GameGenBase>);

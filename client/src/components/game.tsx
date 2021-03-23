@@ -34,32 +34,14 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
     const [buttonText, setButtonText] = useState("Start Game!"); //button state
     const [endGame, setEndGame] = useState<boolean>(false); //game state
 
-    const [question, setQuestions] = useState<{question:string, answer: number}[]>([
-        {"question": "3 times 5", "answer": 15},
-        {"question": "3 plus 5", "answer": 8},
-        {"question": "4 times 5", "answer": 20},
-        {"question": "3 plus 3", "answer": 6},
-        {"question": "5 minus 1", "answer": 4},
-        {"question": "3 minus 6", "answer": -3},
-        {"question": "3 times 2", "answer": 6},
-        {"question": "5 plus 5", "answer": 10},
-        {"question": "8 times 5", "answer": 40},
-        {"question": "3 plus 19", "answer": 22},
-        {"question": "5 minus 26", "answer": -21},
-        {"question": "54 minus 6", "answer": 48},
-        {"question": "21 minus 1", "answer": 20},
-        {"question": "12 divided by 6", "answer": 2},
-        {"question": "3 times 19", "answer": 57},
-        {"question": "5 plus 17", "answer": 22},
-        {"question": "8 times 12", "answer": 96},
-        {"question": "29 plus 12", "answer": 41},
-        {"question": "10 minus 17", "answer": -7},
-        {"question": "50 minus 27", "answer": 23},
+    const [question, setQuestions] = useState<{question:string, answer: string}[]>([
     ]);
 
+    console.log(gameInfo)
+
     useEffect(() => {
-        getMoreQs()
-    }, [question.length < 20])
+        getQuestions()
+    }, [])
 
     const onStart = () => {
         setGameInfo({
@@ -68,11 +50,11 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
         });
     };
 
-    const getMoreQs = async () => {
-        const res = await fetch('v1/questions');
+    const getQuestions = async () => {
+        const res = await fetch(`api/v1/game/${gameInfo.id}/questions`);
         if(res.ok) {
             const data = await res.json();
-            setQuestions([...question, data])
+            setQuestions(data["questions"])
         }
     }
 
@@ -159,7 +141,7 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
 
     const onSubmit = () => {
         console.log("Trying submit")
-        if(parseInt(answer) === question[0].answer) {
+        if(answer === question[0].answer) {
             const newPlayers = players;
             newPlayers[0].score = ++newPlayers[0].score;
             updatePlayers(newPlayers);
@@ -425,30 +407,28 @@ export const GamePage = props => {
     //useEffect to load in gameInfo & players
     //load in gameInfo
 
-    const loadInGameInfo = async () => {
-        const res = await fetch('/v1/game', {
-            method: 'POST',
-            body: props.$id,
-            credentials: 'include',
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-
-        if(res.ok) {
-            const gameInfo = await res.json()
-            return gameInfo;
-        }
-    }
-
     const [gameInfo, setGameInfo] = useState({
-        "id": props.$id,
-        "start": false,
-        "mode": "head",
+        "id": props.match.params.id,
+        "status": "",
+        "mode": "",
         "maxTime": 20,
         "totalQuestions": 20,
         "questionNumber": 1,
     });
+
+    useEffect(() => {
+        async function setGameData() {
+            const res = await fetch(`/api/v1/game/${props.match.params.id}`);
+            if(res.ok) {
+                const gameInfo = await res.json()
+                setGameInfo({
+                    ...gameInfo,
+                    questionNumber: 1
+                })
+            }
+        }
+        setGameData()
+    }, [])
 
     //load in my info
     const [me, updateMe] = useState<{name: string, score: number, color: string}>({name: "Sam", score: 0, color: "red"});

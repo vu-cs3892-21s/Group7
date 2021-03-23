@@ -24,6 +24,10 @@ const ProfileBlock = ({userInfo}) => {
     const [editText, setEditText] = useState("Edit Profile");
     const [profile, updateProfile] = useState(userInfo);
 
+    useEffect(() => {
+        updateProfile(userInfo)
+    }, [userInfo])
+
     const onChange = (ev: { target: { id: string; value: any; }; }) => {
         updateProfile({
             ...profile,
