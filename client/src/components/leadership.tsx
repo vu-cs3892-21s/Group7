@@ -123,4 +123,5 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
             </Table>
         </TableContainer>
     </LeaderBoardBlockBase>)
+
 }

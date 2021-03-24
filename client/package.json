@@ -4,6 +4,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/types": "^5.1.0",
     "classnames": "^2.2.6",
     "contentful": "^8.2.0",
     "css-loader": "^5.1.1",

@@ -1,16 +1,22 @@
 'use strict';
 
 import React, {useState} from 'react';
+import {useHistory} from 'react-router';
 import styled from 'styled-components';
-import {CenteredDiv, ErrorMessage} from "./shared";
+
+import {CenteredButton, ErrorMessage} from "./shared";
+import GroupIcon from '@material-ui/icons/Group';
+import PersonIcon from '@material-ui/icons/Person';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+
 
 const Header = styled.h2`
-position: flex;
+    position: flex;
     padding-left: 75px;
-    padding-top: 50px;
+    padding-top: 30px;
     font: 70px;
-    grid-area: title;
-    font-family: revalia;   
+    grid-area: title;  
+    color: white;
 `;
 
 const GameModeBase = styled.div`
@@ -21,20 +27,22 @@ const GameModeBase = styled.div`
   grid-template-rows: auto
   grid-template-areas: "1 2 3"
   max-height: 250px;
-  // padding-top: 160px;
   padding-top: 0px;
   padding-bottom: 0px;
 `;
 
-const gameModes: { name: string, description: string, src: string }[] = [
-    { name: "Solo", "description": "Practice Math On Your Own", "src": "/images/solo.png" },
-    { name: "Head to Head", "description": "Play With A Randomly Matched Foe", "src": "head.png" },
-    { name: "Group Play", "description": "Play With 2+ Friends In A Private Room", "src": "group.png"  }
-];
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameMode = ({gameModes, onClick}) => {
+const GameMode = ({onClick}) => {
+    // type Icon = typeof PersonIcon | typeof GroupIcon | typeof GroupAddIcon;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const gameModes: { name: string, description: string, icon: any}[] = [
+        { name: "Solo", description: "Practice Math On Your Own", icon: <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"70%"}}/> },
+        { name: "Head to Head", description: "Play With A Randomly Matched Foe", icon: <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
+        { name: "Group Play", description: "Play With 2+ Friends In A Private Room", icon: <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
+    ];
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const modeBoxes = gameModes.map((gameMode, i) => (
@@ -47,26 +55,21 @@ const GameMode = ({gameModes, onClick}) => {
 const GameModeBlockBase = styled.button`
   display: grid;
   max-height: 300px;
-  grid-template-rows: 1fr 40px 90px;
+  grid-template-rows: 65% 10% 25%;
 
   grid-template-areas: 
     'pic'
     'name'
     'description';
   margin: 1em;
-  border: 3px solid white;
-  color: black;
-  // background-color: #B5CEF3;
-  background-color: #D3D3D3;
+
+  border: 3px solid black;
+  color: "#00538F";
+  background-color: #B5CEF3;
+
   text-align: center;
-
 `;
 
-const GameModeImage = styled.img`
-  grid-area: pic;
-  max-width: 150px;
-  padding: 1em;
-`;
 //gameMode: { name: string, description: string, src: string }
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -74,11 +77,10 @@ const GameModeBlock = ({ gameMode, onClick}) => {
     //make the background the image?
     console.log(gameMode);
     return(
-        //how to make it recognize any click?
-    <GameModeBlockBase value={gameMode.name} onClick = {onClick}>
-        <GameModeImage src={`images/${gameMode.src}`}/>
-        <div style={{"gridArea" : "name", "fontWeight": "bold" , "fontSize": "18px"}}>{gameMode.name}</div>
-        <div style={{"gridArea" : "description"}}>{gameMode.description}</div>
+    <GameModeBlockBase id={gameMode.name} onClick = {onClick}>
+        {gameMode.icon}
+        <div id={gameMode.name} onClick = {onClick} style={{"zIndex": 0, "gridArea" : "name", "fontWeight": "bold" , "fontSize": "20px"}}>{gameMode.name}</div>
+        <div id={gameMode.name} onClick = {onClick} style={{"zIndex": 0, "gridArea" : "description", "fontSize": "18px"}}>{gameMode.description}</div>
     </GameModeBlockBase>);
 };
 
@@ -89,14 +91,15 @@ const GameInfoBase = styled.div`
    grid-template-areas: 
       'type duration'
       'start start';
-  margin: 0 40px;
+  padding: 10px;
+  margin: 20px;
   text-align: center;
   justify-content: center;
   border: 3px solid black;
   color: black;
-  // background-color: #B5CEF3;
-    background-color: #D3D3D3;
-  max-height: 400px;
+  background-color: #B5CEF3;
+  max-height: 300px;
+  width: fit-content;
 `;
 
 const QuestionsBase = styled.div`
@@ -108,7 +111,7 @@ const QuestionsBase = styled.div`
 `;
 
 
-const QuestionsButton = styled.button`
+const QuestionButton = styled.button`
     height: 40px;
     width: 100px;
     margin: 5px;
@@ -133,7 +136,6 @@ const DurationBase = styled.div`
    justify-items: center;
 `;
 
-
 const OperationButton = styled.button`
     height: 50px;
     width: 50px;
@@ -152,29 +154,20 @@ const OperationBase = styled.div`
     padding: 0px;
 `;
 
-const StartButton = styled.button`
-    height: 40px;
-    width: 150px;
-    border: 2px solid black;
-    background-color: white; 
-    justify-items:center;
-   
-`;
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const QuestionButtons = ({questionTypes, onChange, game}) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const questionBoxes = questionTypes.map((questionType, i) => (
-        <QuestionsButton
+        <QuestionButton
             name="questionType"
             value={questionType}
             onClick={onChange}
             key={i}
             style = {{"fontWeight": "bold" , "fontSize": "18px", "border": (questionType === game.questionType) ? "2px solid red": ""}}>
             {questionType}
-        </QuestionsButton>
+        </QuestionButton>
     ));
     return( <QuestionsBase>
         <h5>Question Type</h5>
@@ -203,7 +196,7 @@ const OperationButtons = ({operationTypes, onChange, game}) => {
     </OperationBase>);
 };
 
-const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string}) => {
+const GameInfo = ({chosenMode}: {chosenMode:string}) => {
     const questionType = ["SAT", "ACT", "GRE", "Normal"];
     const duration = (chosenMode !== "Head to Head");
     const numberOfQuestions = (chosenMode === "Group Play");
@@ -215,8 +208,10 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
         questionType: "",
         duration: 0,
         operations: [],
-        numberOfQuestions: 0,
+        numberOfQuestions: 20,
     });
+
+    const history = useHistory()
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -278,7 +273,7 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
 
         console.log(game);
 
-        const res = await fetch('/v1/create', {
+        const res = await fetch('/api/v1/game/create', {
             method: 'POST',
             body: JSON.stringify(game),
             credentials: 'include',
@@ -319,8 +314,8 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
                         onChange = {onChange}
                         style = {{"fontWeight": "bold" , "fontSize": "18px"}}/>) : null}
             </DurationBase>
-        <div style={{"justifyItems":"center", "gridArea": "start"}}>
-            <StartButton onClick={onSubmit}>Start Game!</StartButton>
+        <div style={{"gridArea": "start", "position": "relative"}}>
+            <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Start Game!</CenteredButton>
             <ErrorMessage msg = {error}/>
         </div>
     </GameInfoBase>);
@@ -328,22 +323,25 @@ const GameInfo = ({history, chosenMode}: {history: History , chosenMode:string})
 
 const JoinGameBase = styled.div`
   text-align: center;
+  position: relative;
   justify-content: center;
   border: 3px solid black;
   color: black;
-  // background-color: #B5CEF3;
-    background-color: #D3D3D3;
-  max-height: 400px;
+  background-color: #D3D3D3;
+  max-height: 300px;
   padding: 10px;
+  margin: 20px;
+  width: fit-content;
 `;
 
 const JoinGame = () => {
     const [error, setError] = useState("");
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState<string>("");
 
     const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
         setCode(ev.target.value);
     }
+    const history = useHistory()
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
@@ -363,7 +361,7 @@ const JoinGame = () => {
             console.log(data);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            history.push(`/game/${data.id}`)
+            history.push(`/game/${data.id}`);
         } else {
             setError("Invalid Game Code")
         }
@@ -371,7 +369,7 @@ const JoinGame = () => {
     }
 
     return(<JoinGameBase>
-        <DurationBase>
+        <DurationBase >
             <h5 style = {{"paddingTop": "10px"}}>Room Code</h5>
             <DurationInput
                 value = {code}
@@ -379,7 +377,7 @@ const JoinGame = () => {
                 onChange = {onChange}
             />
         </DurationBase>
-        <StartButton onClick={onSubmit}>Join Room!</StartButton>
+        <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Join!</CenteredButton>
         <ErrorMessage msg = {error}/>
     </JoinGameBase>)
 
@@ -389,24 +387,31 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 300px 300px;
+  grid-template-rows: 75px 330px 300px;
   grid-template-areas: 
     'title'
     'modes'
     'options' 
 `;
 
+const OptionsBase = styled.div`
+    gridArea: options;
+    display: grid; 
+    grid-template-areas: '1 2';
+    grid-template-columns: 50% 50%;
+    padding-left: 60px;
+`;
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-unused-vars
 export const GameGen = (props: { history: History; }) => {
     //get game modes from database
     const [chosenMode, setMode] = useState("");
 
-    const onClick = (event: { preventDefault: () => void; target: { value: React.SetStateAction<string>; }; }) => {
+    const onClick = (event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }) => {
         event.preventDefault();
         console.log("calling onClick");
-        console.log(event.target.value);
-        setMode(event.target.value);
+        console.log(event.target.id);
+        setMode(event.target.id);
         console.log(chosenMode);
     };
 
@@ -415,10 +420,10 @@ export const GameGen = (props: { history: History; }) => {
     return(
         <GameGenBase>
             <Header> Select Game Mode</Header>
-            <GameMode gameModes = {gameModes} onClick={onClick}/>
-            <div style={{"gridArea":"options", "display":"flex", "flexDirection":"row"}}>
-                {chosenMode ? (<GameInfo history = {props.history} chosenMode = {chosenMode}/>) : null}
+            <GameMode onClick={onClick}/>
+            <OptionsBase>
+                {chosenMode ? (<GameInfo chosenMode = {chosenMode}/>) : null}
                 {(chosenMode === "Group Play") ? <JoinGame/> : null}
-            </div>
+            </OptionsBase>
     </GameGenBase>);
 }
