@@ -68,7 +68,6 @@ const GameModeBlockBase = styled.button`
   background-color: #B5CEF3;
 
   text-align: center;
-
 `;
 
 //gameMode: { name: string, description: string, src: string }

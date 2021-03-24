@@ -87,6 +87,7 @@ export const AnswerLabel = styled.label`
     padding-right: 1em;
 `;
 
+
 export const AnswerInput = styled.input`
     padding-left: 5px;
     color: black;
@@ -96,7 +97,7 @@ export const AnswerInput = styled.input`
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
-`;
+
 
 export const HeaderWrap = styled.div`
     grid-area: top;
@@ -164,6 +165,24 @@ export const CenteredButton = styled.button`
   &:active{
     background-color: #B5CEF3;
   }
+`;
+
+export const CenteredButton = styled.button`
+  max-width: 200px;
+  min-width: 150px;
+  max-height: 2em;
+  background:#00538f;
+  border-radius: 5px;
+  line-height: 2em;
+  font-size: 25px;
+  color: white;
+  font-family: revalia;
+  width: 50%;
+  height: 50%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
 `;
 
 export const InfoBlock = styled.div`

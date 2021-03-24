@@ -11,19 +11,8 @@ import {LeadershipBoard} from "./components/leadership";
 import { HashRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
 import {CenteredDiv, HeaderWrap} from "./components/shared";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import {MuiThemeProvider, createMuiTheme, Theme} from "@material-ui/core/styles";
-import {AppBar} from "@material-ui/core";
+import {Theme} from "@material-ui/core/styles";
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-
-
-// const themeLight = createMuiTheme({
-//     palette: {
-//         background: {
-//             default: "#f4f7fc"
-//         }
-//     }
-// });
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,8 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: "0px",
             width: "100vw",
             position: "fixed",
-            // position: "relative",
-            // zIndex: theme.zIndex.drawer + 1,
         },
     }),
 );
@@ -122,12 +109,6 @@ const App = () => {
     return (
         <HashRouter>
         <GridBase>
-            {/*<MuiThemeProvider theme={themeLight}>*/}
-            {/*    <CssBaseline />*/}
-                {/*<AppBar  className={classes.header}>*/}
-                {/*    Multiplayer Math*/}
-                {/*</AppBar>*/}
-            {/*<HeaderWrap>Multiplayer Math</HeaderWrap>*/}
             <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
             <Route exact path="/" component={Landing} />
             <Route
@@ -151,7 +132,6 @@ const App = () => {
                 path="/leadership"
                 render={p => <LeadershipBoard currentUser = {state.username} />}
             />
-            {/*</MuiThemeProvider>*/}
         </GridBase>
         </HashRouter>
     );
@@ -164,9 +144,6 @@ const Landing = () => {
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         <CenteredDiv style = {landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
     </div>
-    // <CenteredDiv style={{"gridArea": "main", "fontSize" : "100px"}}>Welcome to our site!</CenteredDiv>;
-
-
 };
 
 render(<App />, document.getElementById("root"));

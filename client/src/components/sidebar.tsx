@@ -3,10 +3,6 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
-// import styled from 'styled-components';
-// import { Button } from './shared';
-
-
 import { createStyles, Theme, makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -33,35 +29,6 @@ const drawerWidth = "100%";
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-    //     drawer: {
-    //         width: drawerWidth,
-    //         flexShrink: 0,
-    //         height:"100vh,"
-    //     },
-    //     drawerPaper: {
-    //         width: drawerWidth,
-    //         background: "#00538F",
-    //         height: "100vh",
-    //     },
-    //     toolbar: theme.mixins.toolbar,
-    //     playFormat: {
-    //         color: "white",
-    //         textAlign: "center",
-    //         fontSize:'35px',
-    //     },
-    //     listFormat: {
-    //         color: "white",
-    //         textAlign: "center",
-    //         fontSize:'22px',
-    //     },
-    //     tr: {
-    //         '&:hover': {
-    //             background: "#B5CEF3",
-    //         },
-    //     },
-    //
-    // }),
-
         root: {
             display: 'flex',
         },
@@ -167,16 +134,13 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
     const classes = useStyles();
     return (
 
+
         <Box mt={20} mb={20}>
             <Link to={"/create"}>
             {/*<ListItem button key = {"playlink"} className = {classes.tr}>*/}
             <ListItem button key = {"createLink"}>
                 <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
 
-        {/*<Box mt={10} mb={28}>*/}
-        {/*    <Link to={"/create"}>*/}
-        {/*    <ListItem button key = {"createlink"} className = {classes.tr}>*/}
-        {/*       <ListItemText classes = {{primary: classes.playFormat}} primary={"Play!"}/>*/}
 
             </ListItem>
             </Link>
@@ -201,6 +165,7 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
         </Box>
     );
 }
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -227,6 +192,7 @@ const AccountOptions = ({loggedIn, logIn, logOut}) => {
     );
 }
 
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const SideBar = ({loggedIn, logIn, logOut, username}) => {
@@ -242,24 +208,6 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
         setOpen(false);
     };
     return (
-        // <div>
-        //     <CssBaseline />
-        //     <Drawer
-        //         className={classes.drawer}
-        //         variant="permanent"
-        //         classes={{
-        //             paper: classes.drawerPaper,
-        //         }}
-        //         anchor="left"
-        //     >
-        //         <div className={classes.toolbar} />
-        //         <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {'/images/math.png'}/>
-        //         <SideBarOptions loggedIn = {loggedIn} username={username}/>
-        //
-        //         <Divider />
-        //         <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
-        //     </Drawer>
-        // </div>
         <div className={classes.root} style = {divStyle}>
             <CssBaseline />
             <AppBar
@@ -296,13 +244,9 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronRightIcon className = {classes.chevronIcon}/> : <ChevronLeftIcon />}
                     </IconButton>
-                    {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {require('/images/math.png')}/>*/}
                 </div>
 
-               {/* <div className={classes.toolbar} />*/}
-               {/*<img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 50}} src = {'../../images/math.png'}/>*/}
-
-
+              
                 <button onClick = {handleDrawerClose} className = {classes.buttonFormat}>
                     <SideBarOptions loggedIn = {loggedIn} username={username}/>
 
