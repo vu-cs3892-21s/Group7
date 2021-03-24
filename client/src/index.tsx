@@ -80,13 +80,9 @@ const App = () => {
 
     const logIn = async (ev: { preventDefault: () => void; target: { offsetParent: {id: string}}; }) => {
         ev.preventDefault();
-        const endpoint = `/api/login/${ev.target.offsetParent.id}`;
+        const endpoint = `http://localhost:5000/login/${ev.target.offsetParent.id}`;
         try {
-            //use this for SSO so how do we do this...
             window.location.href = endpoint
-            // const data = await response.json();
-            // console.log(data)
-            // console.log(response)
             const user = {
                 // username: data.login,
                 first_name: "",
@@ -107,7 +103,6 @@ const App = () => {
             .then(res => res.json())
             .then(data => {
                 setState(data);
-                console.log(data);
             })
             .catch(err => alert(err))
     }
