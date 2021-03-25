@@ -22,7 +22,7 @@ class Config(object):
     # TODO: Move this object
     SECRET_KEY: str = os.environ.get('SECRET_KEY') or 'super-secret-key'
     SQLALCHEMY_DATABASE_URI: str = os.environ.get(
-        'DATABASE_URI') or 'postgres:5432'
+        'DATABASE_URI') or 'postgres:8200'
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
     # SQLALCHEMY_ECHO: bool = os.environ.get('DATABASE_LOG') or True
