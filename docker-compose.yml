@@ -11,10 +11,10 @@ services:
       - "FLASK_RUN_HOST=0.0.0.0"
       - "FLASK_RUN_PORT=5000"
       - "FLASK_ENV=development"
-      - "DATABASE_URI=postgresql://postgres:postgres@postgres:8200/postgres"
+      - "DATABASE_URI=postgresql://postgres:postgres@postgres:5432/postgres"
       - "DATABASE_LOG=True"
-    ports:
-      - "5000:5000"
+    # ports:
+    #   - "5000:5000"
     depends_on:
       - "postgres"
     tty: true
@@ -25,8 +25,8 @@ services:
     volumes:
       - "./client:/client"
     container_name: client
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     depends_on:
       - "server"
   postgres:
@@ -40,11 +40,11 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports:
-      - "8200:8200"
   redis:
     container_name: redis
     image: "redis:latest"
+    expose:
+      - "6379"
   nginx:
     container_name: nginx
     image: "nginx:latest"
@@ -57,4 +57,16 @@ services:
       - "client"
       - "postgres"
       - "redis"
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8888:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres:5432
+      ADMINER_DESIGN: nette
+      ADMINER_PLUGINS: tables-filter
 # todo: make networking explicit
