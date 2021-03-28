@@ -8,7 +8,6 @@ import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
-
 const Header = styled.h2`
     position: flex;
     padding-left: 75px;
