@@ -12,6 +12,10 @@ const ErrorBase = styled.div`
   display: flex;
   justify-content: center;
   min-height: 1.2em;
+  position: absolute;
+  bottom: 0; 
+  right: 0;
+  left: 0;
 `;
 
 export const ErrorMessage = ({ msg = '', hide = false }) => {
