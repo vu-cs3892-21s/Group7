@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {AnswerInput, FunButton, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
 import PersonIcon from "@material-ui/icons/Person";
+import { ButtonGroup, Button } from '@material-ui/core';
 
 
 
@@ -67,7 +68,6 @@ const ProfileBlock = ({userInfo}) => {
     <ProfileBlockBase>
         <div style={{"flex" : 1, "position": "relative"}}>
             <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": (profile.color)? (profile.color) : "white" }}/>
-            <FunButton style={{"position": "absolute", "bottom": -20, "right": 0}}onClick={onClick}>{editText}</FunButton>
         </div>
         <InfoBlock style={{"flex" : 5, "position": "relative"}}>
             <InfoLabels>
@@ -95,6 +95,9 @@ const ProfileBlock = ({userInfo}) => {
                     value={profile.color}
                     style = {{"margin": "0.5em", "height": "1.5em", "position": "relative"}}
                 /> : <ShortP>{profile.color ? profile.color: "--"}</ShortP>}
+                <ButtonGroup color="primary" variant="contained" aria-label="contained primary button group">
+                    <Button style={{"width": "fit-content"}}onClick={onClick}>{editText}</Button>
+                </ButtonGroup>
             </InfoData>
         </InfoBlock>
     </ProfileBlockBase>);
@@ -104,6 +107,7 @@ const StatsBoxBase = styled.div`
   flex: 1;
   padding: 1em;
   margin: 1em;
+  height: 50%;
   display: flex-container;
   justify-content: center;
   text-align: center;
@@ -132,17 +136,18 @@ const StatsBlockBase = styled.div`
   display: flex;
   padding: 1em;
   justify-content: center;
-  margin-top: 1em;
+  margin-top: 2em;
 `;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
 // @ts-ignore
 const StatsBlock = ({userInfo, mode}) => {
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     useEffect(() => {
         getStats().then(r=>
-            updateStats(r)
-        );
+            updateStats(r));
     }, [mode]);
 
     const getStats = async () => {
@@ -152,7 +157,7 @@ const StatsBlock = ({userInfo, mode}) => {
             ["Level", (Math.random()*100).toPrecision(3)],
             ["Ranking", (Math.random()*100).toPrecision(3)],
             ["Win Rate", (Math.random()*100).toPrecision(3)],
-            ["Accuracy", (Math.random()*100).toPrecision(3)]
+            ["Accuracy", (Math.random()*100).toPrecision(3)],
         ]);
         // const body = {
         //     primary_email: userInfo.primary_email,
@@ -188,7 +193,7 @@ const StatsBlock = ({userInfo, mode}) => {
             ["Level", 30],
             ["Ranking", 20],
             ["Win Rate", 20],
-            ["Accuracy", 20]
+            ["Accuracy", 20],
         ]);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -224,9 +229,9 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
     }
 
     const modeButtons = modes.map(m =>
-        <FunButton style={{"backgroundColor": (mode === m) ? "#B5CEF3" : "#00538f"}} key={m} onClick={modeChange} id={m}>
+        <Button key={m} onClick={modeChange} id={m}>
             {m}
-        </FunButton>);
+        </Button>);
 
     useEffect(() => {
         onLoggedIn();
@@ -235,7 +240,9 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
 
     return(<ProfilePageBase>
         <ProfileBlock userInfo={currentUser}/>
-        <div style={{"marginTop": "50px", "display": "flex", "flexDirection": "row"}}>{modeButtons}</div>
+        <ButtonGroup style={{"position": "absolute", "right": "3em"}} color="primary" variant="contained" aria-label="contained primary button group">
+            {modeButtons}
+        </ButtonGroup>
         <StatsBlock userInfo={currentUser} mode={mode}/>
     </ProfilePageBase>);
 }
