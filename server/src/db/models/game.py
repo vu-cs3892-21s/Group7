@@ -1,6 +1,7 @@
 from typing import Dict
 from .user import User
 from ..database import db
+from datetime import datetime
 
 
 class Game(db.Model):
@@ -11,6 +12,9 @@ class Game(db.Model):
     question_type = db.Column(db.String(40))
     num_questions = db.Column(db.Integer)
     duration = db.Column(db.Integer)
+    room_code = db.Column(db.String(8))
+    create_time = db.Column(db.DateTime, nullable=False,
+                            default=datetime.utcnow)
 
 
 class GamePlayer(db.Model):

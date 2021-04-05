@@ -1,13 +1,15 @@
+from db.database import db
+from db.models.game import Game, GamePlayer, GameQuestion
 import random
 from typing import List, Tuple
 from flask import Blueprint, request
 from flask_login import login_required, current_user
+
+from db.models.user import User
 from .shared.api_types import Json
 
 import sys
 sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.game import Game, GamePlayer, GameQuestion
-from db.database import db
 
 GAME_API_PREFIX = "/v1/game"
 
@@ -85,3 +87,33 @@ def create_game():
     db.session.commit()
 
     return {"id": game.id}
+
+
+@game_api.route("/join", methods=["POST"])
+@login_required
+def join_game():
+    # body includes code parameter
+    code: str = request.get_json()
+    print(Game.query.all())
+    req_game: Game = Game.query.filter_by(room_code=code).one()
+    print(req_game)
+    game_id: int = req_game.id
+    print(game_id, flush=True)
+    # add player into this game
+    print(current_user.id, 'cuser')
+    game_player: GamePlayer = GamePlayer(
+        game_id=game_id, player_id=current_user.id, score=0)
+
+    db.session.add(game_player)
+    db.session.commit()
+
+    gp_list: List[GamePlayer] = GamePlayer.query.filter_by(
+        game_id=game_id).all()
+
+    user_emails: List[str] = []
+
+    for gp in gp_list:
+        assoc_user: User = User.query.filter_by(id=gp.player_id).one()
+        user_emails.append(assoc_user.primary_email)
+
+    return {"id": game_id, "user_emails": user_emails}
