@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router';
@@ -9,25 +9,26 @@ import GroupIcon from '@material-ui/icons/Group';
 import { Alert } from '@material-ui/lab';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
+
 import {
-    Checkbox,
-    FormControlLabel,
-    FormGroup,
-    FormLabel,
-    Radio,
-    RadioGroup,
-    Slider,
-    Typography,
-    FormControl
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Slider,
+  Typography,
+  FormControl,
 } from "@material-ui/core";
 
 const Header = styled.h2`
-    position: flex;
-    padding-left: 75px;
-    padding-top: 30px;
-    font: 70px;
-    grid-area: title;  
-    color: white;
+  position: flex;
+  padding-left: 75px;
+  padding-top: 30px;
+  font: 70px;
+  grid-area: title;
+  color: white;
 `;
 
 const GameModeBase = styled.div`
@@ -44,52 +45,90 @@ const GameModeBase = styled.div`
 //: {onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameMode = ({onClick}) => {
-    const gameModes: { name: string, description: string, icon: any }[] = [
-        { name: "Solo", description: "Practice Math On Your Own", icon: <PersonIcon onClick = {onClick} style={{"fill": "#00538F", "width": "100%", "height":"100%"}}/> },
-        { name: "Head to Head", description: "Play With A Randomly Matched Foe", icon: <GroupIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>},
-        { name: "Group Play", description: "Play With 2+ Friends In A Private Room", icon: <GroupAddIcon onClick = {onClick} style={{"fill": "#00538F","width": "100%", "height":"100%"}}/>  }
-    ];
-    const modeBoxes = gameModes.map((gameMode, i) => (
-        <GameModeBlock key={i} gameMode={gameMode} onClick={onClick}/>
-    ));
-    return(<GameModeBase>{modeBoxes}</GameModeBase>);
-}
-
+const GameMode = ({ onClick }) => {
+  const gameModes: { name: string; description: string; icon: any }[] = [
+    {
+      name: "Solo",
+      description: "Practice Math On Your Own",
+      icon: (
+        <PersonIcon
+          onClick={onClick}
+          style={{ fill: "#00538F", width: "100%", height: "100%" }}
+        />
+      ),
+    },
+    {
+      name: "Head to Head",
+      description: "Play With A Randomly Matched Foe",
+      icon: (
+        <GroupIcon
+          onClick={onClick}
+          style={{ fill: "#00538F", width: "100%", height: "100%" }}
+        />
+      ),
+    },
+    {
+      name: "Group Play",
+      description: "Play With 2+ Friends In A Private Room",
+      icon: (
+        <GroupAddIcon
+          onClick={onClick}
+          style={{ fill: "#00538F", width: "100%", height: "100%" }}
+        />
+      ),
+    },
+  ];
+  const modeBoxes = gameModes.map((gameMode, i) => (
+    <GameModeBlock key={i} gameMode={gameMode} onClick={onClick} />
+  ));
+  return <GameModeBase>{modeBoxes}</GameModeBase>;
+};
 
 const GameModeBlockBase = styled.button`
   border-radius: 10px;
   display: grid;
   max-height: 250px;
   grid-template-rows: 65% 10% 25%;
-  grid-template-areas: 
-    'pic'
-    'name'
-    'description';
+  grid-template-areas:
+    "pic"
+    "name"
+    "description";
   margin: 1em;
   border: 3px solid black;
   color: "#00538F";
-  background-color: #B5CEF3;
+  background-color: #b5cef3;
   text-align: center;
 `;
 //{gameMode: { name: string, description: string, icon: any },
 //onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameModeBlock = ({ gameMode, onClick} ) => {
-    console.log(gameMode);
-    return (
-        <GameModeBlockBase id={gameMode.name} onClick={onClick}>
-            {gameMode.icon}
-            <div id={gameMode.name} onClick={onClick} style={{
-                "zIndex": 0,
-                "gridArea": "name",
-                "fontWeight": "bold",
-                "fontSize": "20px"
-            }}>{gameMode.name}</div>
-            <div id={gameMode.name} onClick={onClick}
-                 style={{"zIndex": 0, "gridArea": "description", "fontSize": "18px"}}>{gameMode.description}</div>
-        </GameModeBlockBase>);
+const GameModeBlock = ({ gameMode, onClick }) => {
+  console.log(gameMode);
+  return (
+    <GameModeBlockBase id={gameMode.name} onClick={onClick}>
+      {gameMode.icon}
+      <div
+        id={gameMode.name}
+        onClick={onClick}
+        style={{
+          zIndex: 0,
+          gridArea: "name",
+          fontWeight: "bold",
+          fontSize: "20px",
+        }}
+      >
+        {gameMode.name}
+      </div>
+      <div
+        id={gameMode.name}
+        onClick={onClick}
+        style={{ zIndex: 0, gridArea: "description", fontSize: "18px" }}
+      >
+        {gameMode.description}
+      </div>
+    </GameModeBlockBase>
+  );
 };
 
 const GameInfoBase = styled.div`
@@ -110,6 +149,7 @@ const GameInfoBase = styled.div`
   background-color: #B5CEF3;
   min-height: 350px;
   max-height: 375px;
+
   width: fit-content;
   border-radius: 10px;
 `;
@@ -121,76 +161,116 @@ const QuestionsBase = styled.div`
 `;
 
 const DurationInput = styled.input`
-    height: 50px;
-    width: 100px;
-    border: 2px solid black;
-    background-color: white; 
+  height: 50px;
+  width: 100px;
+  border: 2px solid black;
+  background-color: white;
 `;
 
 const DurationBase = styled.div`
-   grid-area: duration;
-   grid-template-rows: 50% 25% 25%;
-   grid-template-areas: 'duration'
-   'operation'
-   'operation';
-   justify-items: center;
-   padding-top: 1em;
+  grid-area: duration;
+  grid-template-rows: 50% 25% 25%;
+  grid-template-areas:
+    "duration"
+    "operation"
+    "operation";
+  justify-items: center;
+  padding-top: 1em;
 `;
 
 const OperationBase = styled.div`
-    grid-area: operation;
-    grid-template-rows: 50% 50%;
-    grid-template-columns: 50% 50%;
-    grid-template-areas: 
-        '1 2'
-        '3 4';
-    justify-items:center;
-    padding: 0px;
-    padding-top: 3em;
+  grid-area: operation;
+  grid-template-rows: 50% 50%;
+  grid-template-columns: 50% 50%;
+  grid-template-areas:
+    "1 2"
+    "3 4";
+  justify-items: center;
+  padding: 0px;
+  padding-top: 3em;
 `;
 //{questionType:string}), onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const QuestionButtons = ({onChange, questionType}) => {
-
-    return( <QuestionsBase>
-        <FormControl>
-            <FormLabel style={{"fontSize": "1.25rem", "color": "black"}}>Question Type</FormLabel>
-            <RadioGroup aria-label="questions" name="questionType" value={questionType} onChange={onChange}>
-                <FormControlLabel value="SAT" control={<Radio />} label="SAT" />
-                <FormControlLabel value="ACT" control={<Radio />} label="ACT" />
-                <FormControlLabel value="GRE" control={<Radio />} label="GRE" />
-                <FormControlLabel value="Normal" control={<Radio />} label="Normal" />
-            </RadioGroup>
-        </FormControl>
-    </QuestionsBase>);
+const QuestionButtons = ({ onChange, questionType }) => {
+  return (
+    <QuestionsBase>
+      <FormControl>
+        <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+          Question Type
+        </FormLabel>
+        <RadioGroup
+          aria-label="questions"
+          name="questionType"
+          value={questionType}
+          onChange={onChange}
+        >
+          <FormControlLabel value="SAT" control={<Radio />} label="SAT" />
+          <FormControlLabel value="ACT" control={<Radio />} label="ACT" />
+          <FormControlLabel value="GRE" control={<Radio />} label="GRE" />
+          <FormControlLabel value="Normal" control={<Radio />} label="Normal" />
+        </RadioGroup>
+      </FormControl>
+    </QuestionsBase>
+  );
 };
 //{onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}}, operations:string[]}
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const OperationButtons = ({onChange, operations}) => {
-
-    return( <OperationBase>
-        <FormLabel style={{"fontSize": "1.25rem", "color": "black"}}>Operation Type</FormLabel>
-                <FormGroup style={{"flexDirection": "row"}}>
-                    <FormControlLabel
-                        control={<Checkbox checked={operations.includes("+")} onChange={onChange} value="+" name="operations" />}
-                        label="+"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={operations.includes("-")} onChange={onChange} value="-" name="operations" />}
-                        label="-"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={operations.includes("*")} onChange={onChange} value="*" name="operations" />}
-                        label="*"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={operations.includes("/")} onChange={onChange} value="/" name="operations" />}
-                        label="/"
-                    />
-                </FormGroup>
-    </OperationBase>);
+const OperationButtons = ({ onChange, operations }) => {
+  return (
+    <OperationBase>
+      <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+        Operation Type
+      </FormLabel>
+      <FormGroup style={{ flexDirection: "row" }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={operations.includes("+")}
+              onChange={onChange}
+              value="+"
+              name="operations"
+            />
+          }
+          label="+"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={operations.includes("-")}
+              onChange={onChange}
+              value="-"
+              name="operations"
+            />
+          }
+          label="-"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={operations.includes("*")}
+              onChange={onChange}
+              value="*"
+              name="operations"
+            />
+          }
+          label="*"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={operations.includes("/")}
+              onChange={onChange}
+              value="/"
+              name="operations"
+            />
+          }
+          label="/"
+        />
+      </FormGroup>
+    </OperationBase>
+  );
 };
 
 const GameInfo = ({chosenMode}: {chosenMode:string}) => {
@@ -284,20 +364,19 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
 
         console.log(game);
 
-        const res = await fetch('/api/v1/game/create', {
-            method: 'POST',
-            body: JSON.stringify(game),
-            credentials: 'include',
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
+    const res = await fetch("/api/v1/game/create", {
+      method: "POST",
+      body: JSON.stringify(game),
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+    });
 
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            history.push(`/game/${data.id}`);
-        }
+    if (res.ok) {
+      const data = await res.json();
+      console.log(data);
+      history.push(`/game/${data.id}`);
     }
 
     return (<GameInfoBase>
@@ -355,7 +434,7 @@ const JoinGameBase = styled.div`
   border: 3px solid black;
   border-radius: 10px;
   color: black;
-  background-color: #B5CEF3;
+  background-color: #b5cef3;
   height: fit-content;
   padding: 10px;
   margin: 20px;
@@ -363,37 +442,37 @@ const JoinGameBase = styled.div`
 `;
 
 const JoinGame = () => {
-    const [error, setError] = useState("");
-    const [code, setCode] = useState<string>("");
-    const history = useHistory();
+  const [error, setError] = useState("");
+  const [code, setCode] = useState<string>("");
+  const history = useHistory();
 
-    const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
-        setCode(ev.target.value);
-    }
+  const onChange = (ev: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setCode(ev.target.value);
+  };
 
-    const onSubmit = async (ev: { preventDefault: () => void; }) => {
-        ev.preventDefault();
-        console.log("Trying to submit!");
+  const onSubmit = async (ev: { preventDefault: () => void }) => {
+    ev.preventDefault();
+    console.log("Trying to submit!");
 
-        const res = await fetch('/v1/join', {
-            method: 'POST',
-            body: code,
-            credentials: 'include',
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
+    const res = await fetch("/api/v1/game/join", {
+      method: "POST",
+      body: JSON.stringify(code),
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+    });
 
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            history.push(`/game/${data.id}`);
-        } else {
-            setError("Invalid Game Code")
-        }
-
+    if (res.ok) {
+      const data = await res.json();
+      console.log(data);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      history.push(`/game/${data.id}`);
+    } else {
+      setError("Invalid Game Code");
     }
 
     return(<JoinGameBase>
@@ -408,9 +487,9 @@ const JoinGame = () => {
         {error ? <Alert severity="error">{error}</Alert> : null}
         <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%", "margin": "1.5em", "position": "relative"}} onClick={onSubmit}>Join!</CenteredButton>
     </JoinGameBase>)
+};
 
 
-}
 const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
@@ -423,34 +502,38 @@ const GameGenBase = styled.div`
 `;
 
 const OptionsBase = styled.div`
-    gridArea: options;
-    display: grid; 
-    grid-template-areas: '1 2';
-    grid-template-columns: 50% 50%;
-    padding-left: 60px;
+  gridarea: options;
+  display: grid;
+  grid-template-areas: "1 2";
+  grid-template-columns: 50% 50%;
+  padding-left: 60px;
 `;
 
-export const GameGen = (props: { history: History; }) => {
-    const [chosenMode, setMode] = useState("");
+export const GameGen = (props: { history: History }) => {
+  const [chosenMode, setMode] = useState("");
 
-    //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
-    const onClick = (event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }) => {
-        event.preventDefault();
-        console.log("calling onClick");
-        console.log(event.target.id);
-        setMode(event.target.id);
-        console.log(chosenMode);
-    };
+  //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
+  const onClick = (event: {
+    preventDefault: () => void;
+    target: { id: React.SetStateAction<string> };
+  }) => {
+    event.preventDefault();
+    console.log("calling onClick");
+    console.log(event.target.id);
+    setMode(event.target.id);
+    console.log(chosenMode);
+  };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return(
-        <GameGenBase>
-            <Header> Select Game Mode</Header>
-            <GameMode onClick={onClick}/>
-            <OptionsBase>
-                {chosenMode ? (<GameInfo chosenMode = {chosenMode}/>) : null}
-                {(chosenMode === "Group Play") ? <JoinGame/> : null}
-            </OptionsBase>
-    </GameGenBase>);
-}
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return (
+    <GameGenBase>
+      <Header> Select Game Mode</Header>
+      <GameMode onClick={onClick} />
+      <OptionsBase>
+        {chosenMode ? <GameInfo chosenMode={chosenMode} /> : null}
+        {chosenMode === "Group Play" ? <JoinGame /> : null}
+      </OptionsBase>
+    </GameGenBase>
+  );
+};
