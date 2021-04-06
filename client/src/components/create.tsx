@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router';
 import styled from 'styled-components';
 
-import {CenteredButton, ErrorMessage} from "./shared";
+import {CenteredButton} from "./shared";
 import GroupIcon from '@material-ui/icons/Group';
 import { Alert } from '@material-ui/lab';
 import PersonIcon from '@material-ui/icons/Person';
@@ -338,21 +338,21 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
             });
         }
         console.log(game);
-    }
+    };
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
         console.log("Trying to submit!");
 
-        if(game.questionType === "") {
+        if (game.questionType === "") {
             setError("Select question type");
             console.log("Select question type");
             return;
-        } else if(chosenMode === "Solo" && game.operations.length === 0) {
+        } else if (chosenMode === "Solo" && game.operations.length === 0) {
             setError("Select operation types");
             console.log("Select operation types");
             return;
-        } else if(chosenMode !== "Head To Head" && game.duration === 0) {
+        } else if (chosenMode !== "Head To Head" && game.duration === 0) {
             setError("Enter > 0 duration");
             console.log("Enter > 0 duration");
             return;
@@ -364,20 +364,21 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
 
         console.log(game);
 
-    const res = await fetch("/api/v1/game/create", {
-      method: "POST",
-      body: JSON.stringify(game),
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+        const res = await fetch("/api/v1/game/create", {
+            method: "POST",
+            body: JSON.stringify(game),
+            credentials: "include",
+            headers: {
+                "content-type": "application/json",
+            },
+        });
 
-    if (res.ok) {
-      const data = await res.json();
-      console.log(data);
-      history.push(`/game/${data.id}`);
-    }
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            history.push(`/game/${data.id}`);
+        }
+    };
 
     return (<GameInfoBase>
             {questionType ? (<QuestionButtons onChange={onChange} questionType = {game.questionType}/>): null}
@@ -453,27 +454,28 @@ const JoinGame = () => {
   };
 
   const onSubmit = async (ev: { preventDefault: () => void }) => {
-    ev.preventDefault();
-    console.log("Trying to submit!");
+      ev.preventDefault();
+      console.log("Trying to submit!");
 
-    const res = await fetch("/api/v1/game/join", {
-      method: "POST",
-      body: JSON.stringify(code),
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+      const res = await fetch("/api/v1/game/join", {
+          method: "POST",
+          body: JSON.stringify(code),
+          credentials: "include",
+          headers: {
+              "content-type": "application/json",
+          },
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      console.log(data);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      history.push(`/game/${data.id}`);
-    } else {
-      setError("Invalid Game Code");
-    }
+      if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          history.push(`/game/${data.id}`);
+      } else {
+          setError("Invalid Game Code");
+      }
+  };
 
     return(<JoinGameBase>
         <DurationBase>
@@ -510,7 +512,7 @@ const OptionsBase = styled.div`
 `;
 
 export const GameGen = (props: { history: History }) => {
-  const [chosenMode, setMode] = useState("");
+  const [chosenMode, setMode] = useState<string>("");
 
   //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
   const onClick = (event: {
@@ -526,7 +528,7 @@ export const GameGen = (props: { history: History }) => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return (
+    return (
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />
