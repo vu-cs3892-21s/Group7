@@ -123,12 +123,12 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
     }
 
     const getScores = async () => {
-
         const res = await fetch('/v1/updatedScores', {
             method: 'GET',
             body: gameInfo.id,
             credentials: 'include',
             headers: {
+
                 'content-type': 'application/json'
             }
         });

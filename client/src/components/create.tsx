@@ -1,11 +1,12 @@
 'use strict';
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router';
 import styled from 'styled-components';
 
 import {CenteredButton, ErrorMessage} from "./shared";
 import GroupIcon from '@material-ui/icons/Group';
+import { Alert } from '@material-ui/lab';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import {
@@ -33,7 +34,6 @@ const GameModeBase = styled.div`
   grid-area: modes;
   display: grid;
   grid-template-columns: 33% 33% 33%;
-  padding-top: 30px;
   padding-bottom: 0px;
   padding-right: 60px;
   padding-left: 60px;
@@ -95,18 +95,21 @@ const GameModeBlock = ({ gameMode, onClick} ) => {
 const GameInfoBase = styled.div`
    display:grid;
    grid-template-columns: '50% 50%';
-   grid-template-rows: 70% 30%;
+   grid-template-rows: 70% 15% 15%;
    grid-template-areas: 
       'type duration'
+      'error error'
       'start start';
   padding: 10px;
   margin: 20px;
+  margin-top: 0px;
   text-align: center;
   justify-content: center;
   border: 3px solid black;
   color: black;
   background-color: #B5CEF3;
-  min-height: 330px;
+  min-height: 350px;
+  max-height: 375px;
   width: fit-content;
   border-radius: 10px;
 `;
@@ -211,6 +214,8 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
         operations: [],
         numberOfQuestions: 20,
     });
+
+    useEffect(() => setError(""), [chosenMode]);
     //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -263,7 +268,7 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
             setError("Select question type");
             console.log("Select question type");
             return;
-        } else if(chosenMode === "Solo" && game.operations === []) {
+        } else if(chosenMode === "Solo" && game.operations.length === 0) {
             setError("Select operation types");
             console.log("Select operation types");
             return;
@@ -334,9 +339,11 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
                     </div> : null
                 }
             </DurationBase>
+        <div style ={{"gridArea": "error"}}>
+            {error ? <Alert severity="error">{error}</Alert> : null}
+        </div>
         <div style={{"gridArea": "start", "position": "relative"}}>
             <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Start Game!</CenteredButton>
-            <ErrorMessage msg = {error}/>
         </div>
     </GameInfoBase>);
 };
@@ -398,8 +405,8 @@ const JoinGame = () => {
                 onChange = {onChange}
             />
         </DurationBase>
+        {error ? <Alert severity="error">{error}</Alert> : null}
         <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%", "margin": "1.5em", "position": "relative"}} onClick={onSubmit}>Join!</CenteredButton>
-        <ErrorMessage msg = {error}/>
     </JoinGameBase>)
 
 
@@ -408,7 +415,7 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 330px 300px;
+  grid-template-rows: 75px 275px 400px;
   grid-template-areas: 
     'title'
     'modes'
