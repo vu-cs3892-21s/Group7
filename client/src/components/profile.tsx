@@ -153,48 +153,44 @@ const StatsBlock = ({userInfo, mode}) => {
 
     const getStats = async () => {
         console.log("changing stats");
-        return ([
-            ["Average Speed", (Math.random()*100).toPrecision(3)],
-            ["Level", (Math.random()*100).toPrecision(3)],
-            ["Ranking", (Math.random()*100).toPrecision(3)],
-            ["Win Rate", (Math.random()*100).toPrecision(3)],
-            ["Accuracy", (Math.random()*100).toPrecision(3)],
-        ]);
-        // const body = {
-        //     primary_email: userInfo.primary_email,
-        //     mode: mode
-        // };
-        // const res = await fetch('/v1/gameStats', {
-        //     method: 'GET',
-        //     body: JSON.stringify(body),
-        //     credentials: 'include',
-        //     headers: {
-        //         'content-type': 'application/json'
-        //     }
-        // });
-        // if(res.ok) {
-        //     const data = await res.json();
-        //     return data;
-        // } else {
-        //     console.log("Did not work!");
-        //     return ([
-        //         ["Average Speed", Math.random()*100],
-        //         ["Level", Math.random()*100],
-        //         ["Ranking", Math.random()*100],
-        //         ["Win Rate", Math.random()*100],
-        //         ["Accuracy", Math.random()*100]
-        //     ]);
-        // }
+        const body = {
+            user_id: userInfo.id,
+            mode: mode
+        };
+        const res = await fetch('/api/v1/game/getStats', {
+            method: 'GET',
+            body: JSON.stringify(body),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        if(res.ok) {
+            const data = await res.json();
+            return ([
+                ["Number of Games", data.num_games],
+                ["Win Rate", data.win_rate],
+                ["Number of Questions", data.num_questions],
+                ["Accuracy", data.accuracy]
+            ]);
+        } else {
+            console.log("Did not work!");
+            return ([
+                ["Number of Games", Math.random()*100],
+                ["Win Rate", Math.random()*100],
+                ["Number of Questions", Math.random()*100],
+                ["Accuracy", Math.random()*100]
+            ]);
+        }
     };
 
     //grab all the user stats from given mode!
     const [stats, updateStats] = useState(
         [
-            ["Average Speed", 20],
-            ["Level", 30],
-            ["Ranking", 20],
-            ["Win Rate", 20],
-            ["Accuracy", 20],
+            ["Number of Games", Math.random()*100],
+            ["Win Rate", Math.random()*100],
+            ["Number of Questions", Math.random()*100],
+            ["Accuracy", Math.random()*100]
         ]);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -222,6 +218,7 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
     const defaultMode = "Normal";
     const modes = ["Normal", "ACT", "GRE", "SAT"];
     const [mode, setMode] = useState(defaultMode);
+    console.log(currentUser);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

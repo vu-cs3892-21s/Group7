@@ -6,7 +6,7 @@ from .shared.api_types import Json
 
 import sys
 sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.game import Game, GamePlayer, GameQuestion
+from db.models.game import Game, GamePlayer, GameQuestion, StatsTable
 from db.database import db
 
 GAME_API_PREFIX = "/v1/game"
@@ -85,3 +85,39 @@ def create_game():
     db.session.commit()
 
     return {"id": game.id}
+
+@game_api.route("/updateStats", methods=["POST"])
+@login_required
+def update_stats():
+    request_json: Json = request.get_json()
+    statsTable_query = StatsTable.query.filter_by(player_id=request_json["player_id"], mode=request_json["mode"])
+    try:
+        stats = statsTable_query.one()
+    except NoResultFound:
+        stats = StatsTable(
+            player_id=request_json["player_id"], mode=request_json["mode"]
+        )
+        db.session.add(stats)
+        db.session.commit()
+
+    stats.update(num_questions = num_questions + request_json["num_questions"],
+    num_correct = num_correct + request_json["num_correct"], num_games = num_games + 1,
+    num_wins = num_wins + request_json["num_wins"]))
+    db.session.commit()
+
+    return {"id": stats.id}
+
+@game_api.route("/getStats", methods=["GET"])
+@login_required
+def get_stats():
+    request_json: Json = request.get_json()
+    statsTable_query = StatsTable.query.filter_by(player_id=request_json["user_id"], mode=requested_json["mode"])
+    statsTable = statsTable_query.one()
+    accuracy: double = statsTable.num_correct/statsTable.num_questions
+    win_rate: double = statsTable.num_wins/statsTable.num_games
+    return {
+        "num_games": statsTable.num_games,
+        "num_questions": statsTable.num_questions,
+        "accuracy": accuracy,
+        "win_rate": win_rate
+    }

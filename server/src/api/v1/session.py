@@ -116,9 +116,8 @@ def get_user_info(blueprint: OAuth2ConsumerBlueprint) -> UserRecord:
 def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
-
 @ session_api.route("/github")
-def github_sesssion() -> Response:
+def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
     return redirect("http://localhost:7070/#/profile")

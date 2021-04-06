@@ -33,7 +33,13 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
     const [answer, setAnswer] = useState<string>(""); //user answer
     const [buttonText, setButtonText] = useState("Start Game!"); //button state
     const [endGame, setEndGame] = useState<boolean>(false); //game state
-
+    const [stats, setStats] = useState<{player_id: number, mode:string,num_questions:number, num_correct:number, num_wins:number}>({
+        player_id: 1,
+        mode: gameInfo.mode,
+        num_questions: gameInfo.totalQuestions,
+        num_correct: 0,
+        num_wins: 0,
+    });
     const [question, setQuestions] = useState<{question:string, answer: string}[]>([
     ]);
 
@@ -58,7 +64,8 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
         }
     }
 
-    const endOfGame = () => {
+    const endOfGame = async () => {
+        await updateUserStats();
         setGameInfo({
             ...gameInfo,
             start: false
@@ -96,19 +103,21 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
         setButtonText("Next Question!");
     }
 
-    const updateUserStats = async ({question, correct, time} : {question:string, correct: boolean, time:number}) => {
+    const updateUserStats = async () => {
+        //update whether or not you won
+        let won = true;
+        players.forEach((player: { score: number; }) => {
+            won = won && (player.score <= players[0].score)
+        })
 
-        const userInfo = {
-            score: ++players[0].score,
-            question: question,
-            correct: correct,
-            time: time,
-            gameId: gameInfo.id
-        };
+        setStats({
+            ...stats,
+            num_wins: (won)? 1 : 0
+        });
 
-        const res = await fetch('/v1/userStats', {
+        const res = await fetch('/api/v1/game/updateStats', {
             method: 'POST',
-            body: JSON.stringify(userInfo),
+            body: JSON.stringify(stats),
             credentials: 'include',
             headers: {
                 'content-type': 'application/json'
@@ -122,32 +131,35 @@ const QuestionBox = ({players, updatePlayers, gameInfo, setGameInfo}) => {
         }
     }
 
-    const getScores = async () => {
-        const res = await fetch('/v1/updatedScores', {
-            method: 'GET',
-            body: gameInfo.id,
-            credentials: 'include',
-            headers: {
-
-                'content-type': 'application/json'
-            }
-        });
-        if(res.ok) {
-            console.log("Updated Stats");
-        } else {
-            console.log("Error: could not update user stats");
-        }
-    }
+    // use web sockets
+    // const getScores = async () => {
+    //     const res = await fetch('/v1/updatedScores', {
+    //         method: 'GET',
+    //         body: gameInfo.id,
+    //         credentials: 'include',
+    //         headers: {
+    //
+    //             'content-type': 'application/json'
+    //         }
+    //     });
+    //     if(res.ok) {
+    //         console.log("Updated Stats");
+    //     } else {
+    //         console.log("Error: could not update user stats");
+    //     }
+    // }
 
     const onSubmit = () => {
         console.log("Trying submit")
         if(answer === question[0].answer) {
+            setStats({
+                ...stats,
+                num_correct: stats.num_correct + 1
+            });
+            //updateScore
             const newPlayers = players;
             newPlayers[0].score = ++newPlayers[0].score;
             updatePlayers(newPlayers);
-            // await updateUserStats(question[0].question, true, 10);
-            // let newPlayers = getScores();
-            // updatePlayers(newPlayers);
             resetAfterQuestion();
             return true;
         } else {
