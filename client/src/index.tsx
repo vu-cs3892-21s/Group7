@@ -11,6 +11,7 @@ import { LeadershipBoard } from "./components/leadership";
 import { HashRouter, Route, Redirect } from "react-router-dom";
 import { render } from "react-dom";
 import { CenteredDiv, HeaderWrap } from "./components/shared";
+import { SocketContext, socket } from "./context/socket";
 import { Theme } from "@material-ui/core/styles";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 
@@ -120,7 +121,7 @@ const App = () => {
         <Route exact path="/" component={Landing} />
         <Route
           path="/profile"
-          render={(p) => {
+          render={() => {
             return <Profile currentUser={state} onLoggedIn={onLoggedIn} />;
           }}
         />
@@ -134,13 +135,20 @@ const App = () => {
         />
         <Route
           path="/game/:id"
-          render={(p) => {
-            return <GamePage {...p} />;
+          render={() => {
+            return (
+              <SocketContext.Provider value={socket}>
+                <GamePage
+                  userEmail={state.primary_email}
+                  userName={state.name}
+                />
+              </SocketContext.Provider>
+            );
           }}
         />
         <Route
           path="/leadership"
-          render={(p) => <LeadershipBoard currentUser={state.username} />}
+          render={() => <LeadershipBoard currentUser={state.username} />}
         />
       </GridBase>
     </HashRouter>
