@@ -1,0 +1,4 @@
+steps:
+  # run compose (temp)
+  - name: "docker/compose:1.28.5"
+    args: ["up", "-d"]
