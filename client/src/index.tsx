@@ -17,14 +17,14 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        header:{
+        header: {
             backgroundColor: "#B5CEF3",
             minHeight: "100px",
             margin: "0px",
             width: "100vw",
             position: "fixed",
         },
-    }),
+    })
 );
 
 const landingStyleTop = {
@@ -33,8 +33,7 @@ const landingStyleTop = {
     fontFamily: "neuemachina-ultrabold",
     color: "white",
     width: "100vw",
-}
-
+};
 
 const GridBase = styled.div`
   positive: relative;
@@ -65,18 +64,21 @@ const App = () => {
         return state.primary_email;
     };
 
-    const logIn = async (ev: { preventDefault: () => void; target: { offsetParent: {id: string}}; }) => {
+
+    const logIn = async (ev: {
+        preventDefault: () => void;
+        target: { offsetParent: { id: string } };
+    }) => {
         ev.preventDefault();
         const endpoint = `http://localhost:5000/login/${ev.target.offsetParent.id}`;
         try {
-            window.location.href = endpoint
+            window.location.href = endpoint;
             const user = {
                 // username: data.login,
-                first_name: "",
-                last_name: "",
+                name: "",
                 primary_email: "",
-                city: "",
-            }
+                color: "",
+            };
             localStorage.setItem("user", JSON.stringify(user));
             setState(user);
         } catch (err) {
@@ -84,15 +86,19 @@ const App = () => {
             logOut();
         }
     };
-    
+
+
     const onLoggedIn = () => {
         fetch("/api/v1/session/profile")
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => res.json())
+            .then((data) => {
                 setState(data);
+                console.log("fetched profile info");
+                console.log(data);
             })
-            .catch(err => alert(err))
-    }
+            .catch((err) => alert(err));
+    };
+
 
     // Helper for when a user logs out
     const logOut = () => {
@@ -108,31 +114,39 @@ const App = () => {
     // @ts-ignore
     return (
         <HashRouter>
-        <GridBase>
-            <SideBar loggedIn = {loggedIn()} logIn={logIn} logOut={logOut} username ={state.username}/>
-            <Route exact path="/" component={Landing} />
-            <Route
-                path="/profile"
-                render = {p => {return <Profile currentUser = {state} onLoggedIn={onLoggedIn}/>}}
-            />
-            <Route
-                path="/create"
-                render={p => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    return <GameGen {...p.history} />;
-                }}
-            />
-            <Route
-                path="/game/:id"
-                render={p => {return <GamePage {...p}/>;
-                }}
-            />
-            <Route
-                path="/leadership"
-                render={p => <LeadershipBoard currentUser = {state.username} />}
-            />
-        </GridBase>
+            <GridBase>
+                <SideBar
+                    loggedIn={loggedIn()}
+                    logIn={logIn}
+                    logOut={logOut}
+                    username={state.username}
+                />
+                <Route exact path="/" component={Landing} />
+                <Route
+                    path="/profile"
+                    render={(p) => {
+                        return <Profile currentUser={state} onLoggedIn={onLoggedIn} />;
+                    }}
+                />
+                <Route
+                    path="/create"
+                    render={(p) => {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        return <GameGen {...p.history} />;
+                    }}
+                />
+                <Route
+                    path="/game/:id"
+                    render={(p) => {
+                        return <GamePage {...p} />;
+                    }}
+                />
+                <Route
+                    path="/leadership"
+                    render={(p) => <LeadershipBoard currentUser={state.username} />}
+                />
+            </GridBase>
         </HashRouter>
     );
 };
@@ -140,10 +154,12 @@ const App = () => {
 const Landing = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return <div>
-        {/* eslint-disable-next-line react/no-unescaped-entities */}
-        <CenteredDiv style = {landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
-    </div>
+    return (
+        <div>
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            <CenteredDiv style={landingStyleTop}>TRAIN YOUR BRAIN</CenteredDiv>
+        </div>
+    );
 };
 
 render(<App />, document.getElementById("root"));

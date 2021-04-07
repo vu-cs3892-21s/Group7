@@ -28,6 +28,7 @@ const StyledTableCell = withStyles((theme) => ({
     },
 }))(TableCell);
 
+
 const theme = createMuiTheme({
     overrides: {
         MuiTab: {
@@ -170,6 +171,7 @@ const a11yProps = (index: any) => {
     };
 }
 
+
 const LeaderBoardBlockBase = styled.div`
   width: 100%;
   height:100%;
@@ -188,8 +190,8 @@ const Header = styled.h1`
 
 export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
     const classes = useStyles();
-    const [value, setValue] = useState(0);
 
+    const [value, setValue] = useState(0);
     const handleChange = (
         event: any,
         newValue: React.SetStateAction<number>
@@ -220,5 +222,4 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
                 {TableComponent()}
             </TabPanel>
         </LeaderBoardBlockBase>)
-
 }

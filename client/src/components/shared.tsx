@@ -100,6 +100,7 @@ export const AnswerInput = styled.input`
     `;
 
 
+
 export const HeaderWrap = styled.div`
     grid-area: top;
     padding: 0px 10px;
