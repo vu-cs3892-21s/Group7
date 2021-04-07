@@ -1,10 +1,11 @@
 'use strict';
 
-import React, {useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {AnswerInput, AnswerLabel, CenteredDiv, CenteredButton} from "./shared";
 import Timer from 'react-compound-timer';
 import PersonIcon from '@material-ui/icons/Person';
+import {Theme} from "@material-ui/core";
 
 
 const QuestionBoxBase = styled.div`
@@ -264,8 +265,9 @@ const ChatBase = styled.div`
         'chat'
         'type';
     padding: 10px;
-    border: 5px solid white;
+    // border: 5px solid white;
     box-sizing: border-box;
+    background-color: rgb(204, 204, 204, 0.32);
 `;
 const ChatBox = () => {
     const [messages, setMessages] = useState<{sender:string, text:string}[]>([]);
@@ -284,6 +286,7 @@ const ChatBox = () => {
     const onChange = (ev: { target: { value: React.SetStateAction<string>; }; }) => {
         updateMessage(ev.target.value);
     }
+
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
@@ -314,17 +317,62 @@ const ChatBox = () => {
     </ChatBase>);
 }
 
+interface Props {
+    color: string;
+    align?: string;
+}
+
+const Bubble = styled.div<Props> `
+    background-color: ${(props) => props.color};
+    border-radius: 6px; 
+    margin: 2px; 
+    // maxWidth: 75%;
+    width: fit-content;
+    float: ${(props) => props.align};
+`;
+
+//create hash code for hex color
+const hashCode = (str:string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return 125 * hash;
+}
+
+//compute random hex color code
+const intToRGB = (i: number) => {
+    const c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return "#" + "00000".substring(0, 6 - c.length) + c;
+}
+
+const chatBubble = (i: number, sender: string, text: string) => {
+    const userColor = intToRGB(hashCode(sender));
+    //******This will need to be changed to person logged in
+    const alignment = (sender === 'Sam') ? "right": "left";
+    return (
+        <Bubble color ={userColor} align={alignment} key={i}>
+            <div style = {{"paddingLeft": "7px", "paddingRight": "7px" }}>[{sender}]: {text}</div>
+        </Bubble>
+    );
+}
+
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const MessageList = ({messages}) => {
     const messageBox = messages.map((message: {sender:string, text:string}, i:number) => (
-        <div style ={{"backgroundColor": "white", "borderRadius": "5px", "margin": "2px", "maxWidth": "95%"}}key={i}>
-            {message.sender}: {message.text}
+        <div key = {i}>
+        {chatBubble(i, message.sender, message.text)}
         </div>
     ));
-    return(<div style={{"overflow": "scroll", "gridArea":"chat", "display":"flex", "flexDirection": "column-reverse"}}>{messageBox}</div>);
+    return(<div style={{"overflow": "auto", "gridArea":"chat", "display":"flex", "flexDirection": "column-reverse"}}>{messageBox}</div>);
 
 };
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -334,7 +382,7 @@ const SendMessageForm = ({onChange, onSubmit, myMessage}) => {
             onSubmit={onSubmit}
             className="send-message-form">
             <AnswerInput
-                style={{"textAlign": "right", "width": "100%"}}
+                style={{"backgroundColor": "rgb(204, 204, 204, 0.5)","textAlign": "right", "width": "100%"}}
                 onChange={onChange}
                 value={myMessage}
                 placeholder="Type your message and hit ENTER"
@@ -346,7 +394,8 @@ const SendMessageForm = ({onChange, onSubmit, myMessage}) => {
 const PlayerBox = styled.div`
     margin: 5px;
     padding-right: 30px;
-    background: #B5CEF3;
+    // background: #B5CEF3;
+    background: rgb(112, 144, 193, 0.87);
     position: relative;
     border: 3px solid white;
     border-radius: 5px;
@@ -364,7 +413,7 @@ const Player = ({player, rank}) => {
         <PlayerBox>
             <PersonIcon style={{"gridArea": "img", "width": "100%", "height": "100%", "fill": player.color }}/>
             <CenteredDiv style={{"gridArea": "player", "fontWeight": "bold","fontSize": "20px", "position": "relative"}}>{player.name}: {player.score}</CenteredDiv>
-            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "75%", "position": "relative"}}>#{rank}</CenteredDiv>
+            <CenteredDiv style={{"fontSize": "40px", "gridArea": "rank", "textAlign": "right", "height": "100%", "position": "relative"}}>#{rank}</CenteredDiv>
         </PlayerBox>)
 };
 
