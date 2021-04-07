@@ -13,8 +13,8 @@ services:
       - "FLASK_ENV=development"
       - "DATABASE_URI=postgresql://postgres:postgres@postgres:5432/postgres"
       - "DATABASE_LOG=True"
-    # ports:
-    #   - "5000:5000"
+    ports:
+      - "5000:5000"
     depends_on:
       - "postgres"
     tty: true
@@ -26,8 +26,8 @@ services:
       - "./client:/client"
       - "/client/node_modules"
     container_name: client
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - "server"
   postgres:

@@ -2,7 +2,7 @@
 import os
 from api.v1.session import (github_blueprint, google_blueprint,
                             session_api, SESSION_API_PREFIX, SECRET_KEY)
-from api.v1.game import (game_api, GAME_API_PREFIX)
+from api.v1.game import (socketio, game_api, GAME_API_PREFIX)
 from flask import Flask
 from flask_login import LoginManager
 from db.database import db
@@ -35,6 +35,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 login_manager = LoginManager(app)
+socketio.init_app(app)
 
 
 @login_manager.user_loader
@@ -110,4 +111,7 @@ def create_test_data() -> None:
 with app.app_context():
     drop_everything()
     db.create_all()
-    create_test_data()
+    # create_test_data()
+
+
+socketio.run(app, host="0.0.0.0", port=5000, debug=True)

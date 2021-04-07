@@ -1,10 +1,11 @@
 "use strict";
 
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
 import { CenteredButton, ErrorMessage } from "./shared";
+import { SocketContext, socket } from "../context/socket";
 import GroupIcon from "@material-ui/icons/Group";
 import PersonIcon from "@material-ui/icons/Person";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
@@ -274,6 +275,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
   const numberOfQuestions = chosenMode === "Group Play";
   const operations = chosenMode === "Solo";
   const history = useHistory();
+  const socket = useContext(SocketContext);
 
   const [error, setError] = useState("");
   const [game, setGame] = useState<{
@@ -286,7 +288,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     mode: chosenMode,
     questionType: "",
     duration: 20,
-    operations: [],
+    operations: ["+", "-", "*", "/"],
     numberOfQuestions: 20,
   });
   //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
@@ -372,6 +374,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     if (res.ok) {
       const data = await res.json();
       console.log(data);
+      socket.emit("join", data.id.toString());
       history.push(`/game/${data.id}`);
     }
   };
@@ -459,6 +462,21 @@ const JoinGame = () => {
   const [error, setError] = useState("");
   const [code, setCode] = useState<string>("");
   const history = useHistory();
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    socket.on("join_response", (worked) => {
+      if (worked) {
+        history.push(`/game/${code}`);
+        console.log("connected!");
+      } else {
+        setError("Invalid Game Code");
+      }
+    });
+    return () => {
+      socket.off("join_response");
+    };
+  }, [code]);
 
   const onChange = (ev: {
     target: { value: React.SetStateAction<string> };
@@ -470,24 +488,7 @@ const JoinGame = () => {
     ev.preventDefault();
     console.log("Trying to submit!");
 
-    const res = await fetch("/api/v1/game/join", {
-      method: "POST",
-      body: JSON.stringify(code),
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      console.log(data);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      history.push(`/game/${data.id}`);
-    } else {
-      setError("Invalid Game Code");
-    }
+    socket.emit("join", code);
   };
 
   return (
@@ -557,10 +558,12 @@ export const GameGen = (props: { history: History }) => {
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />
-      <OptionsBase>
-        {chosenMode ? <GameInfo chosenMode={chosenMode} /> : null}
-        {chosenMode === "Group Play" ? <JoinGame /> : null}
-      </OptionsBase>
+      <SocketContext.Provider value={socket}>
+        <OptionsBase>
+          {chosenMode ? <GameInfo chosenMode={chosenMode} /> : null}
+          {chosenMode === "Group Play" ? <JoinGame /> : null}
+        </OptionsBase>
+      </SocketContext.Provider>
     </GameGenBase>
   );
 };
