@@ -96,7 +96,8 @@ export const AnswerInput = styled.input`
     overflow: scroll;
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
+    top: 0; left: 0; bottom: 0; right: 0
+    `;
 
 
 export const HeaderWrap = styled.div`
@@ -167,23 +168,6 @@ export const CenteredButton = styled.button`
   }
 `;
 
-export const CenteredButton = styled.button`
-  max-width: 200px;
-  min-width: 150px;
-  max-height: 2em;
-  background:#00538f;
-  border-radius: 5px;
-  line-height: 2em;
-  font-size: 25px;
-  color: white;
-  font-family: revalia;
-  width: 50%;
-  height: 50%;
-  overflow: auto;
-  margin: auto;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-`;
 
 export const InfoBlock = styled.div`
   display: grid;

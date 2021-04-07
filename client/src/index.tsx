@@ -10,7 +10,7 @@ import {GamePage} from "./components/game";
 import {LeadershipBoard} from "./components/leadership";
 import { HashRouter, Route, Redirect } from "react-router-dom";
 import {render} from "react-dom";
-import {CenteredDiv, HeaderWrap} from "./components/shared";
+import {CenteredDiv} from "./components/shared";
 import {Theme} from "@material-ui/core/styles";
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 
