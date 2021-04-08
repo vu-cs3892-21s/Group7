@@ -4,7 +4,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
-import { CenteredButton, ErrorMessage } from "./shared";
+import { CenteredButton} from "./shared";
 import { SocketContext, socket } from "../context/socket";
 import { Alert } from '@material-ui/lab';
 import GroupIcon from "@material-ui/icons/Group";
@@ -453,7 +453,7 @@ const JoinGame = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    socket.on("join_response", (worked) => {
+    socket.on("join_response", (worked: any) => {
       if (worked) {
         history.push(`/game/${code}`);
         console.log("connected!");

@@ -386,7 +386,7 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   }, []);
 
   useEffect(() => {
-    socket.on("chat_update", (message) => {
+    socket.on("chat_update", (message: Message) => {
       setMessages([message, ...messages]);
     });
     return () => {

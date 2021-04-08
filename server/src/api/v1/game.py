@@ -98,32 +98,45 @@ def create_game():
 @game_api.route("/updateStats", methods=["POST"])
 @login_required
 def update_stats():
-    request_json: Json = request.get_json()
-    statsTable_query = StatsTable.query.filter_by(player_id=request_json["player_id"], mode=request_json["mode"])
-    try:
-        stats = statsTable_query.one()
-    except NoResultFound:
-        stats = StatsTable(
-            player_id=request_json["player_id"], mode=request_json["mode"]
-        )
-        db.session.add(stats)
+    game_id: Json = request.get_json()
+    game = Game.query.filter_by(id=game_id).one()
+
+    player_query = GamePlayer.query.filter_by(game_id=game_id)
+    max_score = player_query(func.max(GamePlayer.score)).scalar()
+
+    player: GamePlayer
+    for player in player_query:
+        statsTable_query = StatsTable.query.filter_by(player_id=player.player_id, mode=game.mode)
+        try:
+            stats = statsTable_query.one()
+        except NoResultFound:
+            stats = StatsTable(player_id=player.player_id, mode=game.mode)
+            db.session.add(stats)
+            db.session.commit()
+        win: boolean = (player.score == max_score)
+        stats.num_questions = stats.num_questions + game.num_questions
+        stats.num_correct = stats.num_correct + player.score
+        stats.num_games = stats.num_games + 1
+        stats.num_wins = stats.num_wins + win
         db.session.commit()
 
-    stats.update(num_questions = num_questions + request_json["num_questions"],
-    num_correct = num_correct + request_json["num_correct"], num_games = num_games + 1,
-    num_wins = num_wins + request_json["num_wins"]))
-    db.session.commit()
-
-    return {"id": stats.id}
+    return {"id": game.id}
 
 @game_api.route("/getStats", methods=["GET"])
 @login_required
 def get_stats():
-    request_json: Json = request.get_json()
-    statsTable_query = StatsTable.query.filter_by(player_id=request_json["user_id"], mode=requested_json["mode"])
-    statsTable = statsTable_query.one()
+    mode: Json = request.get_json()
+    statsTable_query = StatsTable.query.filter_by(player_id=current_user.id, mode=mode)
+    try:
+        stats = statsTable_query.one()
+    except NoResultFound:
+        stats = StatsTable(player_id=player.player_id, mode=game.mode)
+        db.session.add(stats)
+        db.session.commit()
+
     accuracy: double = statsTable.num_correct/statsTable.num_questions
     win_rate: double = statsTable.num_wins/statsTable.num_games
+
     return {
         "num_games": statsTable.num_games,
         "num_questions": statsTable.num_questions,

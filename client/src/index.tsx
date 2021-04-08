@@ -60,14 +60,14 @@ const App = () => {
   const [state, setState] = useState(data ? JSON.parse(data) : defaultUser);
 
   // Helper to check if the user is logged in or not
-  const loggedIn = () => {
+  const loggedIn = () : string => {
     return state.primary_email;
   };
 
   const logIn = async (ev: {
     preventDefault: () => void;
     target: { offsetParent: { id: string } };
-  }) => {
+  })  => {
     ev.preventDefault();
     const endpoint = `http://localhost:5000/login/${ev.target.offsetParent.id}`;
     try {
@@ -86,7 +86,7 @@ const App = () => {
     }
   };
 
-  const onLoggedIn = () => {
+  const onLoggedIn = (): void => {
     fetch("/api/v1/session/profile")
       .then((res) => res.json())
       .then((data) => {
@@ -98,7 +98,7 @@ const App = () => {
   };
 
   // Helper for when a user logs out
-  const logOut = () => {
+  const logOut = () : void => {
     // Wipe localStorage
     localStorage.removeItem("user");
     // Reset user state
