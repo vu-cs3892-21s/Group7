@@ -34,10 +34,11 @@ class GameQuestion(db.Model):
     def as_dict(self) -> Dict[str, any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
 class StatsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    mode = db.Column(db.String(40) index=True)
+    mode = db.Column(db.String(40))
     num_questions = db.Column(db.Integer, default=0)
     num_correct = db.Column(db.Integer, default=0)
     num_games = db.Column(db.Integer, default=0)
