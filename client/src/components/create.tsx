@@ -1,15 +1,15 @@
 "use strict";
 
-import React, {useEffect, useState} from 'react';
-import {useHistory} from 'react-router';
-import styled from 'styled-components';
+import React, { useState, useContext, useEffect } from "react";
+import { useHistory } from "react-router";
+import styled from "styled-components";
 
-import {CenteredButton} from "./shared";
-import GroupIcon from '@material-ui/icons/Group';
+import { CenteredButton, ErrorMessage } from "./shared";
+import { SocketContext, socket } from "../context/socket";
 import { Alert } from '@material-ui/lab';
-import PersonIcon from '@material-ui/icons/Person';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
-
+import GroupIcon from "@material-ui/icons/Group";
+import PersonIcon from "@material-ui/icons/Person";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import {
   Checkbox,
   FormControlLabel,
@@ -149,7 +149,6 @@ const GameInfoBase = styled.div`
   background-color: #B5CEF3;
   min-height: 350px;
   max-height: 375px;
-
   width: fit-content;
   border-radius: 10px;
 `;
@@ -273,72 +272,76 @@ const OperationButtons = ({ onChange, operations }) => {
   );
 };
 
-const GameInfo = ({chosenMode}: {chosenMode:string}) => {
-    const questionType = ["SAT", "ACT", "GRE", "Normal"];
-    const duration = (chosenMode !== "Head to Head");
-    const numberOfQuestions = (chosenMode === "Group Play");
-    const operations = (chosenMode === "Solo");
-    const history = useHistory();
+const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
+  const questionType = ["SAT", "ACT", "GRE", "Normal"];
+  const duration = chosenMode !== "Head to Head";
+  const numberOfQuestions = chosenMode === "Group Play";
+  const operations = chosenMode === "Solo";
+  const history = useHistory();
+  const socket = useContext(SocketContext);
 
-    const [error, setError] = useState("");
-    const [game, setGame] = useState<{
-        mode: string;
-        questionType: string;
-        duration: number;
-        operations: string[];
-        numberOfQuestions: number;
-    }>({
-        mode: chosenMode,
-        questionType: "",
-        duration: 20,
-        operations: [],
-        numberOfQuestions: 20,
-    });
+  const [error, setError] = useState("");
+  const [game, setGame] = useState<{
+    mode: string;
+    questionType: string;
+    duration: number;
+    operations: string[];
+    numberOfQuestions: number;
+  }>({
+    mode: chosenMode,
+    questionType: "",
+    duration: 20,
+    operations: ["+", "-", "*", "/"],
+    numberOfQuestions: 20,
+  });
 
-    useEffect(() => setError(""), [chosenMode]);
-    //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const onChange = (ev) => {
-        setError('');
-        console.log(ev);
-        if(ev.target.name === "questionType") {
-            if (ev.target.value === game.questionType) {
-                setGame({
-                    ...game,
-                    questionType: ""
-                })}
-            else {
-                setGame({
-                    ...game,
-                    [ev.target.name]: ev.target.value
-                });
-            }
-        } else if(ev.target.name === "operations") {
-            if (game.operations.includes(ev.target.value)) {
-                console.log("already includes");
-                const newArr = [...game.operations];
-                console.log(newArr);
-                newArr.splice(newArr.findIndex(item => item === ev.target.value), 1)
-                console.log("removed");
-                setGame({
-                    ...game,
-                    [ev.target.name]: newArr
-                })
-            } else {
-                setGame({
-                    ...game,
-                    [ev.target.name]: [...game.operations, ev.target.value]
-                })
-            }
-        } else{
-            setGame({
-                ...game,
-                [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow)
-            });
-        }
-        console.log(game);
-    };
+    useEffect(() => setError(""), [chosenMode])
+  //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const onChange = (ev) => {
+    setError("");
+    console.log(ev);
+    if (ev.target.name === "questionType") {
+      if (ev.target.value === game.questionType) {
+        setGame({
+          ...game,
+          questionType: "",
+        });
+      } else {
+        setGame({
+          ...game,
+          [ev.target.name]: ev.target.value,
+        });
+      }
+    } else if (ev.target.name === "operations") {
+      if (game.operations.includes(ev.target.value)) {
+        console.log("already includes");
+        const newArr = [...game.operations];
+        console.log(newArr);
+        newArr.splice(
+          newArr.findIndex((item) => item === ev.target.value),
+          1
+        );
+        console.log("removed");
+        setGame({
+          ...game,
+          [ev.target.name]: newArr,
+        });
+      } else {
+        setGame({
+          ...game,
+          [ev.target.name]: [...game.operations, ev.target.value],
+        });
+      }
+    } else {
+      setGame({
+        ...game,
+        [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow),
+      });
+    }
+    console.log(game);
+  };
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
@@ -373,12 +376,13 @@ const GameInfo = ({chosenMode}: {chosenMode:string}) => {
             },
         });
 
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            history.push(`/game/${data.id}`);
-        }
-    };
+    if (res.ok) {
+      const data = await res.json();
+      console.log(data);
+      socket.emit("join", data.id.toString());
+      history.push(`/game/${data.id}`);
+    }
+  };
 
     return (<GameInfoBase>
             {questionType ? (<QuestionButtons onChange={onChange} questionType = {game.questionType}/>): null}
@@ -446,6 +450,21 @@ const JoinGame = () => {
   const [error, setError] = useState("");
   const [code, setCode] = useState<string>("");
   const history = useHistory();
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    socket.on("join_response", (worked) => {
+      if (worked) {
+        history.push(`/game/${code}`);
+        console.log("connected!");
+      } else {
+        setError("Invalid Game Code");
+      }
+    });
+    return () => {
+      socket.off("join_response");
+    };
+  }, [code]);
 
   const onChange = (ev: {
     target: { value: React.SetStateAction<string> };
@@ -454,27 +473,10 @@ const JoinGame = () => {
   };
 
   const onSubmit = async (ev: { preventDefault: () => void }) => {
-      ev.preventDefault();
-      console.log("Trying to submit!");
+    ev.preventDefault();
+    console.log("Trying to submit!");
 
-      const res = await fetch("/api/v1/game/join", {
-          method: "POST",
-          body: JSON.stringify(code),
-          credentials: "include",
-          headers: {
-              "content-type": "application/json",
-          },
-      });
-
-      if (res.ok) {
-          const data = await res.json();
-          console.log(data);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          history.push(`/game/${data.id}`);
-      } else {
-          setError("Invalid Game Code");
-      }
+    socket.emit("join", code);
   };
 
     return(<JoinGameBase>
@@ -532,10 +534,12 @@ export const GameGen = (props: { history: History }) => {
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />
-      <OptionsBase>
-        {chosenMode ? <GameInfo chosenMode={chosenMode} /> : null}
-        {chosenMode === "Group Play" ? <JoinGame /> : null}
-      </OptionsBase>
+      <SocketContext.Provider value={socket}>
+        <OptionsBase>
+          {chosenMode ? <GameInfo chosenMode={chosenMode} /> : null}
+          {chosenMode === "Group Play" ? <JoinGame /> : null}
+        </OptionsBase>
+      </SocketContext.Provider>
     </GameGenBase>
   );
 };
