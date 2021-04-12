@@ -143,28 +143,10 @@ const QuestionBox = ({
       ...gameInfo,
       start: false,
     });
-    updateUserStats();
     setEndGame(true);
     // game should end for all players
     socket.emit("end", gameInfo.id.toString());
     socket.offAny();
-  };
-
-  const updateUserStats = async () => {
-    const res = await fetch('/api/v1/game/updateStats', {
-      method: 'POST',
-      body: gameInfo.id.toString(),
-      credentials: 'include',
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-
-    if(res.ok) {
-      console.log("Updated Stats");
-    } else {
-      console.log("Error: could not update user stats");
-    }
   };
 
   const onChange = (ev: Event): void => {

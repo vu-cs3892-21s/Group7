@@ -146,13 +146,13 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     useEffect(() => {
-        getStats().then(r=>
+        getStats().then( r =>
             updateStats(r));
     }, [mode]);
 
     const getStats = async () => {
         console.log("changing stats");
-        const res = await fetch('/api/v1/game/getStats', {
+        const res = await fetch('/api/v1/session/getStats', {
             method: 'GET',
             body: mode.toString(),
             credentials: 'include',
@@ -164,27 +164,28 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
             const data = await res.json();
             return ([
                 ["Number of Games", data.num_games],
-                ["Win Rate", data.win_rate],
+                ["Win Ratio", data.win_rate.toFixed(2)],
                 ["Number of Questions", data.num_questions],
-                ["Accuracy", data.accuracy]
+                ["Accuracy Ratio", data.accuracy.toFixed(2)]
             ]);
         } else {
             console.log("Did not work!");
             return ([
                 ["Number of Games", 0],
-                ["Win Rate", 0],
+                ["Win Ratio", 0],
                 ["Number of Questions", 0],
-                ["Accuracy", 0]
+                ["Accuracy Ratio", 0]
             ]);
         }
     };
 
+    //<[string, number][]>
     const [stats, updateStats] = useState(
         [
-            ["Number of Games", Math.random()*100],
-            ["Win Rate", Math.random()*100],
-            ["Number of Questions", Math.random()*100],
-            ["Accuracy", Math.random()*100]
+            ["Number of Games", 0],
+            ["Win Ratio", 0],
+            ["Number of Questions", 0],
+            ["Accuracy Ratio", 0]
         ]);
 
     const statsBoxes = stats.map((stat, i) => (

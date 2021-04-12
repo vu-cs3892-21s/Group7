@@ -57,7 +57,7 @@ def get_game_info(game_id: str = None):
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questions
+        "totalQuestions": game.num_questionsfit
     }
 
 
@@ -95,10 +95,7 @@ def create_game():
 
     return {"id": game.id}
 
-@game_api.route("/updateStats", methods=["POST"])
-@login_required
-def update_stats():
-    game_id: Json = request.get_json()
+def update_stats(game_id: str = None):
     game = Game.query.filter_by(id=game_id).one()
 
     player_query = GamePlayer.query.filter_by(game_id=game_id)
@@ -113,7 +110,7 @@ def update_stats():
             stats = StatsTable(player_id=player.player_id, mode=game.mode)
             db.session.add(stats)
             db.session.commit()
-        win: boolean = (player.score == max_score)
+        win: int = int(player.score == max_score)
         stats.num_questions = stats.num_questions + game.num_questions
         stats.num_correct = stats.num_correct + player.score
         stats.num_games = stats.num_games + 1
@@ -121,28 +118,6 @@ def update_stats():
         db.session.commit()
 
     return {"id": game.id}
-
-@game_api.route("/getStats", methods=["GET"])
-@login_required
-def get_stats():
-    mode: Json = request.get_json()
-    statsTable_query = StatsTable.query.filter_by(player_id=current_user.id, mode=mode)
-    try:
-        stats = statsTable_query.one()
-    except NoResultFound:
-        stats = StatsTable(player_id=player.player_id, mode=game.mode)
-        db.session.add(stats)
-        db.session.commit()
-
-    accuracy: double = statsTable.num_correct/statsTable.num_questions
-    win_rate: double = statsTable.num_wins/statsTable.num_games
-
-    return {
-        "num_games": statsTable.num_games,
-        "num_questions": statsTable.num_questions,
-        "accuracy": accuracy,
-        "win_rate": win_rate
-    }
 
 @ game_api.route("/join", methods=["POST"])
 @ login_required
@@ -203,6 +178,7 @@ def start_game(room_code: str):
 def end_game(room_code: str):
     emit("end_game", room=room_code, include_self=False)
     close_room(room_code)
+    update_stats(room_code)
 
 
 @socketio.on("answer")
