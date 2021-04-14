@@ -4,8 +4,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
-import { CenteredButton, ErrorMessage } from "./shared";
+import { CenteredButton} from "./shared";
 import { SocketContext, socket } from "../context/socket";
+import { Alert } from '@material-ui/lab';
 import GroupIcon from "@material-ui/icons/Group";
 import PersonIcon from "@material-ui/icons/Person";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
@@ -34,7 +35,6 @@ const GameModeBase = styled.div`
   grid-area: modes;
   display: grid;
   grid-template-columns: 33% 33% 33%;
-  padding-top: 30px;
   padding-bottom: 0px;
   padding-right: 60px;
   padding-left: 60px;
@@ -132,20 +132,23 @@ const GameModeBlock = ({ gameMode, onClick }) => {
 };
 
 const GameInfoBase = styled.div`
-  display: grid;
-  grid-template-columns: "50% 50%";
-  grid-template-rows: 70% 30%;
-  grid-template-areas:
-    "type duration"
-    "start start";
+   display:grid;
+   grid-template-columns: '50% 50%';
+   grid-template-rows: 70% 15% 15%;
+   grid-template-areas: 
+      'type duration'
+      'error error'
+      'start start';
   padding: 10px;
   margin: 20px;
+  margin-top: 0px;
   text-align: center;
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #b5cef3;
-  min-height: 330px;
+  background-color: #B5CEF3;
+  min-height: 350px;
+  max-height: 375px;
   width: fit-content;
   border-radius: 10px;
 `;
@@ -291,6 +294,8 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     operations: ["+", "-", "*", "/"],
     numberOfQuestions: 20,
   });
+
+    useEffect(() => setError(""), [chosenMode])
   //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -338,38 +343,38 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     console.log(game);
   };
 
-  const onSubmit = async (ev: { preventDefault: () => void }) => {
-    ev.preventDefault();
-    console.log("Trying to submit!");
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit!");
 
-    if (game.questionType === "") {
-      setError("Select question type");
-      console.log("Select question type");
-      return;
-    } else if (chosenMode === "Solo" && game.operations === []) {
-      setError("Select operation types");
-      console.log("Select operation types");
-      return;
-    } else if (chosenMode !== "Head To Head" && game.duration === 0) {
-      setError("Enter > 0 duration");
-      console.log("Enter > 0 duration");
-      return;
-    } else if (chosenMode === "Group Play" && game.numberOfQuestions === 0) {
-      setError("Enter > 0 number of questions");
-      console.log("Enter > 0 number of questions");
-      return;
-    }
+        if (game.questionType === "") {
+            setError("Select question type");
+            console.log("Select question type");
+            return;
+        } else if (chosenMode === "Solo" && game.operations.length === 0) {
+            setError("Select operation types");
+            console.log("Select operation types");
+            return;
+        } else if (chosenMode !== "Head To Head" && game.duration === 0) {
+            setError("Enter > 0 duration");
+            console.log("Enter > 0 duration");
+            return;
+        } else if (chosenMode === "Group Play" && game.numberOfQuestions === 0) {
+            setError("Enter > 0 number of questions");
+            console.log("Enter > 0 number of questions");
+            return;
+        }
 
-    console.log(game);
+        console.log(game);
 
-    const res = await fetch("/api/v1/game/create", {
-      method: "POST",
-      body: JSON.stringify(game),
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+        const res = await fetch("/api/v1/game/create", {
+            method: "POST",
+            body: JSON.stringify(game),
+            credentials: "include",
+            headers: {
+                "content-type": "application/json",
+            },
+        });
 
     if (res.ok) {
       const data = await res.json();
@@ -379,69 +384,52 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     }
   };
 
-  return (
-    <GameInfoBase>
-      {questionType ? (
-        <QuestionButtons onChange={onChange} questionType={game.questionType} />
-      ) : null}
-      <DurationBase>
-        {duration ? (
-          <div>
-            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
-              Duration
-            </Typography>
-            <Slider
-              defaultValue={20}
-              aria-valuetext={"duration"}
-              valueLabelDisplay="auto"
-              onChange={onChange}
-              step={5}
-              marks
-              min={5}
-              max={40}
-            />
-          </div>
-        ) : null}
-        {operations ? (
-          <OperationButtons operations={game.operations} onChange={onChange} />
-        ) : null}
-        {numberOfQuestions ? (
-          <div>
-            <Typography
-              style={{ fontSize: "1.25rem", paddingTop: "3em" }}
-              gutterBottom
-            >
-              Number of Questions
-            </Typography>
-            <Slider
-              defaultValue={20}
-              aria-valuetext={"numberOfQuestions"}
-              valueLabelDisplay="auto"
-              onChange={onChange}
-              step={5}
-              marks
-              min={10}
-              max={50}
-            />
-          </div>
-        ) : null}
-      </DurationBase>
-      <div style={{ gridArea: "start", position: "relative" }}>
-        <CenteredButton
-          style={{
-            fontSize: "18px",
-            minWidth: 0,
-            width: "50%",
-            height: "100%",
-          }}
-          onClick={onSubmit}
-        >
-          Start Game!
-        </CenteredButton>
-        <ErrorMessage msg={error} />
-      </div>
-    </GameInfoBase>
-  );
+    return (<GameInfoBase>
+            {questionType ? (<QuestionButtons onChange={onChange} questionType = {game.questionType}/>): null}
+            <DurationBase>
+                {duration ?
+                    <div>
+                        <Typography style = {{"fontSize":"1.25rem"}} gutterBottom>
+                            Duration
+                        </Typography>
+                        <Slider
+                            defaultValue={20}
+                            aria-valuetext={"duration"}
+                            valueLabelDisplay="auto"
+                            onChange={onChange}
+                            step={5}
+                            marks
+                            min={5}
+                            max={40}
+                        />
+                    </div> : null
+                }
+                {operations ? (<OperationButtons operations = {game.operations} onChange = {onChange}/>): null}
+                {numberOfQuestions ?
+                    <div>
+                        <Typography style = {{"fontSize":"1.25rem", "paddingTop": "3em"}} gutterBottom>
+                            Number of Questions
+                        </Typography>
+                        <Slider
+                            defaultValue={20}
+                            aria-valuetext={"numberOfQuestions"}
+                            valueLabelDisplay="auto"
+                            onChange={onChange}
+                            step={5}
+                            marks
+                            min={10}
+                            max={50}
+                        />
+                    </div> : null
+                }
+            </DurationBase>
+        <div style ={{"gridArea": "error"}}>
+            {error ? <Alert severity="error">{error}</Alert> : null}
+        </div>
+        <div style={{"gridArea": "start", "position": "relative"}}>
+            <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Start Game!</CenteredButton>
+        </div>
+    </GameInfoBase>);
 };
 
 const JoinGameBase = styled.div`
@@ -465,7 +453,7 @@ const JoinGame = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    socket.on("join_response", (worked) => {
+    socket.on("join_response", (worked: any) => {
       if (worked) {
         history.push(`/game/${code}`);
         console.log("connected!");
@@ -491,42 +479,30 @@ const JoinGame = () => {
     socket.emit("join", code);
   };
 
-  return (
-    <JoinGameBase>
-      <DurationBase>
-        <h5>Room Code</h5>
-        <DurationInput
-          value={code}
-          style={{ fontWeight: "bold", fontSize: "18px" }}
-          onChange={onChange}
-        />
-      </DurationBase>
-      <CenteredButton
-        style={{
-          fontSize: "18px",
-          minWidth: 0,
-          width: "50%",
-          height: "100%",
-          margin: "1.5em",
-          position: "relative",
-        }}
-        onClick={onSubmit}
-      >
-        Join!
-      </CenteredButton>
-      <ErrorMessage msg={error} />
-    </JoinGameBase>
-  );
+    return(<JoinGameBase>
+        <DurationBase>
+            <h5>Room Code</h5>
+            <DurationInput
+                value = {code}
+                style = {{"fontWeight": "bold" , "fontSize": "18px" }}
+                onChange = {onChange}
+            />
+        </DurationBase>
+        {error ? <Alert severity="error">{error}</Alert> : null}
+        <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%", "margin": "1.5em", "position": "relative"}} onClick={onSubmit}>Join!</CenteredButton>
+    </JoinGameBase>)
 };
+
+
 const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 330px 300px;
-  grid-template-areas:
-    "title"
-    "modes"
-    "options";
+  grid-template-rows: 75px 275px 400px;
+  grid-template-areas: 
+    'title'
+    'modes'
+    'options' 
 `;
 
 const OptionsBase = styled.div`
@@ -538,7 +514,7 @@ const OptionsBase = styled.div`
 `;
 
 export const GameGen = (props: { history: History }) => {
-  const [chosenMode, setMode] = useState("");
+  const [chosenMode, setMode] = useState<string>("");
 
   //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
   const onClick = (event: {
@@ -554,7 +530,7 @@ export const GameGen = (props: { history: History }) => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return (
+    return (
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />

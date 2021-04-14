@@ -1,12 +1,18 @@
 'use strict';
 
-import React, {useEffect, useState} from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {AnswerInput, FunButton, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
+import {AnswerInput, InfoBlock, InfoData, InfoLabels, ShortP} from "./shared";
 import PersonIcon from "@material-ui/icons/Person";
 import { ButtonGroup, Button } from '@material-ui/core';
 
 
+interface UserInfo {
+    id: number,
+    name: string,
+    primary_email: string,
+    color: string
+}
 
 const ProfileBlockBase = styled.div`
   display: flex;
@@ -16,9 +22,7 @@ const ProfileBlockBase = styled.div`
 `;
 
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const ProfileBlock = ({userInfo}) => {
+const ProfileBlock = ({userInfo}: {userInfo: UserInfo}) => {
 
     console.log(userInfo);
     const [edit, setEdit] = useState(false);
@@ -34,7 +38,7 @@ const ProfileBlock = ({userInfo}) => {
         })
     }
 
-    const saveProfile = async () => {
+    const saveProfile = async ()  => {
         const body = {
             id: profile.id,
             name: profile.name,
@@ -54,7 +58,7 @@ const ProfileBlock = ({userInfo}) => {
         }
     }
 
-    const onClick = () => {
+    const onClick = () : void => {
         if(edit) {
             saveProfile().then(r => console.log("Tried to save profile"));
             setEdit(false);
@@ -118,10 +122,7 @@ const StatsBoxBase = styled.div`
   border-radius: 100px;
 `;
 
-// TO DO: add circle for the stat
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const StatBox = ({stat}:{stat: (string | number)[]}) => {
+const StatBox = ({stat}:{stat: (string | number)[]}) : ReactElement => {
 
     return(<StatsBoxBase>
         <div style={{"flex": 1, "fontWeight": "bold"}}>
@@ -140,65 +141,53 @@ const StatsBlockBase = styled.div`
   margin-top: 2em;
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-// @ts-ignore
-const StatsBlock = ({userInfo, mode}) => {
+const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     useEffect(() => {
-        getStats().then(r=>
+        getStats().then( r =>
             updateStats(r));
     }, [mode]);
 
     const getStats = async () => {
         console.log("changing stats");
-        return ([
-            ["Average Speed", (Math.random()*100).toPrecision(3)],
-            ["Level", (Math.random()*100).toPrecision(3)],
-            ["Ranking", (Math.random()*100).toPrecision(3)],
-            ["Win Rate", (Math.random()*100).toPrecision(3)],
-            ["Accuracy", (Math.random()*100).toPrecision(3)],
-        ]);
-        // const body = {
-        //     primary_email: userInfo.primary_email,
-        //     mode: mode
-        // };
-        // const res = await fetch('/v1/gameStats', {
-        //     method: 'GET',
-        //     body: JSON.stringify(body),
-        //     credentials: 'include',
-        //     headers: {
-        //         'content-type': 'application/json'
-        //     }
-        // });
-        // if(res.ok) {
-        //     const data = await res.json();
-        //     return data;
-        // } else {
-        //     console.log("Did not work!");
-        //     return ([
-        //         ["Average Speed", Math.random()*100],
-        //         ["Level", Math.random()*100],
-        //         ["Ranking", Math.random()*100],
-        //         ["Win Rate", Math.random()*100],
-        //         ["Accuracy", Math.random()*100]
-        //     ]);
-        // }
+        const res = await fetch('/api/v1/session/getStats', {
+            method: 'GET',
+            body: mode.toString(),
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        if(res.ok) {
+            const data = await res.json();
+            return ([
+                ["Number of Games", data.num_games],
+                ["Win Ratio", data.win_rate.toFixed(2)],
+                ["Number of Questions", data.num_questions],
+                ["Accuracy Ratio", data.accuracy.toFixed(2)]
+            ]);
+        } else {
+            console.log("Did not work!");
+            return ([
+                ["Number of Games", 0],
+                ["Win Ratio", 0],
+                ["Number of Questions", 0],
+                ["Accuracy Ratio", 0]
+            ]);
+        }
     };
 
-    //grab all the user stats from given mode!
+    //<[string, number][]>
     const [stats, updateStats] = useState(
         [
-            ["Average Speed", 20],
-            ["Level", 30],
-            ["Ranking", 20],
-            ["Win Rate", 20],
-            ["Accuracy", 20],
+            ["Number of Games", 0],
+            ["Win Ratio", 0],
+            ["Number of Questions", 0],
+            ["Accuracy Ratio", 0]
         ]);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const statsBoxes = stats.map((stat, i) => (
         <StatBox key={i} stat={stat}/>
     ));
@@ -216,12 +205,12 @@ const ProfilePageBase = styled.div`
   padding: 1em;
 `;
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedIn}) => {
+
+export const Profile = ({currentUser, onLoggedIn}: {currentUser: UserInfo, onLoggedIn: () => void}) : ReactElement => {
     const defaultMode = "Normal";
     const modes = ["Normal", "ACT", "GRE", "SAT"];
     const [mode, setMode] = useState(defaultMode);
+    console.log(currentUser);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -244,6 +233,6 @@ export const Profile : ReactStatelessComponent<Props> = ({currentUser, onLoggedI
         <ButtonGroup style={{"position": "absolute", "right": "3em"}} color="primary" variant="contained" aria-label="contained primary button group">
             {modeButtons}
         </ButtonGroup>
-        <StatsBlock userInfo={currentUser} mode={mode}/>
+        <StatsBlock mode={mode}/>
     </ProfilePageBase>);
 }

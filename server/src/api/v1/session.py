@@ -116,9 +116,30 @@ def get_user_info(blueprint: OAuth2ConsumerBlueprint) -> UserRecord:
 def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
+@game_api.route("/getStats", methods=["GET"])
+@login_required
+def get_stats():
+    mode: Json = request.get_json()
+    statsTable_query = StatsTable.query.filter_by(player_id=current_user.id, mode=mode)
+    try:
+        stats = statsTable_query.one()
+    except NoResultFound:
+        stats = StatsTable(player_id=player.player_id, mode=game.mode)
+        db.session.add(stats)
+        db.session.commit()
+
+    accuracy: double = statsTable.num_correct/statsTable.num_questions
+    win_rate: double = statsTable.num_wins/statsTable.num_games
+
+    return {
+        "num_games": statsTable.num_games,
+        "num_questions": statsTable.num_questions,
+        "accuracy": accuracy,
+        "win_rate": win_rate
+    }
 
 @ session_api.route("/github")
-def github_sesssion() -> Response:
+def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
     return redirect("http://localhost:7070/#/profile")

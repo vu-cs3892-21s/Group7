@@ -5,7 +5,7 @@ from flask import Blueprint, request
 from flask_login import login_required, current_user
 
 from db.models.user import User
-from db.models.game import Game, GamePlayer, GameQuestion
+from db.models.game import Game, GamePlayer, GameQuestion, StatsTable
 from db.database import db, as_dict
 from .shared.api_types import Json
 
@@ -57,7 +57,7 @@ def get_game_info(game_id: str = None):
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questions
+        "totalQuestions": game.num_questionsfit
     }
 
 
@@ -95,6 +95,29 @@ def create_game():
 
     return {"id": game.id}
 
+def update_stats(game_id: str = None):
+    game = Game.query.filter_by(id=game_id).one()
+
+    player_query = GamePlayer.query.filter_by(game_id=game_id)
+    max_score = player_query(func.max(GamePlayer.score)).scalar()
+
+    player: GamePlayer
+    for player in player_query:
+        statsTable_query = StatsTable.query.filter_by(player_id=player.player_id, mode=game.mode)
+        try:
+            stats = statsTable_query.one()
+        except NoResultFound:
+            stats = StatsTable(player_id=player.player_id, mode=game.mode)
+            db.session.add(stats)
+            db.session.commit()
+        win: int = int(player.score == max_score)
+        stats.num_questions = stats.num_questions + game.num_questions
+        stats.num_correct = stats.num_correct + player.score
+        stats.num_games = stats.num_games + 1
+        stats.num_wins = stats.num_wins + win
+        db.session.commit()
+
+    return {"id": game.id}
 
 @ game_api.route("/join", methods=["POST"])
 @ login_required
@@ -155,6 +178,7 @@ def start_game(room_code: str):
 def end_game(room_code: str):
     emit("end_game", room=room_code, include_self=False)
     close_room(room_code)
+    update_stats(room_code)
 
 
 @socketio.on("answer")
