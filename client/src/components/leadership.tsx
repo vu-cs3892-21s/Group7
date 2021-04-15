@@ -29,6 +29,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 
+
 const theme = createMuiTheme({
     overrides: {
         MuiTab: {
@@ -97,6 +98,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: "100%",
     },
 }));
+
 
 const createData = (rank: number, name: string, color: string, points: number) => ({rank, name, color, points});
 
@@ -170,6 +172,7 @@ const a11yProps = (index: any) => {
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
+
 
 
 const LeaderBoardBlockBase = styled.div`

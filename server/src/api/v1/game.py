@@ -1,19 +1,32 @@
 import random
 from typing import List, Tuple
+from flask_socketio import SocketIO, emit, join_room, close_room, rooms
 from flask import Blueprint, request
 from flask_login import login_required, current_user
+
+from db.models.user import User
+from db.models.game import Game, GamePlayer, GameQuestion, StatsTable
+from db.database import db, as_dict
 from .shared.api_types import Json
 
-import sys
-sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.game import Game, GamePlayer, GameQuestion
-from db.database import db
 
 GAME_API_PREFIX = "/v1/game"
 
-
+socketio: SocketIO = SocketIO(cors_allowed_origins='*')
 game_api: Blueprint = Blueprint(
     'game_api', __name__, url_prefix=GAME_API_PREFIX)
+
+
+def update_game_players(game_id: str = None):
+    # Push updated players/scores to entire game
+    player_query = GamePlayer.query.filter_by(game_id=game_id)
+    players: List[Json] = []
+    player: GamePlayer
+    for player in player_query:
+        user: User = User.query.filter_by(id=player.player_id).one()
+        players.append({"score": player.score, "primary_email": user.primary_email,
+                        "name": user.name, "color": "orange"})
+    return players
 
 
 def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tuple[str, str]]:
@@ -36,7 +49,7 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
 
 @game_api.route("/<game_id>", methods=["GET"])
 @login_required
-def get_game_info(game_id=None):
+def get_game_info(game_id: str = None):
     game_query = Game.query.filter_by(id=game_id)
     game = game_query.one()
     return {
@@ -44,22 +57,22 @@ def get_game_info(game_id=None):
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questions
+        "totalQuestions": game.num_questionsfit
     }
 
 
-@game_api.route("/<game_id>/questions", methods=["GET"])
-@login_required
-def get_questions(game_id=None):
+@ game_api.route("/<game_id>/questions", methods=["GET"])
+@ login_required
+def get_questions(game_id: str = None):
     game_query = GameQuestion.query.filter_by(game_id=game_id)
     questions: List[Json] = []
     for question in game_query:
-        questions.append(question.as_dict())
+        questions.append(question.question)
     return {"questions": questions}
 
 
-@game_api.route("/create", methods=["POST"])
-@login_required
+@ game_api.route("/create", methods=["POST"])
+@ login_required
 def create_game():
     request_json: Json = request.get_json()
     game: Game = Game(status='Created', operations=','.join(
@@ -68,9 +81,6 @@ def create_game():
         num_questions=request_json["numberOfQuestions"], duration=request_json["duration"])
     db.session.add(game)
     db.session.commit()
-
-    game_player: GamePlayer = GamePlayer(
-        game_id=game.id, player_id=current_user.id, score=0)
 
     questions: List[Tuple[str, str]] = create_questions(
         request_json["operations"], request_json["numberOfQuestions"])
@@ -81,7 +91,125 @@ def create_game():
             game_id=game.id, question=question, answer=answer, quest_num=1 + quest_num)
         db.session.add(game_question)
 
-    db.session.add(game_player)
     db.session.commit()
 
     return {"id": game.id}
+
+def update_stats(game_id: str = None):
+    game = Game.query.filter_by(id=game_id).one()
+
+    player_query = GamePlayer.query.filter_by(game_id=game_id)
+    max_score = player_query(func.max(GamePlayer.score)).scalar()
+
+    player: GamePlayer
+    for player in player_query:
+        statsTable_query = StatsTable.query.filter_by(player_id=player.player_id, mode=game.mode)
+        try:
+            stats = statsTable_query.one()
+        except NoResultFound:
+            stats = StatsTable(player_id=player.player_id, mode=game.mode)
+            db.session.add(stats)
+            db.session.commit()
+        win: int = int(player.score == max_score)
+        stats.num_questions = stats.num_questions + game.num_questions
+        stats.num_correct = stats.num_correct + player.score
+        stats.num_games = stats.num_games + 1
+        stats.num_wins = stats.num_wins + win
+        db.session.commit()
+
+    return {"id": game.id}
+
+@ game_api.route("/join", methods=["POST"])
+@ login_required
+def join_game():
+    # body includes code parameter
+    code: str = request.get_json()
+    print(Game.query.all())
+    req_game: Game = Game.query.filter_by(room_code=code).one()
+    print(req_game)
+    game_id: int = req_game.id
+    print(game_id, flush=True)
+    # add player into this game
+    print(current_user.id, 'cuser')
+    game_player: GamePlayer = GamePlayer(
+        game_id=game_id, player_id=current_user.id, score=0)
+
+    db.session.add(game_player)
+    db.session.commit()
+
+    gp_list: List[GamePlayer] = GamePlayer.query.filter_by(
+        game_id=game_id).all()
+
+    user_emails: List[str] = []
+
+    for gp in gp_list:
+        assoc_user: User = User.query.filter_by(id=gp.player_id).one()
+        user_emails.append(assoc_user.primary_email)
+
+    return {"id": game_id, "user_emails": user_emails}
+
+
+@socketio.on("join")
+def join_game_room(room_code: str):
+    req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    print("testy test", room_code)
+    if req_game is not None:
+        game_player: GamePlayer = GamePlayer(
+            game_id=room_code, player_id=current_user.id, score=0)
+        db.session.add(game_player)
+        db.session.commit()
+        join_room(room_code)
+        print("joined room")
+        emit("join_response", True, room=room_code)
+        emit("update_players", update_game_players(
+            room_code), room=room_code)
+
+    else:
+        print("invalid room")
+        socketio.emit("join_response", False)
+
+
+@socketio.on("start")
+def start_game(room_code: str):
+    emit("start_game", room=room_code, include_self=False)
+
+
+@socketio.on("end")
+def end_game(room_code: str):
+    emit("end_game", room=room_code, include_self=False)
+    close_room(room_code)
+    update_stats(room_code)
+
+
+@socketio.on("answer")
+def validate_answer(answer_data: Json):
+    game_id: str = answer_data["game_id"]
+    game_question: GameQuestion = GameQuestion.query.filter_by(
+        game_id=game_id, quest_num=answer_data["quest_num"]).one()
+    if game_question.answer == answer_data["answer"]:
+        emit("validate_answer", True, room=request.sid)
+        game_player: GamePlayer = GamePlayer.query.filter_by(
+            game_id=game_id, player_id=current_user.id).one()
+        game_player.score += 1
+        db.session.commit()
+        emit("update_players", update_game_players(
+            game_id), room=game_id)
+
+    else:
+        emit("validate_answer", False)
+
+
+@socketio.on("send_chat")
+def send_chat(chat_data: Json):
+    game_id: str = chat_data["game_id"]
+    emit("chat_update", chat_data["message"], room=game_id)
+
+
+@socketio.on("connect")
+def connect():
+    print("Websocket has been connected")
+
+
+@socketio.on("disconnect")
+def disconnect():
+    print("Websocket has been disconnected")
