@@ -26,7 +26,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
 
-SESSION_API_PREFIX: str = "/v1/session"
+SESSION_API_PREFIX: str = "/api/v1/session"
 
 dir_path: str = os.path.dirname(os.path.realpath(__file__))
 with open(dir_path + "/../../../config/sso_config.json", "r") as sso_config_json:

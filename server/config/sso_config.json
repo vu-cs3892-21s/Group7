@@ -1,8 +1,8 @@
 {
   "secret_key": "temp secret key",
   "github": {
-    "client_id": "5f635dbbf813c841603a",
-    "client_secret": "c2307406d0aa37e8a7f0d8eaf2d97d547784baed",
+    "client_id": "6d3dc9b493b40eabbe2e",
+    "client_secret": "1bb8c755f3e8c3f6853db16b869fb236a24a2a23",
     "scope": ["read:user", "user:email"]
   },
   "google": {

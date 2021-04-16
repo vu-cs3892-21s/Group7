@@ -354,9 +354,9 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     console.log(game);
   };
 
-  const onSubmit = async (ev: { preventDefault: () => void }) => {
-    ev.preventDefault();
-    console.log("Trying to submit!");
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit!");
 
     if (game.questionType === "") {
       setError("Select question type");
@@ -576,7 +576,7 @@ export const GameGen = (props: { history: History }) => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return (
+    return (
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />

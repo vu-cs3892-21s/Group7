@@ -13,8 +13,9 @@ from db.models.oauth import OAuth
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.register_blueprint(github_blueprint, url_prefix="/login")
-app.register_blueprint(google_blueprint, url_prefix="/login")
+LOGIN_URL_PREFIX = "/login"
+app.register_blueprint(github_blueprint, url_prefix=LOGIN_URL_PREFIX)
+app.register_blueprint(google_blueprint, url_prefix=LOGIN_URL_PREFIX)
 app.register_blueprint(session_api, url_prefix=SESSION_API_PREFIX)
 
 app.register_blueprint(game_api, url_prefix=GAME_API_PREFIX)

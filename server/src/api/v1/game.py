@@ -88,7 +88,7 @@ def get_game_info(game_id: str = None) -> Json:
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questions
+        "totalQuestions": game.num_questionsfit
     }
 
 
