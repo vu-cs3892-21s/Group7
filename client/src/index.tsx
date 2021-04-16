@@ -60,16 +60,16 @@ const App = () => {
   const [state, setState] = useState(data ? JSON.parse(data) : defaultUser);
 
   // Helper to check if the user is logged in or not
-  const loggedIn = () : string => {
+  const loggedIn = (): string => {
     return state.primary_email;
   };
 
   const logIn = async (ev: {
     preventDefault: () => void;
     target: { offsetParent: { id: string } };
-  })  => {
+  }) => {
     ev.preventDefault();
-    const endpoint = `http://localhost/login/${ev.target.offsetParent.id}`;
+    const endpoint = `http://timcobrien.me:5000/login/${ev.target.offsetParent.id}`;
     try {
       window.location.href = endpoint;
       const user = {
@@ -98,7 +98,7 @@ const App = () => {
   };
 
   // Helper for when a user logs out
-  const logOut = () : void => {
+  const logOut = (): void => {
     // Wipe localStorage
     localStorage.removeItem("user");
     // Reset user state
