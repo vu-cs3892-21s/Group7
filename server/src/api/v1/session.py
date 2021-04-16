@@ -116,6 +116,19 @@ def get_user_info(blueprint: OAuth2ConsumerBlueprint) -> UserRecord:
 def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
+@ session_api.route("/updateProfile", methods=["POST"])
+@ login_required
+def update_profile():
+    request_json: Json = request.get_json()
+    user: User = User.query.filter_by(id = current_user.id).one()
+    if request_json["name"]:
+        user.name = request_json["name"]
+        db.session.commit()
+    if request_json["color"]:
+        user.color = request_json["color"]
+        db.session.commit()
+    return current_user.as_dict()
+
 @ session_api.route("/getStats", methods=["GET"])
 @ login_required
 def get_stats():

@@ -162,13 +162,22 @@ const QuestionBox = ({
     if (question === [] || gameInfo.questionNumber >= gameInfo.totalQuestions) {
         return endOfGame();
       }
+    console.log("next question")
     setGameInfo({
       ...gameInfo,
+      start: false,
       questionNumber: ++gameInfo.questionNumber,
     });
 
     setAnswer("");
     setStatus("");
+
+    console.log("restarting timer")
+    setGameInfo({
+      ...gameInfo,
+      start: true,
+    });
+
   };
 
   const getUserScore = (): number => {
@@ -539,10 +548,12 @@ export const GamePage = ({
     async function setGameData() {
       const res = await fetch(`/api/v1/game/${id}`);
       if (res.ok) {
-        const gameInfo = await res.json();
+        const game = await res.json();
+        console.log("grabbing data!");
+        console.log(game);
         setGameInfo({
           ...gameInfo,
-          questionNumber: 1,
+          start: false,
         });
       }
     }

@@ -23,7 +23,6 @@ const StyledTableCell = withStyles((theme) => ({
     },
 }))(TableCell);
 
-
 const createData = (rank: number, name: string, color: string, points: number) => ({rank, name, color, points});
 
 const rows = [
@@ -92,7 +91,35 @@ const Header = styled.h1`
     font-family: 'Playfair Display', 'serif';
 `;
 
+
 export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
+
+    // const [leadershipInfo, setLeadershipInfo] = useState({
+    //     users: ["Sam", "Tim", "Evan", "Irisa"],
+    //     correct: [4, 3, 2, 1]
+    // });
+    //
+    // useEffect(() => {
+    //     async function setLeadershipBoard() {
+    //         const res = await fetch(`/api/v1/game/getUsers`);
+    //         if (res.ok) {
+    //             const data = await res.json();
+    //             setLeadershipInfo({
+    //                 users: data.users,
+    //                 correct: data.correct
+    //             });
+    //         }
+    //     }
+    //     setLeadershipBoard();
+    // }, []);
+    //
+    // const makeRows = () => {
+    //     let i = 0;
+    //     while(i < leadershipInfo.users.length) {
+    //         rows.append({i + 1, leadershipInfo.users[i], leadershipInfo.correct[i]})
+    //     }
+    // }
+
     const classes = useStyles();
     return(<LeaderBoardBlockBase className = {classes.backDrop}>
         <Header> LEADERSHIP BOARD </Header>

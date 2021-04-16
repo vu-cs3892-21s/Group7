@@ -57,7 +57,21 @@ def get_game_info(game_id: str = None):
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questionsfit
+        "totalQuestions": game.num_questions
+    }
+
+@game_api.route("/getUsers", methods=["GET"])
+def get_users():
+    stats_query = StatsTable.query.order_by(num_correct).limit(10)
+    users: List[Json] = []
+    correct: List[int] = []
+    for stat in stats_query:
+        user = User.query.filter_by(id=stat.player_id).one()
+        users.append(user.name)
+        correct.append(stat.num_correct)
+    return {
+        "users": users,
+        "correct": correct,
     }
 
 
