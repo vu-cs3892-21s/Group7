@@ -1,3 +1,6 @@
+from db.database import db
+from db.models.oauth import OAuth
+from db.models.user import User, UserRecord
 import json
 import os
 from typing import Dict, List
@@ -16,9 +19,6 @@ from .shared.api_types import Json
 
 import sys
 sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.user import User, UserRecord
-from db.models.oauth import OAuth
-from db.database import db
 
 # temporarily allow http and relax scope
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
@@ -117,18 +117,42 @@ def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
 
+@game_api.route("/getStats", methods=["GET"])
+@login_required
+def get_stats():
+    mode: Json = request.get_json()
+    statsTable_query = StatsTable.query.filter_by(
+        player_id=current_user.id, mode=mode)
+    try:
+        stats = statsTable_query.one()
+    except NoResultFound:
+        stats = StatsTable(player_id=player.player_id, mode=game.mode)
+        db.session.add(stats)
+        db.session.commit()
+
+    accuracy: double = statsTable.num_correct/statsTable.num_questions
+    win_rate: double = statsTable.num_wins/statsTable.num_games
+
+    return {
+        "num_games": statsTable.num_games,
+        "num_questions": statsTable.num_questions,
+        "accuracy": accuracy,
+        "win_rate": win_rate
+    }
+
+
 @ session_api.route("/github")
-def github_sesssion() -> Response:
+def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("http://localhost/#/profile")
 
 
 @ session_api.route("/google")
 def google_session() -> Response:
     if not google.authorized:
         return redirect(url_for(GOOGLE_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("http://localhost/#/profile")
 
 
 @ oauth_authorized.connect_via(github_blueprint)
