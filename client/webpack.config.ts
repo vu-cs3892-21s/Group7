@@ -1,6 +1,6 @@
 import path from "path";
 import webpack from "webpack";
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
 const config: webpack.Configuration = {
   entry: "./src/index.tsx",
@@ -43,12 +43,13 @@ const config: webpack.Configuration = {
     contentBase: path.join(__dirname, "build"),
     compress: true,
     port: 4000,
+    disableHostCheck: true,
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
       async: false,
       eslint: {
-        files: "./src/*"
+        files: "./src/*",
       },
     }),
   ],
