@@ -159,27 +159,16 @@ const QuestionBox = ({
   const resetAfterQuestion = (): void => {
     setQuestions(question.slice(1));
 
-    if (gameInfo.mode !== "alone") {
-      if (
-        question === [] ||
-        gameInfo.questionNumber >= gameInfo.totalQuestions
-      ) {
+    if (question === [] || gameInfo.questionNumber >= gameInfo.totalQuestions) {
         return endOfGame();
       }
-      setGameInfo({
-        ...gameInfo,
-        start: false,
-        questionNumber: ++gameInfo.questionNumber,
-      });
-    } else {
-      setGameInfo({
-        ...gameInfo,
-        questionNumber: ++gameInfo.questionNumber,
-      });
-    }
+    setGameInfo({
+      ...gameInfo,
+      questionNumber: ++gameInfo.questionNumber,
+    });
+
     setAnswer("");
     setStatus("");
-    setButtonText("Next Question!");
   };
 
   const getUserScore = (): number => {
@@ -215,10 +204,11 @@ const QuestionBox = ({
     resetAfterQuestion();
   };
 
-  return gameInfo.mode !== "alone" ? (
+  return (
     <QuestionBoxBase>
       <div style={{ gridArea: "topQ" }}>
         Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}
+        {gameInfo.mode === "Group Play" ? <div> Room Code: {gameInfo.id}</div>: null}
       </div>
       <div style={{ gridArea: "topT", textAlign: "right" }}>
         {gameInfo.start ? (
@@ -254,7 +244,7 @@ const QuestionBox = ({
         <CenteredDiv
           style={{ gridArea: "main", fontWeight: "bold", fontSize: "32px" }}
         >
-          Game Over! <br /> Your Score: {getUserScore()}{" "}
+          Game Over! <br /> Questions Answered: {getUserScore()}{" "}
         </CenteredDiv>
       ) : (
         <CenteredDiv
@@ -271,36 +261,7 @@ const QuestionBox = ({
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
       ) : null}
-    </QuestionBoxBase>
-  ) : (
-    <QuestionBoxBase>
-      <div style={{ gridArea: "topQ" }}>Question {gameInfo.questionNumber}</div>
-      <div style={{ gridArea: "topT", textAlign: "right" }}>
-        Number Correct: {players[0].score}
-      </div>
-      {gameInfo.start ? (
-        <div
-          style={{ gridArea: "main", textAlign: "center", fontSize: "18px" }}
-        >
-          {question[0]}
-        </div>
-      ) : (
-        <CenteredDiv
-          style={{
-            position: "relative",
-            gridArea: "main",
-            alignItems: "center",
-          }}
-        >
-          <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
-        </CenteredDiv>
-      )}
-      <Status>{status}</Status>
-      {gameInfo.start ? (
-        <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
-      ) : null}
-    </QuestionBoxBase>
-  );
+    </QuestionBoxBase>);
 };
 
 const AnswerBoxBase = styled.div`
@@ -339,6 +300,7 @@ const AnswerBox = ({
         onChange={onChange}
         onKeyDown={onKeyDown}
         value={answer}
+        autoFocus
       />
     </AnswerBoxBase>
   );
@@ -605,8 +567,8 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {gameInfo.mode !== "alone" ? <Players players={players} /> : null}
-      {gameInfo.mode !== "alone" ? <ChatBox name={userName} id={id} /> : null}
+      {gameInfo.mode !== "Solo" ? <Players players={players} /> : null}
+      {gameInfo.mode !== "Solo" ? <ChatBox name={userName} id={id} /> : null}
     </GamePageBase>
   );
 };

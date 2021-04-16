@@ -116,8 +116,8 @@ def get_user_info(blueprint: OAuth2ConsumerBlueprint) -> UserRecord:
 def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
-@game_api.route("/getStats", methods=["GET"])
-@login_required
+@ session_api.route("/getStats", methods=["GET"])
+@ login_required
 def get_stats():
     mode: Json = request.get_json()
     statsTable_query = StatsTable.query.filter_by(player_id=current_user.id, mode=mode)
