@@ -133,8 +133,6 @@ export const useStyles = makeStyles((theme: Theme) =>
 const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
     const classes = useStyles();
     return (
-
-
         <Box mt={20} mb={20}>
             {loggedIn ?
                 <Link to={"/create"}>
@@ -142,11 +140,6 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
                         <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
                 </ListItem>
             </Link> : null}
-            {/*<Link to={"/game/123"}>*/}
-            {/*    <ListItem button key = {"gamelink"}>*/}
-            {/*        <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>*/}
-            {/*    </ListItem>*/}
-            {/*</Link>*/}
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"}>
                 <ListItemText classes = {{primary: classes.listFormat}} primary={"Leadership Board"} />

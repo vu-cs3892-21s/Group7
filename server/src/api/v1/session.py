@@ -119,7 +119,6 @@ def get_profile_data() -> UserRecord:
 @ session_api.route("/updateProfile", methods=["POST"])
 @ login_required
 def update_profile():
-    console.log(request)
     request_json: Json = request.get_json()
     user: User = User.query.filter_by(id = current_user.id).one()
     if request_json["name"]:

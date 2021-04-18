@@ -525,8 +525,7 @@ export const GamePage = ({
   userEmail: string;
   userName: string;
 }): ReactElement => {
-  //useEffect to load in gameInfo & players
-  //load in gameInfo
+
   const socket: Socket = useContext(SocketContext);
   const { id } = useParams<{ id: string }>();
   const [gameInfo, setGameInfo] = useState({
@@ -551,7 +550,10 @@ export const GamePage = ({
         console.log(game);
         setGameInfo({
           ...gameInfo,
-          start: false,
+          status: game.status,
+          mode: game.mode,
+          totalQuestions: game.totalQuestions,
+          maxTime: game.maxTime,
         });
       }
     }
@@ -576,8 +578,8 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {gameInfo.mode !== "Solo" ? <Players players={players} /> : null}
-      {gameInfo.mode !== "Solo" ? <ChatBox name={userName} id={id} /> : null}
+      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head") ? <Players players={players} /> : null}
+      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head")  ? <ChatBox name={userName} id={id} /> : null}
     </GamePageBase>
   );
 };
