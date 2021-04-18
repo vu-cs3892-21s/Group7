@@ -78,8 +78,8 @@ const QuestionBox = ({
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
   const [endGame, setEndGame] = useState<boolean>(false); //game state
+  const [speed, setSpeed] = useState<number>(0);
   const socket: Socket = useContext(SocketContext);
-
   const [question, setQuestions] = useState<string[]>([]);
 
   console.log(gameInfo);
@@ -91,7 +91,7 @@ const QuestionBox = ({
         const data = await res.json();
         setQuestions(data["questions"]);
       }
-    };
+    }
 
     getQuestions();
   }, []);
@@ -108,8 +108,8 @@ const QuestionBox = ({
 
     socket.on("validate_answer", (correct: boolean) => {
       console.log("validate attempt");
-      console.log(question);
       if (correct) {
+
         resetAfterQuestion();
       } else {
         setStatus("Incorrect!");
@@ -140,6 +140,14 @@ const QuestionBox = ({
     }
   };
 
+  const getSpeed = async () => {
+    const res = await fetch(`api/v1/game/${gameInfo.id}/speed`);
+    if (res.ok) {
+      const data = await res.json();
+      setSpeed(data.speed);
+    }
+  };
+
   const endOfGame = () => {
     setGameInfo({
       ...gameInfo,
@@ -147,6 +155,7 @@ const QuestionBox = ({
     });
     setEndGame(true);
     socket.emit("end", gameInfo.id.toString());
+    getSpeed();
     socket.offAny();
   };
 
@@ -195,7 +204,7 @@ const QuestionBox = ({
   const onSubmit = (): void => {
     console.log("Trying submit");
     console.log("Difference");
-    console.log((Date.now()-gameInfo.startTime)/1000);
+    console.log((Date.now()-gameInfo.startTime)/1000)
 
     socket.emit("answer", {
       answer: answer,
@@ -259,7 +268,7 @@ const QuestionBox = ({
         <CenteredDiv
           style={{ gridArea: "main", fontWeight: "bold", fontSize: "32px" }}
         >
-          Game Over! <br /> Questions Answered: {getUserScore()}{" "}
+          Game Over! <br /> Questions Answered: {getUserScore()}{" "} <br /> Average Speed: {speed}
         </CenteredDiv>
       ) : (
         <CenteredDiv

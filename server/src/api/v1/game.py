@@ -84,6 +84,13 @@ def get_questions(game_id: str = None):
         questions.append(question.question)
     return {"questions": questions}
 
+@ game_api.route("/<game_id>/speed", methods=["GET"])
+@ login_required
+def get_speed(game_id: str = None):
+    player = GamePlayer.query.filter_by(game_id=game_id, player_id=current_user).one()
+    speed : float = player.total_duration / player.num_correct
+    return {"speed": speed}
+
 @ game_api.route("/create", methods=["POST"])
 @ login_required
 def create_game():
@@ -194,7 +201,6 @@ def end_game(room_code: str):
     emit("end_game", room=room_code, include_self=False)
     close_room(room_code)
     update_stats(room_code)
-
 
 @socketio.on("answer")
 def validate_answer(answer_data: Json):
