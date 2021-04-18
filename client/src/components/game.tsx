@@ -143,7 +143,6 @@ const QuestionBox = ({
       start: false,
     });
     setEndGame(true);
-    // game should end for all players
     socket.emit("end", gameInfo.id.toString());
     socket.offAny();
   };

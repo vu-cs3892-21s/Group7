@@ -136,19 +136,17 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
 
 
         <Box mt={20} mb={20}>
-            <Link to={"/create"}>
-            {/*<ListItem button key = {"playlink"} className = {classes.tr}>*/}
-            <ListItem button key = {"createLink"}>
-                <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
-
-
-            </ListItem>
-            </Link>
-            <Link to={"/game/123"}>
-                <ListItem button key = {"gamelink"}>
-                    <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>
+            {loggedIn ?
+                <Link to={"/create"}>
+                    <ListItem button key = {"createLink"}>
+                        <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
                 </ListItem>
-            </Link>
+            </Link> : null}
+            {/*<Link to={"/game/123"}>*/}
+            {/*    <ListItem button key = {"gamelink"}>*/}
+            {/*        <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>*/}
+            {/*    </ListItem>*/}
+            {/*</Link>*/}
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"}>
                 <ListItemText classes = {{primary: classes.listFormat}} primary={"Leadership Board"} />
