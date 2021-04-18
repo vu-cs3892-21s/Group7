@@ -84,7 +84,6 @@ def get_questions(game_id: str = None):
         questions.append(question.question)
     return {"questions": questions}
 
-
 @ game_api.route("/create", methods=["POST"])
 @ login_required
 def create_game():
