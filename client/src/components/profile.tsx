@@ -166,7 +166,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
                 ["Number of Games", data.num_games],
                 ["Win Ratio", data.win_rate.toFixed(2)],
                 ["Number of Questions", data.num_questions],
-                ["Accuracy Ratio", data.accuracy.toFixed(2)]
+                ["Accuracy Ratio", data.accuracy.toFixed(2)],
+                ["Speed", data.speed.toFixed(2)]
             ]);
         } else {
             console.log("Did not work!");
@@ -174,7 +175,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
                 ["Number of Games", 0],
                 ["Win Ratio", 0],
                 ["Number of Questions", 0],
-                ["Accuracy Ratio", 0]
+                ["Accuracy Ratio", 0],
+                ["Speed", 0]
             ]);
         }
     };
@@ -185,7 +187,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
             ["Number of Games", 0],
             ["Win Ratio", 0],
             ["Number of Questions", 0],
-            ["Accuracy Ratio", 0]
+            ["Accuracy Ratio", 0],
+            ["Speed", 0]
         ]);
 
     const statsBoxes = stats.map((stat, i) => (

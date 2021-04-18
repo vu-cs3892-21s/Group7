@@ -141,14 +141,16 @@ def get_stats():
         db.session.add(stats)
         db.session.commit()
 
-    accuracy: double = statsTable.num_correct/statsTable.num_questions
-    win_rate: double = statsTable.num_wins/statsTable.num_games
+    accuracy: float = statsTable.num_correct/statsTable.num_questions
+    win_rate: float = statsTable.num_wins/statsTable.num_games
+    speed: float = statsTable.total_duration/statsTable.num_correct
 
     return {
         "num_games": statsTable.num_games,
         "num_questions": statsTable.num_questions,
         "accuracy": accuracy,
-        "win_rate": win_rate
+        "win_rate": win_rate,
+        "speed": speed
     }
 
 @ session_api.route("/github")

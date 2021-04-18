@@ -21,8 +21,8 @@ class GamePlayer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey(Game.id), nullable=False)
     player_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    score = db.Column(db.Integer)
-
+    score = db.Column(db.Integer, default=0)
+    total_duration = db.Column(db.Float, default=0)
 
 class GameQuestion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,3 +43,4 @@ class StatsTable(db.Model):
     num_correct = db.Column(db.Integer, default=0)
     num_games = db.Column(db.Integer, default=0)
     num_wins = db.Column(db.Integer, default=0)
+    total_duration = db.Column(db.Float, default=0)

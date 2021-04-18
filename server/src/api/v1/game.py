@@ -130,6 +130,7 @@ def update_stats(game_id: str = None):
             stats.num_games = stats.num_games + 1
         stats.num_questions = stats.num_questions + game.num_questions
         stats.num_correct = stats.num_correct + player.score
+        stats.total_duration = stats.total_duration + player.total_duration
         db.session.commit()
 
     return {"id": game.id}
@@ -206,6 +207,7 @@ def validate_answer(answer_data: Json):
         game_player: GamePlayer = GamePlayer.query.filter_by(
             game_id=game_id, player_id=current_user.id).one()
         game_player.score += 1
+        game_player.total_duration += answer_data["duration"]
         db.session.commit()
         emit("update_players", update_game_players(
             game_id), room=game_id)

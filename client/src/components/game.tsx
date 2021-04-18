@@ -33,6 +33,7 @@ interface GameInfo {
   totalQuestions: number;
   questionNumber: number;
   start: boolean;
+  startTime: number;
 }
 
 interface Event {
@@ -101,6 +102,7 @@ const QuestionBox = ({
       setGameInfo({
         ...gameInfo,
         start: true,
+        startTime: Date.now()
       });
     });
 
@@ -129,6 +131,7 @@ const QuestionBox = ({
     setGameInfo({
       ...gameInfo,
       start: true,
+      startTime: Date.now()
     });
 
     if (gameInfo.questionNumber == 1) {
@@ -174,6 +177,7 @@ const QuestionBox = ({
     setGameInfo({
       ...gameInfo,
       start: true,
+      startTime: Date.now()
     });
 
   };
@@ -190,10 +194,14 @@ const QuestionBox = ({
 
   const onSubmit = (): void => {
     console.log("Trying submit");
+    console.log("Difference");
+    console.log((Date.now()-gameInfo.startTime)/1000);
+
     socket.emit("answer", {
       answer: answer,
       game_id: gameInfo.id.toString(),
       quest_num: gameInfo.questionNumber,
+      duration: (Date.now() - gameInfo.startTime) / 1000
     });
   };
 
@@ -536,6 +544,7 @@ export const GamePage = ({
     totalQuestions: 20,
     questionNumber: 1,
     start: false,
+    startTime: 0
   });
 
   //load in all the players
