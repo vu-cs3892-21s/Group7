@@ -365,7 +365,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
             return;
         }
 
-        console.log(game);
+        console.log(JSON.stringify(game));
 
         const res = await fetch("/api/v1/game/create", {
             method: "POST",

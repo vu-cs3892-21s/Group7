@@ -124,11 +124,12 @@ def update_stats(game_id: str = None):
             stats = StatsTable(player_id=player.player_id, mode=game.mode)
             db.session.add(stats)
             db.session.commit()
-        win: int = int(player.score == max_score)
+        if(game.mode !== "Solo")
+            win: int = int(player.score == max_score)
+            stats.num_wins = stats.num_wins + win
+            stats.num_games = stats.num_games + 1
         stats.num_questions = stats.num_questions + game.num_questions
         stats.num_correct = stats.num_correct + player.score
-        stats.num_games = stats.num_games + 1
-        stats.num_wins = stats.num_wins + win
         db.session.commit()
 
     return {"id": game.id}

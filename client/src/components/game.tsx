@@ -76,7 +76,6 @@ const QuestionBox = ({
 }): ReactElement => {
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
-  const [buttonText, setButtonText] = useState<string>("Start Game!"); //button state
   const [endGame, setEndGame] = useState<boolean>(false); //game state
   const socket: Socket = useContext(SocketContext);
 
@@ -232,9 +231,9 @@ const QuestionBox = ({
             ]}
           >
             {() => (
-              <React.Fragment>
-                Time Remaining: <Timer.Seconds /> seconds
-              </React.Fragment>
+                <React.Fragment>
+                  Time Remaining: <Timer.Seconds /> seconds
+                </React.Fragment>
             )}
           </Timer>
         ) : (
@@ -263,7 +262,7 @@ const QuestionBox = ({
             alignItems: "center",
           }}
         >
-          <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
+          <CenteredButton onClick={onStart}>Start Game!</CenteredButton>
         </CenteredDiv>
       )}
       <Status>{status}</Status>

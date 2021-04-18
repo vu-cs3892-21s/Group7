@@ -39,6 +39,7 @@ const ProfileBlock = ({userInfo}: {userInfo: UserInfo}) => {
     }
 
     const saveProfile = async () => {
+        console.log(JSON.stringify(profile));
         const res = await fetch("/api/v1/session/updateProfile", {
             method: 'POST',
             body: JSON.stringify(profile),
