@@ -110,9 +110,11 @@ def create_game():
 
 def update_stats(game_id: str = None):
     game = Game.query.filter_by(id=game_id).one()
-
     player_query = GamePlayer.query.filter_by(game_id=game_id)
-    max_score = player_query(func.max(GamePlayer.score)).scalar()
+
+    #update max_score of game
+    game.max_score = max(p.max_score for p in player_query)
+    db.session.commit()
 
     player: GamePlayer
     for player in player_query:
@@ -124,7 +126,7 @@ def update_stats(game_id: str = None):
             db.session.add(stats)
             db.session.commit()
         if game.mode != "Solo":
-            win: int = int(player.score == max_score)
+            win: int = int(player.score == game.max_score)
             stats.num_wins = stats.num_wins + win
             stats.num_games = stats.num_games + 1
         stats.num_questions = stats.num_questions + game.num_questions

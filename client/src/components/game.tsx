@@ -160,7 +160,7 @@ const QuestionBox = ({
   const resetAfterQuestion = (): void => {
     setQuestions(question.slice(1));
 
-    if (question === [] || gameInfo.questionNumber >= gameInfo.totalQuestions) {
+    if (gameInfo.questionNumber >= gameInfo.totalQuestions) {
         return endOfGame();
       }
     console.log("next question")
