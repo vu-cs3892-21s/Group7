@@ -25,7 +25,7 @@ def update_game_players(game_id: str = None):
     for player in player_query:
         user: User = User.query.filter_by(id=player.player_id).one()
         players.append({"score": player.score, "primary_email": user.primary_email,
-                        "name": user.name, "color": "orange"})
+                        "name": user.name, "color": user.color, "total_duration": player.total_duration})
     return players
 
 
@@ -84,13 +84,6 @@ def get_questions(game_id: str = None):
         questions.append(question.question)
     return {"questions": questions}
 
-@ game_api.route("/<game_id>/speed", methods=["GET"])
-@ login_required
-def get_speed(game_id: str = None):
-    player = GamePlayer.query.filter_by(game_id=game_id, player_id=current_user).one()
-    speed : float = player.total_duration / player.num_correct
-    return {"speed": speed}
-
 @ game_api.route("/create", methods=["POST"])
 @ login_required
 def create_game():
@@ -136,7 +129,7 @@ def update_stats(game_id: str = None):
             stats.num_games = stats.num_games + 1
         stats.num_questions = stats.num_questions + game.num_questions
         stats.num_correct = stats.num_correct + player.score
-        stats.total_duration = stats.total_duration + player.total_duration
+        stats.total_duration = stats.total_duration + player.total_duration + game.duration * (game.num_questions - player.score)
         db.session.commit()
 
     return {"id": game.id}

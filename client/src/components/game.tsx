@@ -22,6 +22,7 @@ interface Player {
   name: string;
   primary_email: string;
   score: number;
+  total_duration: number;
   color: string;
 }
 
@@ -78,7 +79,6 @@ const QuestionBox = ({
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
   const [endGame, setEndGame] = useState<boolean>(false); //game state
-  const [speed, setSpeed] = useState<number>(0);
   const socket: Socket = useContext(SocketContext);
   const [question, setQuestions] = useState<string[]>([]);
 
@@ -140,14 +140,6 @@ const QuestionBox = ({
     }
   };
 
-  const getSpeed = async () => {
-    const res = await fetch(`api/v1/game/${gameInfo.id}/speed`);
-    if (res.ok) {
-      const data = await res.json();
-      setSpeed(data.speed);
-    }
-  };
-
   const endOfGame = () => {
     setGameInfo({
       ...gameInfo,
@@ -155,7 +147,6 @@ const QuestionBox = ({
     });
     setEndGame(true);
     socket.emit("end", gameInfo.id.toString());
-    getSpeed();
     socket.offAny();
   };
 
@@ -199,6 +190,17 @@ const QuestionBox = ({
       throw new TypeError("User is not in this game!");
     }
     return user.score;
+  };
+
+  const getUserSpeed = (): string => {
+    const user: Player | undefined = players.find(
+        (player: Player) => player.primary_email == userEmail
+    );
+    if (user === undefined) {
+      throw new TypeError("User is not in this game!");
+    }
+    const speed = (user.total_duration + (gameInfo.totalQuestions - user.score)*gameInfo.maxTime)/gameInfo.totalQuestions;
+    return speed.toFixed(2);
   };
 
   const onSubmit = (): void => {
@@ -266,9 +268,9 @@ const QuestionBox = ({
         </div>
       ) : endGame ? (
         <CenteredDiv
-          style={{ gridArea: "main", fontWeight: "bold", fontSize: "32px" }}
+          style={{ gridArea: "main", fontWeight: "bold", fontSize: "25px" }}
         >
-          Game Over! <br /> Questions Answered: {getUserScore()}{" "} <br /> Average Speed: {speed}
+          Game Over! <br /> Questions Answered: {getUserScore()}{" "} <br /> Average Speed: {getUserSpeed()} seconds
         </CenteredDiv>
       ) : (
         <CenteredDiv
