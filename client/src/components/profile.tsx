@@ -27,7 +27,7 @@ const ProfileBlock = ({userInfo}: {userInfo: UserInfo}) => {
     console.log(userInfo);
     const [edit, setEdit] = useState(false);
     const [editText, setEditText] = useState("Edit Profile");
-    const [profile, updateProfile] = useState(userInfo);
+    const [profile, updateProfile] = useState<UserInfo>(userInfo);
 
     useEffect(() => updateProfile(userInfo), [userInfo]);
 
@@ -38,23 +38,23 @@ const ProfileBlock = ({userInfo}: {userInfo: UserInfo}) => {
         })
     }
 
-    const saveProfile = async ()  => {
-        const body = {
-            id: profile.id,
-            name: profile.name,
-            primary_email: userInfo.primary_email,
-            color: profile.color,
-        };
-        const res = await fetch('localhost:7070/api/v1/updateInfo', {
+    const saveProfile = async () => {
+        console.log(JSON.stringify(profile));
+        const res = await fetch("/api/v1/session/updateProfile", {
             method: 'POST',
-            body: JSON.stringify(body),
+            body: JSON.stringify(profile),
             credentials: 'include',
             headers: {
                 'content-type': 'application/json'
             }
         });
-        if(!res.ok) {
-            console.log("Could not update info");
+        if(res.ok) {
+            const data : {data: UserInfo} = await res.json();
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            updateProfile(data);
+        } else {
+            console.log("Failed to update info");
         }
     }
 
@@ -166,7 +166,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
                 ["Number of Games", data.num_games],
                 ["Win Ratio", data.win_rate.toFixed(2)],
                 ["Number of Questions", data.num_questions],
-                ["Accuracy Ratio", data.accuracy.toFixed(2)]
+                ["Accuracy Ratio", data.accuracy.toFixed(2)],
+                ["Speed", data.speed.toFixed(2)]
             ]);
         } else {
             console.log("Did not work!");
@@ -174,7 +175,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
                 ["Number of Games", 0],
                 ["Win Ratio", 0],
                 ["Number of Questions", 0],
-                ["Accuracy Ratio", 0]
+                ["Accuracy Ratio", 0],
+                ["Speed", 0]
             ]);
         }
     };
@@ -185,7 +187,8 @@ const StatsBlock = ({mode} : {mode:string}) : ReactElement => {
             ["Number of Games", 0],
             ["Win Ratio", 0],
             ["Number of Questions", 0],
-            ["Accuracy Ratio", 0]
+            ["Accuracy Ratio", 0],
+            ["Speed", 0]
         ]);
 
     const statsBoxes = stats.map((stat, i) => (

@@ -22,6 +22,7 @@ interface Player {
   name: string;
   primary_email: string;
   score: number;
+  total_duration: number;
   color: string;
 }
 
@@ -33,6 +34,7 @@ interface GameInfo {
   totalQuestions: number;
   questionNumber: number;
   start: boolean;
+  startTime: number;
 }
 
 interface Event {
@@ -76,10 +78,8 @@ const QuestionBox = ({
 }): ReactElement => {
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
-  const [buttonText, setButtonText] = useState<string>("Start Game!"); //button state
   const [endGame, setEndGame] = useState<boolean>(false); //game state
   const socket: Socket = useContext(SocketContext);
-
   const [question, setQuestions] = useState<string[]>([]);
 
   console.log(gameInfo);
@@ -91,7 +91,7 @@ const QuestionBox = ({
         const data = await res.json();
         setQuestions(data["questions"]);
       }
-    };
+    }
 
     getQuestions();
   }, []);
@@ -102,13 +102,14 @@ const QuestionBox = ({
       setGameInfo({
         ...gameInfo,
         start: true,
+        startTime: Date.now()
       });
     });
 
     socket.on("validate_answer", (correct: boolean) => {
       console.log("validate attempt");
-      console.log(question);
       if (correct) {
+
         resetAfterQuestion();
       } else {
         setStatus("Incorrect!");
@@ -130,6 +131,7 @@ const QuestionBox = ({
     setGameInfo({
       ...gameInfo,
       start: true,
+      startTime: Date.now()
     });
 
     if (gameInfo.questionNumber == 1) {
@@ -144,7 +146,6 @@ const QuestionBox = ({
       start: false,
     });
     setEndGame(true);
-    // game should end for all players
     socket.emit("end", gameInfo.id.toString());
     socket.offAny();
   };
@@ -159,27 +160,26 @@ const QuestionBox = ({
   const resetAfterQuestion = (): void => {
     setQuestions(question.slice(1));
 
-    if (gameInfo.mode !== "alone") {
-      if (
-        question === [] ||
-        gameInfo.questionNumber >= gameInfo.totalQuestions
-      ) {
+    if (gameInfo.questionNumber >= gameInfo.totalQuestions) {
         return endOfGame();
       }
-      setGameInfo({
-        ...gameInfo,
-        start: false,
-        questionNumber: ++gameInfo.questionNumber,
-      });
-    } else {
-      setGameInfo({
-        ...gameInfo,
-        questionNumber: ++gameInfo.questionNumber,
-      });
-    }
+    console.log("next question")
+    setGameInfo({
+      ...gameInfo,
+      start: false,
+      questionNumber: ++gameInfo.questionNumber,
+    });
+
     setAnswer("");
     setStatus("");
-    setButtonText("Next Question!");
+
+    console.log("restarting timer")
+    setGameInfo({
+      ...gameInfo,
+      start: true,
+      startTime: Date.now()
+    });
+
   };
 
   const getUserScore = (): number => {
@@ -192,12 +192,27 @@ const QuestionBox = ({
     return user.score;
   };
 
+  const getUserSpeed = (): string => {
+    const user: Player | undefined = players.find(
+        (player: Player) => player.primary_email == userEmail
+    );
+    if (user === undefined) {
+      throw new TypeError("User is not in this game!");
+    }
+    const speed = (user.total_duration + (gameInfo.totalQuestions - user.score)*gameInfo.maxTime)/gameInfo.totalQuestions;
+    return speed.toFixed(2);
+  };
+
   const onSubmit = (): void => {
     console.log("Trying submit");
+    console.log("Difference");
+    console.log((Date.now()-gameInfo.startTime)/1000)
+
     socket.emit("answer", {
       answer: answer,
       game_id: gameInfo.id.toString(),
       quest_num: gameInfo.questionNumber,
+      duration: (Date.now() - gameInfo.startTime) / 1000
     });
   };
 
@@ -215,10 +230,11 @@ const QuestionBox = ({
     resetAfterQuestion();
   };
 
-  return gameInfo.mode !== "alone" ? (
+  return (
     <QuestionBoxBase>
       <div style={{ gridArea: "topQ" }}>
         Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}
+        {gameInfo.mode === "Group Play" ? <div> Room Code: {gameInfo.id}</div>: null}
       </div>
       <div style={{ gridArea: "topT", textAlign: "right" }}>
         {gameInfo.start ? (
@@ -233,9 +249,9 @@ const QuestionBox = ({
             ]}
           >
             {() => (
-              <React.Fragment>
-                Time Remaining: <Timer.Seconds /> seconds
-              </React.Fragment>
+                <React.Fragment>
+                  Time Remaining: <Timer.Seconds /> seconds
+                </React.Fragment>
             )}
           </Timer>
         ) : (
@@ -252,9 +268,9 @@ const QuestionBox = ({
         </div>
       ) : endGame ? (
         <CenteredDiv
-          style={{ gridArea: "main", fontWeight: "bold", fontSize: "32px" }}
+          style={{ gridArea: "main", fontWeight: "bold", fontSize: "25px" }}
         >
-          Game Over! <br /> Your Score: {getUserScore()}{" "}
+          Game Over! <br /> Questions Answered: {getUserScore()}{" "} <br /> Average Speed: {getUserSpeed()} seconds
         </CenteredDiv>
       ) : (
         <CenteredDiv
@@ -264,43 +280,14 @@ const QuestionBox = ({
             alignItems: "center",
           }}
         >
-          <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
+          <CenteredButton onClick={onStart}>Start Game!</CenteredButton>
         </CenteredDiv>
       )}
       <Status>{status}</Status>
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
       ) : null}
-    </QuestionBoxBase>
-  ) : (
-    <QuestionBoxBase>
-      <div style={{ gridArea: "topQ" }}>Question {gameInfo.questionNumber}</div>
-      <div style={{ gridArea: "topT", textAlign: "right" }}>
-        Number Correct: {players[0].score}
-      </div>
-      {gameInfo.start ? (
-        <div
-          style={{ gridArea: "main", textAlign: "center", fontSize: "18px" }}
-        >
-          {question[0]}
-        </div>
-      ) : (
-        <CenteredDiv
-          style={{
-            position: "relative",
-            gridArea: "main",
-            alignItems: "center",
-          }}
-        >
-          <CenteredButton onClick={onStart}>{buttonText}</CenteredButton>
-        </CenteredDiv>
-      )}
-      <Status>{status}</Status>
-      {gameInfo.start ? (
-        <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
-      ) : null}
-    </QuestionBoxBase>
-  );
+    </QuestionBoxBase>);
 };
 
 const AnswerBoxBase = styled.div`
@@ -339,6 +326,7 @@ const AnswerBox = ({
         onChange={onChange}
         onKeyDown={onKeyDown}
         value={answer}
+        autoFocus
       />
     </AnswerBoxBase>
   );
@@ -556,8 +544,7 @@ export const GamePage = ({
   userEmail: string;
   userName: string;
 }): ReactElement => {
-  //useEffect to load in gameInfo & players
-  //load in gameInfo
+
   const socket: Socket = useContext(SocketContext);
   const { id } = useParams<{ id: string }>();
   const [gameInfo, setGameInfo] = useState({
@@ -568,6 +555,7 @@ export const GamePage = ({
     totalQuestions: 20,
     questionNumber: 1,
     start: false,
+    startTime: 0
   });
 
   //load in all the players
@@ -577,10 +565,15 @@ export const GamePage = ({
     async function setGameData() {
       const res = await fetch(`/api/v1/game/${id}`);
       if (res.ok) {
-        const gameInfo = await res.json();
+        const game = await res.json();
+        console.log("grabbing data!");
+        console.log(game);
         setGameInfo({
           ...gameInfo,
-          questionNumber: 1,
+          status: game.status,
+          mode: game.mode,
+          totalQuestions: game.totalQuestions,
+          maxTime: game.maxTime,
         });
       }
     }
@@ -605,8 +598,8 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {gameInfo.mode !== "alone" ? <Players players={players} /> : null}
-      {gameInfo.mode !== "alone" ? <ChatBox name={userName} id={id} /> : null}
+      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head") ? <Players players={players} /> : null}
+      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head")  ? <ChatBox name={userName} id={id} /> : null}
     </GamePageBase>
   );
 };
