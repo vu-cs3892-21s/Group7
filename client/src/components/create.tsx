@@ -186,7 +186,6 @@ const OperationBase = styled.div`
     "3 4";
   justify-items: center;
   padding: 0px;
-  padding-top: 3em;
 `;
 //{questionType:string}), onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -275,8 +274,8 @@ const OperationButtons = ({ onChange, operations }) => {
 const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
   const questionType = ["SAT", "ACT", "GRE", "Normal"];
   const duration = chosenMode !== "Head to Head";
-  const numberOfQuestions = chosenMode === "Group Play";
-  const operations = chosenMode === "Solo";
+  const numberOfQuestions = chosenMode !== "Head to Head";
+  const operations = chosenMode !== "Head to Head";
   const history = useHistory();
   const socket = useContext(SocketContext);
 
@@ -365,7 +364,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
             return;
         }
 
-        console.log(game);
+        console.log(JSON.stringify(game));
 
         const res = await fetch("/api/v1/game/create", {
             method: "POST",
@@ -404,10 +403,9 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
                         />
                     </div> : null
                 }
-                {operations ? (<OperationButtons operations = {game.operations} onChange = {onChange}/>): null}
                 {numberOfQuestions ?
                     <div>
-                        <Typography style = {{"fontSize":"1.25rem", "paddingTop": "3em"}} gutterBottom>
+                        <Typography style = {{"fontSize":"1.25rem"}} gutterBottom>
                             Number of Questions
                         </Typography>
                         <Slider
@@ -422,6 +420,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
                         />
                     </div> : null
                 }
+                {operations ? (<OperationButtons operations = {game.operations} onChange = {onChange}/>): null}
             </DurationBase>
         <div style ={{"gridArea": "error"}}>
             {error ? <Alert severity="error">{error}</Alert> : null}

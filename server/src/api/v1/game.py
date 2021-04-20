@@ -25,7 +25,7 @@ def update_game_players(game_id: str = None):
     for player in player_query:
         user: User = User.query.filter_by(id=player.player_id).one()
         players.append({"score": player.score, "primary_email": user.primary_email,
-                        "name": user.name, "color": "orange"})
+                        "name": user.name, "color": user.color, "total_duration": player.total_duration})
     return players
 
 
@@ -57,7 +57,21 @@ def get_game_info(game_id: str = None):
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questionsfit
+        "totalQuestions": game.num_questions
+    }
+
+@game_api.route("/getUsers", methods=["GET"])
+def get_users():
+    stats_query = StatsTable.query.order_by(num_correct).limit(10)
+    users: List[Json] = []
+    correct: List[int] = []
+    for stat in stats_query:
+        user = User.query.filter_by(id=stat.player_id).one()
+        users.append(user.name)
+        correct.append(stat.num_correct)
+    return {
+        "users": users,
+        "correct": correct,
     }
 
 
@@ -69,7 +83,6 @@ def get_questions(game_id: str = None):
     for question in game_query:
         questions.append(question.question)
     return {"questions": questions}
-
 
 @ game_api.route("/create", methods=["POST"])
 @ login_required
@@ -97,9 +110,11 @@ def create_game():
 
 def update_stats(game_id: str = None):
     game = Game.query.filter_by(id=game_id).one()
-
     player_query = GamePlayer.query.filter_by(game_id=game_id)
-    max_score = player_query(func.max(GamePlayer.score)).scalar()
+
+    #update max_score of game
+    game.max_score = max(p.max_score for p in player_query)
+    db.session.commit()
 
     player: GamePlayer
     for player in player_query:
@@ -110,11 +125,13 @@ def update_stats(game_id: str = None):
             stats = StatsTable(player_id=player.player_id, mode=game.mode)
             db.session.add(stats)
             db.session.commit()
-        win: int = int(player.score == max_score)
+        if game.mode != "Solo":
+            win: int = int(player.score == game.max_score)
+            stats.num_wins = stats.num_wins + win
+            stats.num_games = stats.num_games + 1
         stats.num_questions = stats.num_questions + game.num_questions
         stats.num_correct = stats.num_correct + player.score
-        stats.num_games = stats.num_games + 1
-        stats.num_wins = stats.num_wins + win
+        stats.total_duration = stats.total_duration + player.total_duration + game.duration * (game.num_questions - player.score)
         db.session.commit()
 
     return {"id": game.id}
@@ -180,7 +197,6 @@ def end_game(room_code: str):
     close_room(room_code)
     update_stats(room_code)
 
-
 @socketio.on("answer")
 def validate_answer(answer_data: Json):
     game_id: str = answer_data["game_id"]
@@ -191,6 +207,7 @@ def validate_answer(answer_data: Json):
         game_player: GamePlayer = GamePlayer.query.filter_by(
             game_id=game_id, player_id=current_user.id).one()
         game_player.score += 1
+        game_player.total_duration += answer_data["duration"]
         db.session.commit()
         emit("update_players", update_game_players(
             game_id), room=game_id)

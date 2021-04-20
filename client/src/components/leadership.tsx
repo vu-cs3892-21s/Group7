@@ -29,7 +29,6 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 
-
 const theme = createMuiTheme({
     overrides: {
         MuiTab: {
@@ -191,7 +190,35 @@ const Header = styled.h1`
     font-family: 'Playfair Display', 'serif';
 `;
 
+
 export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
+
+    // const [leadershipInfo, setLeadershipInfo] = useState({
+    //     users: ["Sam", "Tim", "Evan", "Irisa"],
+    //     correct: [4, 3, 2, 1]
+    // });
+    //
+    // useEffect(() => {
+    //     async function setLeadershipBoard() {
+    //         const res = await fetch(`/api/v1/game/getUsers`);
+    //         if (res.ok) {
+    //             const data = await res.json();
+    //             setLeadershipInfo({
+    //                 users: data.users,
+    //                 correct: data.correct
+    //             });
+    //         }
+    //     }
+    //     setLeadershipBoard();
+    // }, []);
+    //
+    // const makeRows = () => {
+    //     let i = 0;
+    //     while(i < leadershipInfo.users.length) {
+    //         rows.append({i + 1, leadershipInfo.users[i], leadershipInfo.correct[i]})
+    //     }
+    // }
+
     const classes = useStyles();
 
     const [value, setValue] = useState(0);
