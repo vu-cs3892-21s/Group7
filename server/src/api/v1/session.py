@@ -1,7 +1,10 @@
+from db.database import db
+from db.models.oauth import OAuth
+from db.models.user import User, UserRecord
 import json
 import os
 from typing import Dict, List
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint, redirect, url_for, request
 from requests.models import Response as HandlerResponse
 from werkzeug.wrappers import Response
 from werkzeug.local import LocalProxy
@@ -16,9 +19,6 @@ from .shared.api_types import Json
 
 import sys
 sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.user import User, UserRecord
-from db.models.oauth import OAuth
-from db.database import db
 
 # temporarily allow http and relax scope
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
@@ -116,42 +116,19 @@ def get_user_info(blueprint: OAuth2ConsumerBlueprint) -> UserRecord:
 def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
+
 @ session_api.route("/updateProfile", methods=["POST"])
 @ login_required
 def update_profile():
     request_json: Json = request.get_json()
-    user: User = User.query.filter_by(id = current_user.id).one()
+    user: User = User.query.filter_by(id=current_user.id).one()
     if request_json["name"]:
         user.name = request_json["name"]
-        db.session.commit()
     if request_json["color"]:
         user.color = request_json["color"]
-        db.session.commit()
+    db.session.commit()
     return current_user.as_dict()
 
-@ session_api.route("/getStats", methods=["GET"])
-@ login_required
-def get_stats():
-    mode: Json = request.get_json()
-    statsTable_query = StatsTable.query.filter_by(player_id=current_user.id, mode=mode)
-    try:
-        stats = statsTable_query.one()
-    except NoResultFound:
-        stats = StatsTable(player_id=player.player_id, mode=game.mode)
-        db.session.add(stats)
-        db.session.commit()
-
-    accuracy: float = statsTable.num_correct/statsTable.num_questions
-    win_rate: float = statsTable.num_wins/statsTable.num_games
-    speed: float = statsTable.total_duration/statsTable.num_correct
-
-    return {
-        "num_games": statsTable.num_games,
-        "num_questions": statsTable.num_questions,
-        "accuracy": accuracy,
-        "win_rate": win_rate,
-        "speed": speed
-    }
 
 @ session_api.route("/github")
 def github_session() -> Response:
