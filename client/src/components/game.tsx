@@ -348,7 +348,7 @@ const ChatBase = styled.div`
     "chat"
     "type";
   padding: 10px;
-  //border: 5px solid white;
+  border: 5px solid white;
   box-sizing: border-box;
   background-color: rgb(204, 204, 204, 0.32);
 `;
@@ -382,12 +382,14 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   }): Promise<void> => {
     ev.preventDefault();
 
-    const message: Message = {
-      sender: name,
-      text: myMessage,
+    if(myMessage !== "") {
+      const message: Message = {
+        sender: name,
+        text: myMessage,
+      };
+      socket.emit("send_chat", { message: message, game_id: id });
+      updateMessage("");
     };
-    socket.emit("send_chat", { message: message, game_id: id });
-    updateMessage("");
   };
 
   return (
@@ -413,7 +415,7 @@ const Bubble = styled.div<Props> `
     margin: 2px; 
     // maxWidth: 75%;
     width: fit-content;
-    float: ${(props) => props.align};
+    float: left;
 `;
 
 //create hash code for hex color
@@ -436,10 +438,8 @@ const intToRGB = (i: number) => {
 
 const chatBubble = (i: number, sender: string, text: string) => {
   const userColor = intToRGB(hashCode(sender));
-  //******This will need to be changed to person logged in
-  const alignment = (sender === 'Sam') ? "right": "left";
   return (
-      <Bubble color ={userColor} align={alignment} key={i}>
+      <Bubble color ={userColor} key={i}>
         <div style = {{"paddingLeft": "7px", "paddingRight": "7px" }}>[{sender}]: {text}</div>
       </Bubble>
   );
@@ -490,7 +490,7 @@ const SendMessageForm = ({
       className="send-message-form"
     >
       <AnswerInput
-        style={{ backgroundColor: "rgb(204, 204, 204, 0.5)", textAlign: "right", width: "100%" }}
+        style={{ backgroundColor: "white", textAlign: "right", width: "100%" }}
         onChange={onChange}
         value={myMessage}
         placeholder="Type your message and hit ENTER"
