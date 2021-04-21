@@ -91,7 +91,7 @@ const QuestionBox = ({
         const data = await res.json();
         setQuestions(data["questions"]);
       }
-    }
+    };
 
     getQuestions();
   }, []);
@@ -102,14 +102,13 @@ const QuestionBox = ({
       setGameInfo({
         ...gameInfo,
         start: true,
-        startTime: Date.now()
+        startTime: Date.now(),
       });
     });
 
     socket.on("validate_answer", (correct: boolean) => {
       console.log("validate attempt");
       if (correct) {
-
         resetAfterQuestion();
       } else {
         setStatus("Incorrect!");
@@ -131,7 +130,7 @@ const QuestionBox = ({
     setGameInfo({
       ...gameInfo,
       start: true,
-      startTime: Date.now()
+      startTime: Date.now(),
     });
 
     if (gameInfo.questionNumber == 1) {
@@ -146,7 +145,6 @@ const QuestionBox = ({
       start: false,
     });
     setEndGame(true);
-    socket.emit("end", gameInfo.id.toString());
     socket.offAny();
   };
 
@@ -161,9 +159,10 @@ const QuestionBox = ({
     setQuestions(question.slice(1));
 
     if (gameInfo.questionNumber >= gameInfo.totalQuestions) {
-        return endOfGame();
-      }
-    console.log("next question")
+      socket.emit("end", gameInfo.id.toString());
+      return endOfGame();
+    }
+    console.log("next question");
     setGameInfo({
       ...gameInfo,
       start: false,
@@ -173,13 +172,12 @@ const QuestionBox = ({
     setAnswer("");
     setStatus("");
 
-    console.log("restarting timer")
+    console.log("restarting timer");
     setGameInfo({
       ...gameInfo,
       start: true,
-      startTime: Date.now()
+      startTime: Date.now(),
     });
-
   };
 
   const getUserScore = (): number => {
@@ -194,25 +192,28 @@ const QuestionBox = ({
 
   const getUserSpeed = (): string => {
     const user: Player | undefined = players.find(
-        (player: Player) => player.primary_email == userEmail
+      (player: Player) => player.primary_email == userEmail
     );
     if (user === undefined) {
       throw new TypeError("User is not in this game!");
     }
-    const speed = (user.total_duration + (gameInfo.totalQuestions - user.score)*gameInfo.maxTime)/gameInfo.totalQuestions;
+    const speed =
+      (user.total_duration +
+        (gameInfo.totalQuestions - user.score) * gameInfo.maxTime) /
+      gameInfo.totalQuestions;
     return speed.toFixed(2);
   };
 
   const onSubmit = (): void => {
     console.log("Trying submit");
     console.log("Difference");
-    console.log((Date.now()-gameInfo.startTime)/1000)
+    console.log((Date.now() - gameInfo.startTime) / 1000);
 
     socket.emit("answer", {
       answer: answer,
       game_id: gameInfo.id.toString(),
       quest_num: gameInfo.questionNumber,
-      duration: (Date.now() - gameInfo.startTime) / 1000
+      duration: (Date.now() - gameInfo.startTime) / 1000,
     });
   };
 
@@ -234,7 +235,9 @@ const QuestionBox = ({
     <QuestionBoxBase>
       <div style={{ gridArea: "topQ" }}>
         Question {gameInfo.questionNumber} of {gameInfo.totalQuestions}
-        {gameInfo.mode === "Group Play" ? <div> Room Code: {gameInfo.id}</div>: null}
+        {gameInfo.mode === "Group Play" ? (
+          <div> Room Code: {gameInfo.id}</div>
+        ) : null}
       </div>
       <div style={{ gridArea: "topT", textAlign: "right" }}>
         {gameInfo.start ? (
@@ -249,9 +252,9 @@ const QuestionBox = ({
             ]}
           >
             {() => (
-                <React.Fragment>
-                  Time Remaining: <Timer.Seconds /> seconds
-                </React.Fragment>
+              <React.Fragment>
+                Time Remaining: <Timer.Seconds /> seconds
+              </React.Fragment>
             )}
           </Timer>
         ) : (
@@ -270,7 +273,8 @@ const QuestionBox = ({
         <CenteredDiv
           style={{ gridArea: "main", fontWeight: "bold", fontSize: "25px" }}
         >
-          Game Over! <br /> Questions Answered: {getUserScore()}{" "} <br /> Average Speed: {getUserSpeed()} seconds
+          Game Over! <br /> Questions Answered: {getUserScore()} <br /> Average
+          Speed: {getUserSpeed()} seconds
         </CenteredDiv>
       ) : (
         <CenteredDiv
@@ -287,7 +291,8 @@ const QuestionBox = ({
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
       ) : null}
-    </QuestionBoxBase>);
+    </QuestionBoxBase>
+  );
 };
 
 const AnswerBoxBase = styled.div`
@@ -544,7 +549,6 @@ export const GamePage = ({
   userEmail: string;
   userName: string;
 }): ReactElement => {
-
   const socket: Socket = useContext(SocketContext);
   const { id } = useParams<{ id: string }>();
   const [gameInfo, setGameInfo] = useState({
@@ -555,7 +559,7 @@ export const GamePage = ({
     totalQuestions: 20,
     questionNumber: 1,
     start: false,
-    startTime: 0
+    startTime: 0,
   });
 
   //load in all the players
@@ -598,8 +602,12 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head") ? <Players players={players} /> : null}
-      {(gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head")  ? <ChatBox name={userName} id={id} /> : null}
+      {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
+        <Players players={players} />
+      ) : null}
+      {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
+        <ChatBox name={userName} id={id} />
+      ) : null}
     </GamePageBase>
   );
 };
