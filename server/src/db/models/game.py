@@ -14,7 +14,8 @@ class Game(db.Model):
     duration = db.Column(db.Integer)
     room_code = db.Column(db.String(8))
     max_score = db.Column(db.Integer)
-    create_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_time = db.Column(db.DateTime, nullable=False,
+                            default=datetime.utcnow)
 
 
 class GamePlayer(db.Model):
@@ -23,6 +24,7 @@ class GamePlayer(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     score = db.Column(db.Integer, default=0)
     total_duration = db.Column(db.Float(2), default=0)
+
 
 class GameQuestion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
