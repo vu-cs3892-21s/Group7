@@ -8,7 +8,7 @@ from flask import Blueprint, redirect, url_for, request
 from requests.models import Response as HandlerResponse
 from werkzeug.wrappers import Response
 from werkzeug.local import LocalProxy
-from flask_login import current_user, login_user, login_required
+from flask_login import current_user, login_user, login_required, logout_user
 from flask_dance.contrib.github import make_github_blueprint, github, OAuth2ConsumerBlueprint
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
@@ -142,6 +142,12 @@ def google_session() -> Response:
     if not google.authorized:
         return redirect(url_for(GOOGLE_TOKEN_API))
     return redirect("http://localhost:7070/#/profile")
+
+
+@ session_api.route("/logout")
+def logout() -> Response:
+    logout_user()
+    return redirect("http://localhost:7070")
 
 
 @ oauth_authorized.connect_via(github_blueprint)
