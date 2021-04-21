@@ -12,6 +12,10 @@ const ErrorBase = styled.div`
   display: flex;
   justify-content: center;
   min-height: 1.2em;
+  position: absolute;
+  bottom: 0; 
+  right: 0;
+  left: 0;
 `;
 
 export const ErrorMessage = ({ msg = '', hide = false }) => {
@@ -100,6 +104,7 @@ export const AnswerInput = styled.input`
     `;
 
 
+
 export const HeaderWrap = styled.div`
     grid-area: top;
     padding: 0px 10px;
@@ -125,7 +130,7 @@ export const FunButton = styled.button`
   max-width: 300px;
   min-width: 150px;
   max-height: 2em;
-  background:#00538f;
+  background: #00538f;
   border-radius: 5px;
   font-size: 20px;
   color: white;
@@ -134,12 +139,12 @@ export const FunButton = styled.button`
   overflow: auto;
   box-shadow: 0 9px #999;
   &:hover {
-    background-color: #B5CEF3;
+    background-color: #b5cef3;
     box-shadow: 0 5px #666;
     transform: translateY(4px);
   }
-  &:active{
-    background-color: #B5CEF3;
+  &:active {
+    background-color: #b5cef3;
   }
 `;
 

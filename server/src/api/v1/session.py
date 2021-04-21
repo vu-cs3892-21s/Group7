@@ -1,11 +1,14 @@
+from db.database import db
+from db.models.oauth import OAuth
+from db.models.user import User, UserRecord
 import json
 import os
 from typing import Dict, List
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint, redirect, url_for, request
 from requests.models import Response as HandlerResponse
 from werkzeug.wrappers import Response
 from werkzeug.local import LocalProxy
-from flask_login import current_user, login_user, login_required
+from flask_login import current_user, login_user, login_required, logout_user
 from flask_dance.contrib.github import make_github_blueprint, github, OAuth2ConsumerBlueprint
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
@@ -16,9 +19,6 @@ from .shared.api_types import Json
 
 import sys
 sys.path.append("...")  # Necessary to import beyond top-level package
-from db.models.user import User, UserRecord
-from db.models.oauth import OAuth
-from db.database import db
 
 # temporarily allow http and relax scope
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
@@ -117,8 +117,21 @@ def get_profile_data() -> UserRecord:
     return current_user.as_dict()
 
 
+@ session_api.route("/updateProfile", methods=["POST"])
+@ login_required
+def update_profile():
+    request_json: Json = request.get_json()
+    user: User = User.query.filter_by(id=current_user.id).one()
+    if request_json["name"]:
+        user.name = request_json["name"]
+    if request_json["color"]:
+        user.color = request_json["color"]
+    db.session.commit()
+    return current_user.as_dict()
+
+
 @ session_api.route("/github")
-def github_sesssion() -> Response:
+def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
     return redirect("http://localhost:7070/#/profile")
@@ -129,6 +142,12 @@ def google_session() -> Response:
     if not google.authorized:
         return redirect(url_for(GOOGLE_TOKEN_API))
     return redirect("http://localhost:7070/#/profile")
+
+
+@ session_api.route("/logout")
+def logout() -> Response:
+    logout_user()
+    return redirect("http://localhost:7070")
 
 
 @ oauth_authorized.connect_via(github_blueprint)

@@ -2,11 +2,12 @@
 import os
 from api.v1.session import (github_blueprint, google_blueprint,
                             session_api, SESSION_API_PREFIX, SECRET_KEY)
-from api.v1.game import (game_api, GAME_API_PREFIX)
+from api.v1.game import (socketio, game_api, GAME_API_PREFIX)
 from flask import Flask
 from flask_login import LoginManager
 from db.database import db
 from db.models.user import User
+from db.models.game import Game, GamePlayer, GameQuestion
 from db.models.oauth import OAuth
 
 app = Flask(__name__)
@@ -34,6 +35,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 login_manager = LoginManager(app)
+socketio.init_app(app)
 
 
 @login_manager.user_loader
@@ -81,6 +83,35 @@ def drop_everything():
     trans.commit()
 
 
+def create_test_data() -> None:
+    question_prompt: str = '2+2'
+    question_ans: str = '4'
+    # manually declaring ids here for simplicity, normally will autoincrement
+    test_user: User = User(
+        id=0, primary_email='tester@test.com', name='Testy Testo')
+    test_question: GameQuestion = GameQuestion(
+        id=1, game_id=100, question=question_prompt, answer=question_ans,
+        quest_num=0)
+    test_player: GamePlayer = GamePlayer(game_id=100, player_id=0, score=0)
+    test_game: Game = Game(id=100, status='complete', operations='+',
+                           mode='solo', question_type='abc',
+                           num_questions=1, duration=1000, room_code='abcd')
+
+    for m in (test_user, test_game):
+        db.session.add(m)
+    db.session.commit()
+    for m in (test_question, test_player):
+        db.session.add(m)
+    db.session.add(test_player)
+    db.session.commit()
+
+    return None
+
+
 with app.app_context():
     drop_everything()
     db.create_all()
+    # create_test_data()
+
+
+socketio.run(app, host="0.0.0.0", port=5000, debug=True)

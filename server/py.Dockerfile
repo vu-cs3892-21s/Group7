@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 EXPOSE 5000
-ENTRYPOINT python -m flask run
+ENTRYPOINT python $FLASK_APP

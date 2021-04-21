@@ -24,9 +24,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const drawerWidth = "100%";
 
-//const drawerWidth = 180;
-
-
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -69,11 +66,6 @@ export const useStyles = makeStyles((theme: Theme) =>
             height:"100vh,"
         },
         drawerPaper: {
-            // width: drawerWidth,
-            // // background: "#00538F",
-            // background: "transparent",
-            // // background: "#bbccfd",
-            // height: "100vh",
             width: '100vw',
             height: '100vh',
             backgroundImage: `url(https://hdwallpaperim.com/wp-content/uploads/2017/09/16/50906-low_poly-wireframe-poly.jpg)`,
@@ -133,22 +125,13 @@ export const useStyles = makeStyles((theme: Theme) =>
 const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
     const classes = useStyles();
     return (
-
-
         <Box mt={20} mb={20}>
-            <Link to={"/create"}>
-            {/*<ListItem button key = {"playlink"} className = {classes.tr}>*/}
-            <ListItem button key = {"createLink"}>
-                <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
-
-
-            </ListItem>
-            </Link>
-            <Link to={"/game/123"}>
-                <ListItem button key = {"gamelink"}>
-                    <ListItemText classes = {{primary: classes.listFormat}} primary={"Game Page"}/>
+            {loggedIn ?
+                <Link to={"/create"}>
+                    <ListItem button key = {"createLink"}>
+                        <ListItemText classes = {{primary: classes.playFormat}} primary={"PLAY!"}/>
                 </ListItem>
-            </Link>
+            </Link> : null}
             <Link to={"/leadership"}>
             <ListItem button key = {"Leadership Board"}>
                 <ListItemText classes = {{primary: classes.listFormat}} primary={"Leadership Board"} />
@@ -246,7 +229,7 @@ export const SideBar = ({loggedIn, logIn, logOut, username}) => {
                     </IconButton>
                 </div>
 
-              
+
                 <button onClick = {handleDrawerClose} className = {classes.buttonFormat}>
                     <SideBarOptions loggedIn = {loggedIn} username={username}/>
 
@@ -265,98 +248,3 @@ const divStyle = {
     backgroundSize: 'cover',
 };
 
-
-
-
-// const AccountOptionsBase = styled.div`
-//     grid-area: account;
-//     position: absolute;
-//     bottom: 0;
-//     & > a {
-//         padding: 6px 8px 6px 16px;
-//         text-decoration: none;
-//         font-size: 25px;
-//         color: white;
-//         display: block;
-//         font-family: revalia;
-//     }
-//     & > a:hover {
-//         color: #f1f1f1;
-//     }
-// `;
-//
-// // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// // @ts-ignore
-// const AccountOptions = ({loggedIn, logIn, logOut}) => {
-//
-//     return(<AccountOptionsBase>
-//             {loggedIn ?
-//                 (<Fragment>
-//                     <Button id="logout" onClick={logOut}>Log Out</Button>
-//                 </Fragment>)
-//                 : (<Fragment>
-//                     <Button id="google" onClick={logIn}>Google Log In</Button>
-//                     <Button id="gitHub" onClick={logIn}>GitHub Log In</Button>
-//                 </Fragment>)
-//
-//             }
-//         </AccountOptionsBase>
-//
-//     );
-// }
-//
-// const SideBarOptionsBase = styled.div`
-//     padding: 0 0 50px 0;
-//     grid-area: options;
-//     & > a {
-//         padding: 6px 8px 6px 16px;
-//         text-decoration: none;
-//         font-size: 25px;
-//         color: white;
-//         display: block;
-//         font-family: revalia;
-//     }
-// `;
-// const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string}) => {
-//     return (
-//         <SideBarOptionsBase>
-//             <Link id="playLink" style = {{"fontSize": 35}} to="/create">Play!</Link>
-//             <Link id="leaderBoard" to="/leadership">Leadership <br/> Board </Link>
-//             {loggedIn ?
-//             (<Link id="profile" to={`/profile/${username}`}>Profile</Link>)
-//             : null}
-//         </SideBarOptionsBase>
-//     );
-// }
-//
-// const SideBarBase = styled.div`
-//     height: 100vh;
-//     padding: 0 0 20px 0;
-//     grid-area: sb;
-//     display: grid;
-//     grid-template-columns: auto;
-//     grid-template-rows: 40% 50% 10%;
-//     grid-template-areas:
-//       "pic"
-//       "options"
-//       "account";
-//     position: absolute;
-//     color: white;
-//     background-color: #00538f;
-//     text-align: center;
-//     overflow: auto;
-//     box-sizing: border-box;
-//     bottom: 0;
-// `;
-//
-//
-// // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/ban-ts-comment
-// // @ts-ignore
-// export const SideBar = ({loggedIn, logIn, logOut, username}) => {
-//     return(
-//         <SideBarBase>
-//             <img style={{"gridArea" : "pic", "width": 180, "paddingBottom": 200}} src = {'../../images/math.png'}/>
-//             <SideBarOptions loggedIn = {loggedIn} username={username}/>
-//             <AccountOptions loggedIn = {loggedIn} logIn={logIn} logOut={logOut}/>
-//         </SideBarBase>);
-// }

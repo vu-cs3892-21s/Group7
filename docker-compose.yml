@@ -24,6 +24,7 @@ services:
       dockerfile: ./client.Dockerfile
     volumes:
       - "./client:/client"
+      - "/client/node_modules"
     container_name: client
     ports:
       - "8000:8000"
@@ -40,11 +41,11 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
   redis:
     container_name: redis
     image: "redis:latest"
+    expose:
+      - "6379"
   nginx:
     container_name: nginx
     image: "nginx:latest"
@@ -57,4 +58,16 @@ services:
       - "client"
       - "postgres"
       - "redis"
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8888:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres:5432
+      ADMINER_DESIGN: nette
+      ADMINER_PLUGINS: tables-filter
 # todo: make networking explicit
