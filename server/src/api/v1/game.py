@@ -130,7 +130,7 @@ def get_stats(mode: str = None) -> Json:
     win_rate: float = stats.num_wins / \
         stats.num_games if stats.num_games != 0 else 0
     speed: float = stats.total_duration / \
-        stats.num_correct if stats.num_correct != 0 else 0
+        stats.num_questions if stats.num_questions != 0 else 0
 
     return {
         "num_games": stats.num_games,

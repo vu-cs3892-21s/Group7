@@ -350,6 +350,7 @@ const ChatBase = styled.div`
   padding: 10px;
   border: 5px solid white;
   box-sizing: border-box;
+  background-color: rgb(204, 204, 204, 0.32);
 `;
 const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -381,12 +382,14 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   }): Promise<void> => {
     ev.preventDefault();
 
-    const message: Message = {
-      sender: name,
-      text: myMessage,
+    if(myMessage !== "") {
+      const message: Message = {
+        sender: name,
+        text: myMessage,
+      };
+      socket.emit("send_chat", { message: message, game_id: id });
+      updateMessage("");
     };
-    socket.emit("send_chat", { message: message, game_id: id });
-    updateMessage("");
   };
 
   return (
@@ -401,33 +404,73 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   );
 };
 
+interface Props {
+  color: string;
+  align?: string;
+}
+
+const Bubble = styled.div<Props> `
+    background-color: ${(props) => props.color};
+    border-radius: 6px; 
+    margin: 2px; 
+    // maxWidth: 75%;
+    width: fit-content;
+    float: left;
+`;
+
+//create hash code for hex color
+const hashCode = (str:string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return 125 * hash;
+}
+
+//compute random hex color code
+const intToRGB = (i: number) => {
+  const c = (i & 0x00FFFFFF)
+      .toString(16)
+      .toUpperCase();
+
+  return "#" + "00000".substring(0, 6 - c.length) + c;
+}
+
+const chatBubble = (i: number, sender: string, text: string) => {
+  const userColor = intToRGB(hashCode(sender));
+  return (
+      <Bubble color ={userColor} key={i}>
+        <div style = {{"paddingLeft": "7px", "paddingRight": "7px" }}>[{sender}]: {text}</div>
+      </Bubble>
+  );
+};
 const MessageList = ({ messages }: { messages: Message[] }): ReactElement => {
   const messageBox = messages.map(
-    (message: { sender: string; text: string }, i: number) => (
-      <div
-        style={{
-          backgroundColor: "white",
-          borderRadius: "5px",
-          margin: "2px",
-          maxWidth: "95%",
-        }}
-        key={i}
-      >
-        {message.sender}: {message.text}
-      </div>
-    )
+      (message: { sender: string; text: string }, i: number) => (
+          <div
+              style={{
+                backgroundColor: "white",
+                borderRadius: "5px",
+                margin: "2px",
+                maxWidth: "95%",
+              }}
+              key={i}
+          >
+            {chatBubble(i, message.sender, message.text)}
+          </div>
+      )
   );
   return (
-    <div
-      style={{
-        overflow: "scroll",
-        gridArea: "chat",
-        display: "flex",
-        flexDirection: "column-reverse",
-      }}
-    >
-      {messageBox}
-    </div>
+      <div
+          style={{
+            overflow: "scroll",
+            gridArea: "chat",
+            display: "flex",
+            flexDirection: "column-reverse",
+          }}
+      >
+        {messageBox}
+      </div>
   );
 };
 
@@ -447,7 +490,7 @@ const SendMessageForm = ({
       className="send-message-form"
     >
       <AnswerInput
-        style={{ textAlign: "right", width: "100%" }}
+        style={{ backgroundColor: "white", textAlign: "right", width: "100%" }}
         onChange={onChange}
         value={myMessage}
         placeholder="Type your message and hit ENTER"
@@ -461,6 +504,7 @@ const PlayerBox = styled.div`
   margin: 5px;
   padding-right: 30px;
   background: #b5cef3;
+  //background: rgb(112, 144, 193, 0.87);
   position: relative;
   border: 3px solid white;
   border-radius: 5px;

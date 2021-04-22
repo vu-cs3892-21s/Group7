@@ -100,8 +100,10 @@ export const AnswerInput = styled.input`
     overflow: scroll;
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-`;
+    top: 0; left: 0; bottom: 0; right: 0
+    `;
+
+
 
 
 export const HeaderWrap = styled.div`
@@ -171,6 +173,7 @@ export const CenteredButton = styled.button`
     background-color: #B5CEF3;
   }
 `;
+
 
 export const InfoBlock = styled.div`
   display: grid;

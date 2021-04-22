@@ -52,6 +52,7 @@ const GridBase = styled.div`
 const defaultUser = {
   name: "",
   primary_email: "",
+  color: "white",
 };
 
 const App = () => {
@@ -73,10 +74,9 @@ const App = () => {
     try {
       window.location.href = endpoint;
       const user = {
-        // username: data.login,
         name: "",
         primary_email: "",
-        color: "",
+        color: "white",
       };
       localStorage.setItem("user", JSON.stringify(user));
       setState(user);
