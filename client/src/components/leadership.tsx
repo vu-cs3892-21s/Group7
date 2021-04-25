@@ -1,9 +1,14 @@
 'use strict';
 
 import React, {useEffect, useState} from 'react';
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import styled from "styled-components";
 import PersonIcon from "@material-ui/icons/Person";
 import {withStyles, makeStyles, Theme} from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -23,22 +28,41 @@ const StyledTableCell = withStyles((theme) => ({
     },
 }))(TableCell);
 
-const createData = (rank: number, name: string, color: string, points: number) => ({rank, name, color, points});
 
-const rows = [
-    createData(1, 'Sam', 'red', 0),
-    createData(2, 'Tim', 'pink',0),
-    createData(3, 'Evan', 'blue',0),
-    createData(4, 'Irisa', 'green',0),
-];
+const theme = createMuiTheme({
+    overrides: {
+        MuiTab: {
+            root: {
+                "&.Mui-selected": {
+                    background: "rgb(204, 204, 204, 0.2)",
+                    border: "none",
+                    outline: "none",
+                }
+            }
+        }
+    }
+});
 
 const useStyles = makeStyles((theme: Theme) => ({
     backDrop: {
-        backdropFilter: "blur(0px)",
+        backdropFilter: "blur(2.5px)",
+    },
+    indicator: {
+        background: "none",
+    },
+    tabs: {
+        flexGrow: 1,
+        width: 500,
+        marginTop: "23vh",
+        marginLeft: "auto",
+        marginRight: "auto",
+        background: "transparent",
+        color: "white",
+        borderBottom: "0.01px solid white",
     },
     table: {
-        width: '90%',
-        marginTop: "11vh",
+        width: '80%',
+        marginTop: "1vh",
         marginLeft: "auto",
         marginRight: "auto",
         borderSpacing: '0 10px',
@@ -66,14 +90,86 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
     },
     rankStyle: {
-        width: "10%",
+        width: "15%",
     },
     picStyle : {
-        width: "10%",
+        width: "19%",
         height: "100%",
     },
 }));
 
+const createData = (rank: number, name: string, color: string, points: number) => ({rank, name, color, points});
+
+const rows = [
+    createData(1, 'Sam', 'red', 0),
+    createData(2, 'Tim', 'pink',0),
+    createData(3, 'Evan', 'blue',0),
+    createData(4, 'Irisa', 'green',0),
+];
+
+//Add data to tables
+const TableComponent = () => {
+    const classes = useStyles();
+    return <TableContainer className={classes.table}>
+        <Table className={classes.table}>
+            <TableHead>
+                <TableRow className={classes.tableHeader}>
+                    <StyledTableCell align="center">Rank</StyledTableCell>
+                    <StyledTableCell align="right"></StyledTableCell>
+                    <StyledTableCell align="left">Player</StyledTableCell>
+                    <StyledTableCell align="center">Points</StyledTableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {rows.map((row) => (
+                    <TableRow key={row.rank}>
+                        <StyledTableCell component="th" scope="row" align="center" className = {classes.rankStyle}>
+                            {row.rank}
+                        </StyledTableCell>
+                        <StyledTableCell align="right" className = {classes.picStyle}>
+                            <PersonIcon style={{ "width": "50%", "height": "100%", "fill": row.color }}/>
+                        </StyledTableCell>
+                        <StyledTableCell align ="left" >{row.name}</StyledTableCell>
+                        <StyledTableCell align="center">{row.points}</StyledTableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </TableContainer>
+};
+
+interface TabPanelProps {
+    children: React.ReactNode;
+    index: any;
+    value: any;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+const a11yProps = (index: any) => {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
 
 const LeaderBoardBlockBase = styled.div`
   width: 100%;
@@ -90,7 +186,6 @@ const Header = styled.h1`
     text-align: center;
     font-family: 'Playfair Display', 'serif';
 `;
-
 
 export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
 
@@ -121,34 +216,36 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
     // }
 
     const classes = useStyles();
-    return(<LeaderBoardBlockBase className = {classes.backDrop}>
-        <Header> LEADERSHIP BOARD </Header>
-        <TableContainer className={classes.table}>
-            <Table className={classes.table} aria-label="customized table">
-                <TableHead>
-                    <TableRow className={classes.tableHeader}>
-                        <StyledTableCell align="left">Rank</StyledTableCell>
-                        <StyledTableCell align="right"></StyledTableCell>
-                        <StyledTableCell align="left">Name</StyledTableCell>
-                        <StyledTableCell align="left">Points</StyledTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.rank}>
-                            <StyledTableCell component="th" scope="row" className = {classes.rankStyle}>
-                                {row.rank}
-                            </StyledTableCell>
-                            <StyledTableCell align="right" className = {classes.picStyle}>
-                                <PersonIcon style={{ "width": "100%", "height": "100%", "fill": row.color }}/>
-                            </StyledTableCell>
-                            <StyledTableCell align = "left">{row.name}</StyledTableCell>
-                            <StyledTableCell align="left">{row.points}</StyledTableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </LeaderBoardBlockBase>)
+    const [value, setValue] = useState(0);
 
-}
+    const handleChange = (
+        event: any,
+        newValue: React.SetStateAction<number>
+    ): void => {
+        setValue(newValue);
+    };
+
+    return(
+        <LeaderBoardBlockBase className = {classes.backDrop}>
+            <Header> LEADERSHIP BOARD </Header>
+
+            <ThemeProvider theme={theme}>
+                <Box className={classes.tabs}>
+                    <Tabs value={value} onChange={handleChange} className={classes.tabs} classes={{ indicator: classes.indicator }}>
+                        <Tab label="Me and My Friends" {...a11yProps(0)} />
+                        <Tab label="Local" {...a11yProps(1)} />
+                        <Tab label="Global" {...a11yProps(2)} />
+                    </Tabs>
+                </Box>
+            </ThemeProvider>
+            <TabPanel value={value} index={0}>
+                {TableComponent()}
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                {TableComponent()}
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+                {TableComponent()}
+            </TabPanel>
+        </LeaderBoardBlockBase>)
+};
