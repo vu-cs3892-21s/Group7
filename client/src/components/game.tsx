@@ -94,7 +94,7 @@ const QuestionBox = ({
     };
 
     getQuestions();
-  }, []);
+  }, [gameInfo.id]);
 
   useEffect(() => {
     // attach socket event listeners
@@ -368,7 +368,7 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
     return () => {
       socket.off("chat_update");
     };
-  }, [messages]);
+  }, [socket, messages]);
 
   const onChange = (ev: {
     target: { value: React.SetStateAction<string> };
@@ -566,7 +566,7 @@ const PlayerBase = styled.div`
 
 const Players = ({ players }: { players: Player[] }): ReactElement => {
   players.sort((a, b) => b.score - a.score);
-  const playerBoxes = players.map((player: any, i: number) => (
+  const playerBoxes = players.map((player: Player, i: number) => (
     <Player key={i} player={player} rank={i + 1} />
   ));
   return <PlayerBase>{playerBoxes}</PlayerBase>;
@@ -626,7 +626,7 @@ export const GamePage = ({
       }
     }
     setGameData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     socket.on("update_players", (game_players: Player[]) => {
@@ -636,7 +636,7 @@ export const GamePage = ({
     return () => {
       socket.off("update_players");
     };
-  }, [players]);
+  }, [players, socket]);
 
   return (
     <GamePageBase>
