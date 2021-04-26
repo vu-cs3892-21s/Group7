@@ -4,9 +4,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
-import { CenteredButton} from "./shared";
+import { CenteredButton } from "./shared";
 import { SocketContext, socket } from "../context/socket";
-import { Alert } from '@material-ui/lab';
+import { Alert } from "@material-ui/lab";
 import GroupIcon from "@material-ui/icons/Group";
 import PersonIcon from "@material-ui/icons/Person";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
@@ -132,13 +132,13 @@ const GameModeBlock = ({ gameMode, onClick }) => {
 };
 
 const GameInfoBase = styled.div`
-   display:grid;
-   grid-template-columns: '50% 50%';
-   grid-template-rows: 70% 15% 15%;
-   grid-template-areas: 
-      'type duration'
-      'error error'
-      'start start';
+  display: grid;
+  grid-template-columns: "50% 50%";
+  grid-template-rows: 70% 15% 15%;
+  grid-template-areas:
+    "type duration"
+    "error error"
+    "start start";
   padding: 10px;
   margin: 20px;
   margin-top: 0px;
@@ -146,7 +146,7 @@ const GameInfoBase = styled.div`
   justify-content: center;
   border: 3px solid black;
   color: black;
-  background-color: #B5CEF3;
+  background-color: #b5cef3;
   min-height: 350px;
   max-height: 375px;
   width: fit-content;
@@ -294,7 +294,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     numberOfQuestions: 20,
   });
 
-    useEffect(() => setError(""), [chosenMode])
+  useEffect(() => setError(""), [chosenMode]);
   //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -342,93 +342,115 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     console.log(game);
   };
 
-    const onSubmit = async (ev: { preventDefault: () => void; }) => {
-        ev.preventDefault();
-        console.log("Trying to submit!");
+  const onSubmit = async (ev: { preventDefault: () => void }) => {
+    ev.preventDefault();
+    console.log("Trying to submit!");
 
-        if (game.questionType === "") {
-            setError("Select question type");
-            console.log("Select question type");
-            return;
-        } else if (chosenMode === "Solo" && game.operations.length === 0) {
-            setError("Select operation types");
-            console.log("Select operation types");
-            return;
-        } else if (chosenMode !== "Head To Head" && game.duration === 0) {
-            setError("Enter > 0 duration");
-            console.log("Enter > 0 duration");
-            return;
-        } else if (chosenMode === "Group Play" && game.numberOfQuestions === 0) {
-            setError("Enter > 0 number of questions");
-            console.log("Enter > 0 number of questions");
-            return;
-        }
+    if (game.questionType === "") {
+      setError("Select question type");
+      console.log("Select question type");
+      return;
+    } else if (chosenMode === "Solo" && game.operations.length === 0) {
+      setError("Select operation types");
+      console.log("Select operation types");
+      return;
+    } else if (chosenMode !== "Head to Head" && game.duration === 0) {
+      setError("Enter > 0 duration");
+      console.log("Enter > 0 duration");
+      return;
+    } else if (chosenMode === "Group Play" && game.numberOfQuestions === 0) {
+      setError("Enter > 0 number of questions");
+      console.log("Enter > 0 number of questions");
+      return;
+    }
 
-        console.log(JSON.stringify(game));
+    console.log(JSON.stringify(game));
 
-        const res = await fetch("/api/v1/game/create", {
-            method: "POST",
-            body: JSON.stringify(game),
-            credentials: "include",
-            headers: {
-                "content-type": "application/json",
-            },
-        });
+    console.log(chosenMode);
+    if (chosenMode === "Head to Head") {
+      socket.emit("find_match", game);
+      history.push("/loading");
+    } else {
+      const res = await fetch("/api/v1/game/create", {
+        method: "POST",
+        body: JSON.stringify(game),
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      console.log(data);
-      socket.emit("join", data.id.toString());
-      history.push(`/game/${data.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        socket.emit("join", data.id.toString());
+        history.push(`/game/${data.id}`);
+      }
     }
   };
 
-    return (<GameInfoBase>
-            {questionType ? (<QuestionButtons onChange={onChange} questionType = {game.questionType}/>): null}
-            <DurationBase>
-                {duration ?
-                    <div>
-                        <Typography style = {{"fontSize":"1.25rem"}} gutterBottom>
-                            Duration
-                        </Typography>
-                        <Slider
-                            defaultValue={20}
-                            aria-valuetext={"duration"}
-                            valueLabelDisplay="auto"
-                            onChange={onChange}
-                            step={5}
-                            marks
-                            min={5}
-                            max={40}
-                        />
-                    </div> : null
-                }
-                {numberOfQuestions ?
-                    <div>
-                        <Typography style = {{"fontSize":"1.25rem"}} gutterBottom>
-                            Number of Questions
-                        </Typography>
-                        <Slider
-                            defaultValue={20}
-                            aria-valuetext={"numberOfQuestions"}
-                            valueLabelDisplay="auto"
-                            onChange={onChange}
-                            step={5}
-                            marks
-                            min={10}
-                            max={50}
-                        />
-                    </div> : null
-                }
-                {operations ? (<OperationButtons operations = {game.operations} onChange = {onChange}/>): null}
-            </DurationBase>
-        <div style ={{"gridArea": "error"}}>
-            {error ? <Alert severity="error">{error}</Alert> : null}
-        </div>
-        <div style={{"gridArea": "start", "position": "relative"}}>
-            <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%"}} onClick={onSubmit}>Start Game!</CenteredButton>
-        </div>
-    </GameInfoBase>);
+  return (
+    <GameInfoBase>
+      {questionType ? (
+        <QuestionButtons onChange={onChange} questionType={game.questionType} />
+      ) : null}
+      <DurationBase>
+        {duration ? (
+          <div>
+            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+              Duration
+            </Typography>
+            <Slider
+              defaultValue={20}
+              aria-valuetext={"duration"}
+              valueLabelDisplay="auto"
+              onChange={onChange}
+              step={5}
+              marks
+              min={5}
+              max={40}
+            />
+          </div>
+        ) : null}
+        {numberOfQuestions ? (
+          <div>
+            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+              Number of Questions
+            </Typography>
+            <Slider
+              defaultValue={20}
+              aria-valuetext={"numberOfQuestions"}
+              valueLabelDisplay="auto"
+              onChange={onChange}
+              step={5}
+              marks
+              min={10}
+              max={50}
+            />
+          </div>
+        ) : null}
+        {operations ? (
+          <OperationButtons operations={game.operations} onChange={onChange} />
+        ) : null}
+      </DurationBase>
+      <div style={{ gridArea: "error" }}>
+        {error ? <Alert severity="error">{error}</Alert> : null}
+      </div>
+      <div style={{ gridArea: "start", position: "relative" }}>
+        <CenteredButton
+          style={{
+            fontSize: "18px",
+            minWidth: 0,
+            width: "50%",
+            height: "100%",
+          }}
+          onClick={onSubmit}
+        >
+          Start Game!
+        </CenteredButton>
+      </div>
+    </GameInfoBase>
+  );
 };
 
 const JoinGameBase = styled.div`
@@ -478,30 +500,43 @@ const JoinGame = () => {
     socket.emit("join", code);
   };
 
-    return(<JoinGameBase>
-        <DurationBase>
-            <h5>Room Code</h5>
-            <DurationInput
-                value = {code}
-                style = {{"fontWeight": "bold" , "fontSize": "18px" }}
-                onChange = {onChange}
-            />
-        </DurationBase>
-        {error ? <Alert severity="error">{error}</Alert> : null}
-        <CenteredButton style={{"fontSize": "18px","minWidth":0, "width": "50%", "height": "100%", "margin": "1.5em", "position": "relative"}} onClick={onSubmit}>Join!</CenteredButton>
-    </JoinGameBase>)
+  return (
+    <JoinGameBase>
+      <DurationBase>
+        <h5>Room Code</h5>
+        <DurationInput
+          value={code}
+          style={{ fontWeight: "bold", fontSize: "18px" }}
+          onChange={onChange}
+        />
+      </DurationBase>
+      {error ? <Alert severity="error">{error}</Alert> : null}
+      <CenteredButton
+        style={{
+          fontSize: "18px",
+          minWidth: 0,
+          width: "50%",
+          height: "100%",
+          margin: "1.5em",
+          position: "relative",
+        }}
+        onClick={onSubmit}
+      >
+        Join!
+      </CenteredButton>
+    </JoinGameBase>
+  );
 };
-
 
 const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 75px 275px 400px;
-  grid-template-areas: 
-    'title'
-    'modes'
-    'options' 
+  grid-template-areas:
+    "title"
+    "modes"
+    "options";
 `;
 
 const OptionsBase = styled.div`
@@ -529,7 +564,7 @@ export const GameGen = (props: { history: History }) => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-    return (
+  return (
     <GameGenBase>
       <Header> Select Game Mode</Header>
       <GameMode onClick={onClick} />

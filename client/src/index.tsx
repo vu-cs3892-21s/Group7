@@ -7,6 +7,7 @@ import { SideBar } from "./components/sidebar";
 import { Profile } from "./components/profile";
 import { GameGen } from "./components/create";
 import { GamePage } from "./components/game";
+import { Loading } from "./components/loading";
 import { LeadershipBoard } from "./components/leadership";
 import { HashRouter, Route } from "react-router-dom";
 import { render } from "react-dom";
@@ -143,6 +144,16 @@ const App = () => {
                   userEmail={state.primary_email}
                   userName={state.name}
                 />
+              </SocketContext.Provider>
+            );
+          }}
+        />
+        <Route
+          path="/loading"
+          render={() => {
+            return (
+              <SocketContext.Provider value={socket}>
+                <Loading />
               </SocketContext.Provider>
             );
           }}
