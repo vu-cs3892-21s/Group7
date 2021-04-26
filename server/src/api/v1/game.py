@@ -48,6 +48,13 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
         questions.append((question, str(answer)))
     return questions
 
+def grab_questions(question_type: str, numberOfQuestions: int) -> List[Tuple[str, str]]:
+    questions: List[Tuple[str, str]] = []
+    question_query = Question.query.filter_by(question_type=question_type)
+    for _ in range(numberOfQuestions):
+        question: Question = random.choice(question_query)
+        questions.append((question.question, question.answer))
+    return questions
 
 def join_game(game_id: str) -> None:
     join_room(game_id)
@@ -109,8 +116,10 @@ def create_game_from_json(game_json) -> str:
     db.session.add(game)
     db.session.commit()
 
-    questions: List[Tuple[str, str]] = create_questions(
-        game_json["operations"], game_json["numberOfQuestions"])
+    if game_json["questionType"] = "Normal":
+        questions: List[Tuple[str, str]] = create_questions(game_json["operations"], game_json["numberOfQuestions"])
+    else:
+        questions: List[Tuple[str, str]] = grab_questions(game_json["questionType"], game_json["numberOfQuestions"])
 
     # Add questions to database
     for quest_num in range(game_json["numberOfQuestions"]):

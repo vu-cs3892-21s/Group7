@@ -203,6 +203,7 @@ const QuestionButtons = ({
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   questionType: string;
 }) => {
+  const questionTypes = ["Arithmetic", "Probability", "Standardized Test", "Comparison"];
   return (
     <QuestionsBase>
       <FormControl>
@@ -215,10 +216,10 @@ const QuestionButtons = ({
           value={questionType}
           onChange={onChange}
         >
-          <FormControlLabel value="SAT" control={<Radio />} label="SAT" />
-          <FormControlLabel value="ACT" control={<Radio />} label="ACT" />
-          <FormControlLabel value="GRE" control={<Radio />} label="GRE" />
-          <FormControlLabel value="Normal" control={<Radio />} label="Normal" />
+          <FormControlLabel value={questionTypes[0]} control={<Radio />} label={questionTypes[0]} />
+          <FormControlLabel value={questionTypes[1]} control={<Radio />} label={questionTypes[1]}/>
+          <FormControlLabel value={questionTypes[2]} control={<Radio />} label={questionTypes[2]} />
+          <FormControlLabel value={questionTypes[3]} control={<Radio />} label={questionTypes[3]} />
         </RadioGroup>
       </FormControl>
     </QuestionsBase>

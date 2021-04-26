@@ -36,6 +36,16 @@ class GameQuestion(db.Model):
     def as_dict(self) -> Dict[str, any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+# Pre-existing questions in the database
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_type = db.Column(db.String(120), index=True)
+    question = db.Column(db.String(120), index=True)
+    answer = db.Column(db.String(40), index=True)
+
+    def as_dict(self) -> Dict[str, any]:
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class StatsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
