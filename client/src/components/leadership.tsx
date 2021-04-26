@@ -16,18 +16,21 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+const Header = styled.h1`
+    color: white;
+    line-height: 30vh;
+    width: 100%;
+    position: fixed;
+    text-align: center;
+    font-family: 'Playfair Display', 'serif';
+`;
 
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: "rgb(204, 204, 204, 0.1)",
-        color: theme.palette.common.white,
-    },
-    body: {
-        fontSize: 20,
-        backgroundColor:"rgb(45, 93, 128, 0.55)"
-    },
-}))(TableCell);
-
+const LeaderBoardBlockBase = styled.div`
+  width: 100%;
+  height:100%;
+  position:fixed;
+  justify-content:center;
+`;
 
 const theme = createMuiTheme({
     overrides: {
@@ -43,6 +46,17 @@ const theme = createMuiTheme({
     }
 });
 
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: "rgb(204, 204, 204, 0.1)",
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 20,
+        backgroundColor:"rgb(45, 93, 128, 0.55)"
+    },
+}))(TableCell);
+
 const useStyles = makeStyles((theme: Theme) => ({
     backDrop: {
         backdropFilter: "blur(2.5px)",
@@ -52,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     tabs: {
         flexGrow: 1,
-        width: 500,
+        width: 640,
         marginTop: "23vh",
         marginLeft: "auto",
         marginRight: "auto",
@@ -62,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     table: {
         width: '80%',
-        marginTop: "1vh",
+        // marginTop: "0vh",
         marginLeft: "auto",
         marginRight: "auto",
         borderSpacing: '0 10px',
@@ -91,52 +105,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     rankStyle: {
         width: "15%",
+        align: "center",
     },
     picStyle : {
         width: "19%",
         height: "100%",
     },
 }));
-
-const createData = (rank: number, name: string, color: string, points: number) => ({rank, name, color, points});
-
-const rows = [
-    createData(1, 'Sam', 'red', 0),
-    createData(2, 'Tim', 'pink',0),
-    createData(3, 'Evan', 'blue',0),
-    createData(4, 'Irisa', 'green',0),
-];
-
-//Add data to tables
-const TableComponent = () => {
-    const classes = useStyles();
-    return <TableContainer className={classes.table}>
-        <Table className={classes.table}>
-            <TableHead>
-                <TableRow className={classes.tableHeader}>
-                    <StyledTableCell align="center">Rank</StyledTableCell>
-                    <StyledTableCell align="right"></StyledTableCell>
-                    <StyledTableCell align="left">Player</StyledTableCell>
-                    <StyledTableCell align="center">Points</StyledTableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows.map((row) => (
-                    <TableRow key={row.rank}>
-                        <StyledTableCell component="th" scope="row" align="center" className = {classes.rankStyle}>
-                            {row.rank}
-                        </StyledTableCell>
-                        <StyledTableCell align="right" className = {classes.picStyle}>
-                            <PersonIcon style={{ "width": "50%", "height": "100%", "fill": row.color }}/>
-                        </StyledTableCell>
-                        <StyledTableCell align ="left" >{row.name}</StyledTableCell>
-                        <StyledTableCell align="center">{row.points}</StyledTableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    </TableContainer>
-};
 
 interface TabPanelProps {
     children: React.ReactNode;
@@ -156,7 +131,7 @@ const TabPanel = (props: TabPanelProps) => {
             {...other}
         >
             {value === index && (
-                <Box p={3}>
+                <Box p={4}>
                     <Typography>{children}</Typography>
                 </Box>
             )}
@@ -171,50 +146,80 @@ const a11yProps = (index: any) => {
     };
 }
 
-const LeaderBoardBlockBase = styled.div`
-  width: 100%;
-  height:100%;
-  position:fixed;
-  justify-content:center;
-`;
+const LeadershipData = (ques_type: string) => {
+    const [leadershipInfo, setLeadershipInfo] = useState({
+        users: [],
+        elo: [],
+        colors: [],
+    });
 
-const Header = styled.h1`
-    color: white;
-    line-height: 30vh;
-    width: 100%;
-    position: fixed;
-    text-align: center;
-    font-family: 'Playfair Display', 'serif';
-`;
+    useEffect(() => {
+        async function setLeadershipBoard() {
+            const res = await fetch(`/api/v1/game/getUsers/${ques_type.toString()}`);
+            if (res.ok) {
+                const data = await res.json();
+                console.log(data);
+                setLeadershipInfo({
+                    users: data.users,
+                    elo: data.elo,
+                    colors: data.colors
+                });
+            }
+            else{
+                console.log("Did not work");
+            }
+        }
+        setLeadershipBoard();
+    }, []);
 
-export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
+    return leadershipInfo;
+};
 
-    // const [leadershipInfo, setLeadershipInfo] = useState({
-    //     users: ["Sam", "Tim", "Evan", "Irisa"],
-    //     correct: [4, 3, 2, 1]
-    // });
-    //
-    // useEffect(() => {
-    //     async function setLeadershipBoard() {
-    //         const res = await fetch(`/api/v1/game/getUsers`);
-    //         if (res.ok) {
-    //             const data = await res.json();
-    //             setLeadershipInfo({
-    //                 users: data.users,
-    //                 correct: data.correct
-    //             });
-    //         }
-    //     }
-    //     setLeadershipBoard();
-    // }, []);
-    //
-    // const makeRows = () => {
-    //     let i = 0;
-    //     while(i < leadershipInfo.users.length) {
-    //         rows.append({i + 1, leadershipInfo.users[i], leadershipInfo.correct[i]})
-    //     }
-    // }
+const TableComponent = (rowData: any[]) => {
+    const classes = useStyles();
+    return <TableContainer className={classes.table}>
+        <Table className={classes.table}>
+            <TableHead>
+                <TableRow className={classes.tableHeader}>
+                    <StyledTableCell align="center">Rank</StyledTableCell>
+                    <StyledTableCell align="right"></StyledTableCell>
+                    <StyledTableCell align="left">Name</StyledTableCell>
+                    <StyledTableCell align="center">Elo</StyledTableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {rowData.map((row) => (
+                    <TableRow key={row.rank}>
+                        <StyledTableCell component="th" scope="row" align="center" className = {classes.rankStyle}>
+                            {row.rank}
+                        </StyledTableCell>
+                        <StyledTableCell align="right" className = {classes.picStyle}>
+                            <PersonIcon style={{ "width": "50%", "height": "100%", "fill": row.color }}/>
+                        </StyledTableCell>
+                        <StyledTableCell align ="left" >{row.name}</StyledTableCell>
+                        <StyledTableCell align="center">{row.elo}</StyledTableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </TableContainer>
+};
 
+const createData = (rank: number, name: string, elo: number, color: string) => ({rank, name, elo, color});
+
+const makeRows = (ques_type: string) => {
+    const leadershipInfo = LeadershipData(ques_type);
+    let i = 0, j = leadershipInfo.users.length - 1;
+    const rows = [];
+    while(i < leadershipInfo.users.length){
+        rows.push(createData(i + 1,leadershipInfo.users[j], leadershipInfo.elo[j], leadershipInfo.colors[j]));
+        i++;
+        j--;
+    }
+    return rows;
+};
+
+export const LeadershipBoard = ({currentUser} : {currentUser:string})=> {
     const classes = useStyles();
     const [value, setValue] = useState(0);
 
@@ -232,20 +237,24 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string}) => {
             <ThemeProvider theme={theme}>
                 <Box className={classes.tabs}>
                     <Tabs value={value} onChange={handleChange} className={classes.tabs} classes={{ indicator: classes.indicator }}>
-                        <Tab label="Me and My Friends" {...a11yProps(0)} />
-                        <Tab label="Local" {...a11yProps(1)} />
-                        <Tab label="Global" {...a11yProps(2)} />
+                        <Tab label="Normal" {...a11yProps(0)} />
+                        <Tab label="ACT" {...a11yProps(1)} />
+                        <Tab label="GRE" {...a11yProps(2)} />
+                        <Tab label="SAT" {...a11yProps(3)} />
                     </Tabs>
                 </Box>
             </ThemeProvider>
             <TabPanel value={value} index={0}>
-                {TableComponent()}
+                {TableComponent(makeRows("Normal"))}
             </TabPanel>
             <TabPanel value={value} index={1}>
-                {TableComponent()}
+                {TableComponent(makeRows("ACT"))}
             </TabPanel>
             <TabPanel value={value} index={2}>
-                {TableComponent()}
+                {TableComponent(makeRows("GRE"))}
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+                {TableComponent(makeRows("SAT"))}
             </TabPanel>
         </LeaderBoardBlockBase>)
 };
