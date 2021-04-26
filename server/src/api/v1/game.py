@@ -74,18 +74,21 @@ def get_game_info(game_id: str = None) -> Json:
     }
 
 
-@ game_api.route("/getUsers", methods=["GET"])
-def get_users() -> Json:
-    stats_query = StatsTable.query.order_by(num_correct).limit(10)
+@game_api.route("/getUsers/<question_type>", methods=["GET"])
+def get_users(question_type: str = None) -> Json:
+    stats_query = StatsTable.query.filter_by(question_type=question_type).order_by('elo').limit(10)
     users: List[Json] = []
-    correct: List[int] = []
+    elo: List[float] = []
+    colors: List[Json] = []
     for stat in stats_query:
         user = User.query.filter_by(id=stat.player_id).one()
         users.append(user.name)
-        correct.append(stat.num_correct)
+        elo.append(stat.elo)
+        colors.append(user.color)
     return {
         "users": users,
-        "correct": correct,
+        "elo": elo,
+        "colors": colors,
     }
 
 
