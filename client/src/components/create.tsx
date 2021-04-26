@@ -152,9 +152,8 @@ const GameInfoBase = styled.div`
   margin-top: 0px;
   text-align: center;
   justify-content: center;
-  border: 3px solid black;
-  color: black;
-  background-color: #b5cef3;
+  border: 3px solid white;
+  color: white;
   min-height: 350px;
   max-height: 375px;
   width: fit-content;
@@ -170,7 +169,7 @@ const QuestionsBase = styled.div`
 const DurationInput = styled.input`
   height: 50px;
   width: 100px;
-  border: 2px solid black;
+  border: 2px solid white;
   background-color: white;
 `;
 
@@ -203,11 +202,11 @@ const QuestionButtons = ({
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   questionType: string;
 }) => {
-  const questionTypes = ["Arithmetic", "Probability", "Standardized Test", "Comparison"];
+  const questionTypes = ["Normal", "Probability", "Standardized Test", "Comparison"];
   return (
     <QuestionsBase>
       <FormControl>
-        <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+        <FormLabel style={{ fontSize: "1.25rem", color: "white" }}>
           Question Type
         </FormLabel>
         <RadioGroup
@@ -215,6 +214,7 @@ const QuestionButtons = ({
           name="questionType"
           value={questionType}
           onChange={onChange}
+          style={{color: "white"}}
         >
           <FormControlLabel value={questionTypes[0]} control={<Radio />} label={questionTypes[0]} />
           <FormControlLabel value={questionTypes[1]} control={<Radio />} label={questionTypes[1]}/>
@@ -229,10 +229,10 @@ const QuestionButtons = ({
 const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<HTMLInputElement>) => void, operations: string[]}) => {
   return (
     <OperationBase>
-      <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+      <FormLabel style={{ fontSize: "1.25rem", color: "white" }}>
         Operation Type
       </FormLabel>
-      <FormGroup style={{ flexDirection: "row" }}>
+      <FormGroup style={{ flexDirection: "row", color: "white"}}>
         <FormControlLabel
           control={
             <Checkbox
@@ -407,7 +407,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
       <DurationBase>
         {duration ? (
           <div>
-            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+            <Typography style={{ fontSize: "1.25rem", color: "white"}} gutterBottom>
               Duration
             </Typography>
             <Slider
@@ -415,16 +415,16 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
               aria-valuetext={"duration"}
               valueLabelDisplay="auto"
               onChange={onChangeNum}
-              step={5}
+              step={10}
               marks
-              min={5}
-              max={40}
+              min={10}
+              max={60}
             />
           </div>
         ) : null}
         {numberOfQuestions ? (
           <div>
-            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+            <Typography style={{ fontSize: "1.25rem", color: "white"}} gutterBottom>
               Number of Questions
             </Typography>
             <Slider
@@ -467,10 +467,9 @@ const JoinGameBase = styled.div`
   text-align: center;
   position: relative;
   justify-content: center;
-  border: 3px solid black;
+  border: 3px solid white;
   border-radius: 10px;
-  color: black;
-  background-color: #b5cef3;
+  color: white;
   height: fit-content;
   padding: 10px;
   margin: 20px;

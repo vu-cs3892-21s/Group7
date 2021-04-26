@@ -119,7 +119,7 @@ def create_game_from_json(game_json) -> str:
     db.session.add(game)
     db.session.commit()
 
-    if game_json["questionType"] = "Normal":
+    if game_json["questionType"] == "Normal":
         questions: List[Tuple[str, str]] = create_questions(game_json["operations"], game_json["numberOfQuestions"])
     else:
         questions: List[Tuple[str, str]] = grab_questions(game_json["questionType"], game_json["numberOfQuestions"])

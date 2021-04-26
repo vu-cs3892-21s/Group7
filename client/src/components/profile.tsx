@@ -243,7 +243,7 @@ export const Profile = ({
   onLoggedIn: () => void;
 }): ReactElement => {
   const defaultMode = "Normal";
-  const modes = ["Normal", "ACT", "GRE", "SAT"];
+  const modes = ["Normal", "Probability", "Standardized Test", "Comparison"];
   const [mode, setMode] = useState(defaultMode);
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

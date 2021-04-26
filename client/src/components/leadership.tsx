@@ -230,6 +230,7 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string})=> {
         setValue(newValue);
     };
 
+    const modes = ["Normal", "Probability", "Standardized Test", "Comparison"];
     return(
         <LeaderBoardBlockBase className = {classes.backDrop}>
             <Header> LEADERSHIP BOARD </Header>
@@ -237,24 +238,24 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string})=> {
             <ThemeProvider theme={theme}>
                 <Box className={classes.tabs}>
                     <Tabs value={value} onChange={handleChange} className={classes.tabs} classes={{ indicator: classes.indicator }}>
-                        <Tab label="Normal" {...a11yProps(0)} />
-                        <Tab label="ACT" {...a11yProps(1)} />
-                        <Tab label="GRE" {...a11yProps(2)} />
-                        <Tab label="SAT" {...a11yProps(3)} />
+                        <Tab label={modes[0]} {...a11yProps(0)} />
+                        <Tab label={modes[1]}  {...a11yProps(1)} />
+                        <Tab label={modes[2]}  {...a11yProps(2)} />
+                        <Tab label={modes[3]}  {...a11yProps(3)} />
                     </Tabs>
                 </Box>
             </ThemeProvider>
             <TabPanel value={value} index={0}>
-                {TableComponent(makeRows("Normal"))}
+                {TableComponent(makeRows(modes[0]))}
             </TabPanel>
             <TabPanel value={value} index={1}>
-                {TableComponent(makeRows("ACT"))}
+                {TableComponent(makeRows(modes[1]))}
             </TabPanel>
             <TabPanel value={value} index={2}>
-                {TableComponent(makeRows("GRE"))}
+                {TableComponent(makeRows(modes[2]))}
             </TabPanel>
             <TabPanel value={value} index={3}>
-                {TableComponent(makeRows("SAT"))}
+                {TableComponent(makeRows(modes[3]))}
             </TabPanel>
         </LeaderBoardBlockBase>)
 };
