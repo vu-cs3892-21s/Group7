@@ -6,28 +6,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 
-const ErrorBase = styled.div`
-  font-family: Revalia;
-  color: red;
-  display: flex;
-  justify-content: center;
-  min-height: 1.2em;
-  position: absolute;
-  bottom: 0; 
-  right: 0;
-  left: 0;
-`;
-
-export const ErrorMessage = ({ msg = '', hide = false }) => {
-    return (
-        <ErrorBase style={{ display: hide ? 'none' : 'inherit' }}>{msg}</ErrorBase>
-    );
-};
-
-ErrorMessage.propTypes = {
-    msg: PropTypes.string,
-    hide: PropTypes.bool
-};
 
 export const useSharedStyles = makeStyles((theme: Theme) =>
     createStyles({

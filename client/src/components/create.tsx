@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useState, useContext, useEffect } from "react";
+import React, {useState, useContext, useEffect, ChangeEvent, MouseEventHandler} from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
@@ -40,19 +40,28 @@ const GameModeBase = styled.div`
   padding-left: 60px;
 `;
 
-//event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}})
-// type Icon = typeof PersonIcon | typeof GroupIcon
-//: {onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
+interface GameMode {
+  name: string;
+  description: string;
+  icon: any
+}
+
+interface Event1 {
+  target: {
+    name: string;
+    value: string;
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameMode = ({ onClick }) => {
-  const gameModes: { name: string; description: string; icon: any }[] = [
+const GameMode = ({ onClick})  => {
+  const gameModes: GameMode[] = [
     {
       name: "Solo",
       description: "Practice Math On Your Own",
       icon: (
         <PersonIcon
-          onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -62,7 +71,6 @@ const GameMode = ({ onClick }) => {
       description: "Play With A Randomly Matched Foe",
       icon: (
         <GroupIcon
-          onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -72,15 +80,16 @@ const GameMode = ({ onClick }) => {
       description: "Play With 2+ Friends In A Private Room",
       icon: (
         <GroupAddIcon
-          onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
     },
   ];
+
   const modeBoxes = gameModes.map((gameMode, i) => (
     <GameModeBlock key={i} gameMode={gameMode} onClick={onClick} />
   ));
+
   return <GameModeBase>{modeBoxes}</GameModeBase>;
 };
 
@@ -99,18 +108,18 @@ const GameModeBlockBase = styled.button`
   background-color: #b5cef3;
   text-align: center;
 `;
-//{gameMode: { name: string, description: string, icon: any },
-//onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const GameModeBlock = ({ gameMode, onClick }) => {
-  console.log(gameMode);
+
+const GameModeBlock = ({ gameMode, onClick }:
+{
+  gameMode: GameMode;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+}
+) => {
   return (
     <GameModeBlockBase id={gameMode.name} onClick={onClick}>
       {gameMode.icon}
       <div
         id={gameMode.name}
-        onClick={onClick}
         style={{
           zIndex: 0,
           gridArea: "name",
@@ -122,7 +131,6 @@ const GameModeBlock = ({ gameMode, onClick }) => {
       </div>
       <div
         id={gameMode.name}
-        onClick={onClick}
         style={{ zIndex: 0, gridArea: "description", fontSize: "18px" }}
       >
         {gameMode.description}
@@ -187,10 +195,14 @@ const OperationBase = styled.div`
   justify-items: center;
   padding: 0px;
 `;
-//{questionType:string}), onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const QuestionButtons = ({ onChange, questionType }) => {
+
+const QuestionButtons = ({
+  onChange,
+  questionType,
+}: {
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  questionType: string;
+}) => {
   return (
     <QuestionsBase>
       <FormControl>
@@ -212,10 +224,8 @@ const QuestionButtons = ({ onChange, questionType }) => {
     </QuestionsBase>
   );
 };
-//{onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}}, operations:string[]}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const OperationButtons = ({ onChange, operations }) => {
+
+const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<HTMLInputElement>) => void, operations: string[]}) => {
   return (
     <OperationBase>
       <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
@@ -272,7 +282,6 @@ const OperationButtons = ({ onChange, operations }) => {
 };
 
 const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
-  const questionType = ["SAT", "ACT", "GRE", "Normal"];
   const duration = chosenMode !== "Head to Head";
   const numberOfQuestions = chosenMode !== "Head to Head";
   const operations = chosenMode !== "Head to Head";
@@ -295,51 +304,53 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
   });
 
   useEffect(() => setError(""), [chosenMode]);
-  //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const onChange = (ev) => {
+    const onChangeNum = (ev) : void => {
     setError("");
-    console.log(ev);
-    if (ev.target.name === "questionType") {
-      if (ev.target.value === game.questionType) {
+    setGame({
+      ...game,
+      [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow),
+    });
+    console.log(game);
+  };
+
+  const onChangeOps = (ev: ChangeEvent<HTMLInputElement>) : void => {
+    if (game.operations.includes(ev.target.value)) {
+      console.log("already includes");
+      const newArr = [...game.operations];
+      console.log(newArr);
+      newArr.splice(
+          newArr.findIndex((item) => item === ev.target.value),
+          1
+      );
+      console.log("removed");
+      setGame({
+        ...game,
+        [ev.target.name]: newArr,
+      });
+    } else {
+      setGame({
+        ...game,
+        [ev.target.name]: [...game.operations, ev.target.value],
+      });
+    }
+  };
+
+  const onChangeQType = (ev: Event1) : void => {
+    setError("");
+    if (ev.target.value === game.questionType) {
         setGame({
           ...game,
           questionType: "",
         });
-      } else {
+    } else {
         setGame({
           ...game,
           [ev.target.name]: ev.target.value,
         });
       }
-    } else if (ev.target.name === "operations") {
-      if (game.operations.includes(ev.target.value)) {
-        console.log("already includes");
-        const newArr = [...game.operations];
-        console.log(newArr);
-        newArr.splice(
-          newArr.findIndex((item) => item === ev.target.value),
-          1
-        );
-        console.log("removed");
-        setGame({
-          ...game,
-          [ev.target.name]: newArr,
-        });
-      } else {
-        setGame({
-          ...game,
-          [ev.target.name]: [...game.operations, ev.target.value],
-        });
-      }
-    } else {
-      setGame({
-        ...game,
-        [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow),
-      });
-    }
-    console.log(game);
   };
 
   const onSubmit = async (ev: { preventDefault: () => void }) => {
@@ -389,11 +400,9 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     }
   };
 
-  return (
+    return (
     <GameInfoBase>
-      {questionType ? (
-        <QuestionButtons onChange={onChange} questionType={game.questionType} />
-      ) : null}
+      <QuestionButtons onChange={onChangeQType} questionType={game.questionType} />
       <DurationBase>
         {duration ? (
           <div>
@@ -404,7 +413,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
               defaultValue={20}
               aria-valuetext={"duration"}
               valueLabelDisplay="auto"
-              onChange={onChange}
+              onChange={onChangeNum}
               step={5}
               marks
               min={5}
@@ -421,7 +430,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
               defaultValue={20}
               aria-valuetext={"numberOfQuestions"}
               valueLabelDisplay="auto"
-              onChange={onChange}
+              onChange={onChangeNum}
               step={5}
               marks
               min={10}
@@ -430,7 +439,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
           </div>
         ) : null}
         {operations ? (
-          <OperationButtons operations={game.operations} onChange={onChange} />
+          <OperationButtons operations={game.operations} onChange={onChangeOps} />
         ) : null}
       </DurationBase>
       <div style={{ gridArea: "error" }}>
@@ -550,12 +559,7 @@ const OptionsBase = styled.div`
 export const GameGen = (props: { history: History }) => {
   const [chosenMode, setMode] = useState<string>("");
 
-  //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
-  const onClick = (event: {
-    preventDefault: () => void;
-    target: { id: React.SetStateAction<string> };
-  }) => {
-    event.preventDefault();
+  const onClick = (event: { target: { id: React.SetStateAction<string>; }; }) : void => {
     console.log("calling onClick");
     console.log(event.target.id);
     setMode(event.target.id);
