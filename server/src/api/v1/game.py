@@ -1,9 +1,10 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Annotated
 from flask_socketio import SocketIO, emit, join_room, close_room, rooms
 from flask import Blueprint, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
+from elo import rate_1vs1
 
 from db.models.user import User
 from db.models.game import Game, GamePlayer, GameQuestion, StatsTable
@@ -48,8 +49,19 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
     return questions
 
 
-@game_api.route("/<game_id>", methods=["GET"])
-@login_required
+def join_game(game_id: str) -> None:
+    join_room(game_id)
+    game_player: GamePlayer = GamePlayer(
+        game_id=game_id, player_id=current_user.id, score=0)
+    db.session.add(game_player)
+    db.session.commit()
+
+    # Inform all other players of new player
+    emit("update_players", update_game_players(game_id), room=game_id)
+
+
+@ game_api.route("/<game_id>", methods=["GET"])
+@ login_required
 def get_game_info(game_id: str = None) -> Json:
     game_query = Game.query.filter_by(id=game_id)
     game = game_query.one()
@@ -62,7 +74,7 @@ def get_game_info(game_id: str = None) -> Json:
     }
 
 
-@game_api.route("/getUsers", methods=["GET"])
+@ game_api.route("/getUsers", methods=["GET"])
 def get_users() -> Json:
     stats_query = StatsTable.query.order_by(num_correct).limit(10)
     users: List[Json] = []
@@ -87,42 +99,42 @@ def get_questions(game_id: str = None) -> Json:
     return {"questions": questions}
 
 
-@ game_api.route("/create", methods=["POST"])
-@ login_required
-def create_game() -> Json:
-    request_json: Json = request.get_json()
+def create_game_from_json(game_json) -> str:
+
+    # Create game and questions
     game: Game = Game(status='Created', operations=','.join(
-        request_json["operations"]), mode=request_json["mode"],
-        question_type=request_json["questionType"],
-        num_questions=request_json["numberOfQuestions"], duration=request_json["duration"])
+        game_json["operations"]), mode=game_json["mode"],
+        question_type=game_json["questionType"],
+        num_questions=game_json["numberOfQuestions"], duration=game_json["duration"])
     db.session.add(game)
     db.session.commit()
 
     questions: List[Tuple[str, str]] = create_questions(
-        request_json["operations"], request_json["numberOfQuestions"])
+        game_json["operations"], game_json["numberOfQuestions"])
 
-    for quest_num in range(request_json["numberOfQuestions"]):
+    # Add questions to database
+    for quest_num in range(game_json["numberOfQuestions"]):
         question, answer = questions[quest_num]
         game_question: GameQuestion = GameQuestion(
             game_id=game.id, question=question, answer=answer, quest_num=1 + quest_num)
         db.session.add(game_question)
-
     db.session.commit()
+    return str(game.id)
 
-    return {"id": game.id}
+
+@ game_api.route("/create", methods=["POST"])
+@ login_required
+def create_game() -> Json:
+    request_json: Json = request.get_json()
+    return {"id": create_game_from_json(request_json)}
 
 
-@game_api.route("/stats/<mode>", methods=["GET"])
-@login_required
-def get_stats(mode: str = None) -> Json:
+@ game_api.route("/stats/<question_type>", methods=["GET"])
+@ login_required
+def get_stats(question_type: str = None) -> Json:
     stats_query = StatsTable.query.filter_by(
-        player_id=current_user.id, mode=mode)
-    try:
-        stats: StatsTable = stats_query.one()
-    except NoResultFound:
-        stats = StatsTable(player_id=current_user.id, mode=mode)
-        db.session.add(stats)
-        db.session.commit()
+        player_id=current_user.id, question_type=question_type)
+    stats: StatsTable = stats_query.one_or_none()
 
     # Compute additional stats ad-hoc
     accuracy: float = stats.num_correct / \
@@ -130,7 +142,7 @@ def get_stats(mode: str = None) -> Json:
     win_rate: float = stats.num_wins / \
         stats.num_games if stats.num_games != 0 else 0
     speed: float = stats.total_duration / \
-        stats.num_correct if stats.num_correct != 0 else 0
+        stats.num_questions if stats.num_questions != 0 else 0
 
     return {
         "num_games": stats.num_games,
@@ -141,16 +153,29 @@ def get_stats(mode: str = None) -> Json:
     }
 
 
-def update_stats(game_id: str = None, mode: str = "Normal") -> Json:
+def update_ratings(players: Annotated[List[GamePlayer], 2], game: Game):
+    # in the form [winner, loser]
+    players.sort(key=lambda player: player.score, reverse=True)
+
+    # calculate changes to elos
+    stats: Annotated[List[StatsTable], 2] = [StatsTable.query.filter_by(
+        player_id=player.id, question_type=game.question_type).one_or_none() for player in players]
+    (stats[0].elo, stats[1].elo) = rate_1vs1(stats[0].elo, stats[1].elo)
+    db.session.commit()
+
+
+def update_stats(game_id: str = None) -> Json:
     game: Game = Game.query.filter_by(id=game_id).one()
     players: List[GamePlayer] = GamePlayer.query.filter_by(
         game_id=game_id).all()
 
     player: GamePlayer
     game.max_score = max(player.score for player in players)
+    if game.mode == "Head to Head":
+        update_ratings(players, game)
     for player in players:
         stats_query = StatsTable.query.filter_by(
-            player_id=player.player_id, mode=mode)
+            player_id=player.player_id, question_type=game.question_type)
         player_stats: StatsTable
         try:
             player_stats = stats_query.one()
@@ -174,39 +199,39 @@ def update_stats(game_id: str = None, mode: str = "Normal") -> Json:
     return {"id": game.id}
 
 
-@socketio.on("join")
+@ socketio.on("join")
 def join_game_room(room_code: str) -> None:
-    req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    req_game: Game = Game.query.filter_by(
+        id=room_code, mode="Group Play").one_or_none()
     if req_game is not None:
-        game_player: GamePlayer = GamePlayer(
-            game_id=room_code, player_id=current_user.id, score=0)
-        db.session.add(game_player)
-        db.session.commit()
-        join_room(room_code)
+        join_game(room_code)
         emit("join_response", True, room=room_code)
-
-        # Inform all other players of new player
-        emit("update_players", update_game_players(
-            room_code), room=room_code)
-
     else:
         print("invalid room")
         socketio.emit("join_response", False)
 
 
-@socketio.on("start")
+@ socketio.on("start")
 def start_game(room_code: str) -> None:
-    emit("start_game", room=room_code, include_self=False)
+    game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    if game.status == "Created":
+        game.status = "Started"
+        db.session.commit()
+        emit("start_game", room=room_code, include_self=False)
 
 
-@socketio.on("end")
+@ socketio.on("end")
 def end_game(room_code: str) -> None:
-    emit("end_game", room=room_code, include_self=False)
-    close_room(room_code)
-    update_stats(room_code)
+    game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    if game.status == "Started":
+        game.status = "Ended"
+        db.session.commit()
+        emit("end_game", room=room_code, include_self=False)
+        close_room(room_code)
+        update_stats(room_code)
 
 
-@socketio.on("answer")
+@ socketio.on("answer")
 def validate_answer(answer_data: Json) -> None:
     game_id: str = answer_data["game_id"]
     game_question: GameQuestion = GameQuestion.query.filter_by(
@@ -227,17 +252,59 @@ def validate_answer(answer_data: Json) -> None:
         emit("validate_answer", False, room=request.sid)
 
 
-@socketio.on("send_chat")
+@ socketio.on("find_match")
+def find_match(game: Json) -> None:
+    games: List[Game] = Game.query.filter_by(
+        question_type=game["questionType"], mode=game["mode"], status="Created").all()
+    game_id: str
+
+    def get_elo_difference(game: Game) -> float:
+        my_elo: float = StatsTable.query.filter_by(
+            question_type=game.question_type, player_id=current_user.id).one().elo
+        opponent: GamePlayer = GamePlayer.query.filter_by(
+            game_id=game.id).one()
+        opponent_elo: float = StatsTable.query.filter_by(
+            question_type=game.question_type, player_id=opponent.id).one().elo
+        return abs(my_elo - opponent_elo)
+
+    # sort games by closest elo and remove games with differences that are too high
+    games.sort(key=get_elo_difference)
+    filter(lambda game: get_elo_difference(game) < 200, games)
+    if len(games) == 0:  # No matches, create our own game
+        game_id = create_game_from_json(game)
+    else:  # Other players waiting for game
+
+        # Find match with closest rating
+        game: Game = games[0]
+        game_id = str(game.id)
+        join_room(game_id)
+        emit("found_match", game_id, room=game_id)
+    join_game(game_id)
+
+
+@socketio.on("cancel_match")
+def cancel_match() -> None:
+    game_players: List[GamePlayer] = GamePlayer.query.filter_by(
+        player_id=current_user.id).all()
+    for game_player in game_players:
+        game: Game = Game.query.filter_by(
+            id=game_player.game_id, status="Created").one_or_none()
+        if game is not None:
+            game.status = "Cancelled"
+    db.session.commit()
+
+
+@ socketio.on("send_chat")
 def send_chat(chat_data: Json) -> None:
     game_id: str = chat_data["game_id"]
     emit("chat_update", chat_data["message"], room=game_id)
 
 
-@socketio.on("connect")
+@ socketio.on("connect")
 def connect() -> None:
     print("Websocket has been connected")
 
 
-@socketio.on("disconnect")
+@ socketio.on("disconnect")
 def disconnect() -> None:
     print("Websocket has been disconnected")

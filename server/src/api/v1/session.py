@@ -1,6 +1,7 @@
 from db.database import db
 from db.models.oauth import OAuth
 from db.models.user import User, UserRecord
+from db.models.game import StatsTable
 import json
 import os
 from typing import Dict, List
@@ -45,6 +46,8 @@ SSO_HANDLER_MAP: Dict[str, LocalProxy] = {
     "github": github,
     "google": google
 }
+
+QUESTION_TYPES: List[str] = ["Normal", "ACT", "GRE", "SAT"]
 
 github_blueprint: OAuth2ConsumerBlueprint = make_github_blueprint(
     storage=SQLAlchemyStorage(
@@ -195,9 +198,15 @@ def blueprint_logged_in(blueprint, token) -> bool:
                 primary_email=user_info["primary_email"],
                 name=user_info["name"],
             )
+            db.session.add(user)
+            db.session.commit()
+            for question_type in QUESTION_TYPES:
+                stat_table = StatsTable(
+                    player_id=user.id, question_type=question_type)
+                db.session.add(stat_table)
 
         oauth.user = user
-        db.session.add_all([user, oauth])
+        db.session.add(oauth)
         db.session.commit()
 
         # Log in the new local user account

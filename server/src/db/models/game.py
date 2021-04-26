@@ -40,9 +40,10 @@ class GameQuestion(db.Model):
 class StatsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    mode = db.Column(db.String(40))
+    question_type = db.Column(db.String(40))
     num_questions = db.Column(db.Integer, default=0)
     num_correct = db.Column(db.Integer, default=0)
     num_games = db.Column(db.Integer, default=0)
     num_wins = db.Column(db.Integer, default=0)
     total_duration = db.Column(db.Float(2), default=0)
+    elo = db.Column(db.Float(2), default=1200)
