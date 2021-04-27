@@ -390,7 +390,7 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
       };
       socket.emit("send_chat", { message: message, game_id: id });
       updateMessage("");
-    };
+    }
   };
 
   return (
