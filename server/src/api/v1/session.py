@@ -47,7 +47,7 @@ SSO_HANDLER_MAP: Dict[str, LocalProxy] = {
     "google": google
 }
 
-QUESTION_TYPES: List[str] = ["Arithmetic", "Sequence", "Kth_biggest"]
+QUESTION_TYPES: List[str] = ["Arithmetic", "Sequence", "Kth_biggest", "Bases"]
 
 github_blueprint: OAuth2ConsumerBlueprint = make_github_blueprint(
     storage=SQLAlchemyStorage(
