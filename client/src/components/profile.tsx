@@ -242,20 +242,24 @@ export const Profile = ({
   currentUser: UserInfo;
   onLoggedIn: () => void;
 }): ReactElement => {
-  const defaultMode = "Normal";
-  const modes = ["Normal", "Probability", "Standardized Test", "Comparison"];
+  const defaultMode = "Arithmetic";
+  const modes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
   const [mode, setMode] = useState(defaultMode);
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const modeChange = (ev) => {
     setMode(ev.target.id);
+    console.log(ev.target.value);
+    console.log(ev.target.id);
   };
 
   const modeButtons = modes.map((m) => (
-    <Button key={m} onClick={modeChange} id={m}>
-      {m}
-    </Button>
+      <span key = {m} id = {m}>
+        <Button key={m} onClick={modeChange} value = {m} id={m}>
+          {m}
+        </Button>
+      </span>
   ));
 
   useEffect(() => {

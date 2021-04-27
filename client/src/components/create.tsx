@@ -112,11 +112,11 @@ const GameModeBlockBase = styled.button`
 const GameModeBlock = ({ gameMode, onClick }:
 {
   gameMode: GameMode;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClick: (mode: string) => void
 }
 ) => {
   return (
-    <GameModeBlockBase id={gameMode.name} onClick={onClick}>
+    <GameModeBlockBase id={gameMode.name} onClick={() => onClick(gameMode.name)}>
       {gameMode.icon}
       <div
         id={gameMode.name}
@@ -559,10 +559,10 @@ const OptionsBase = styled.div`
 export const GameGen = (props: { history: History }) => {
   const [chosenMode, setMode] = useState<string>("");
 
-  const onClick = (event: { target: { id: React.SetStateAction<string>; }; }) : void => {
+  const onClick = (mode: string) : void => {
     console.log("calling onClick");
-    console.log(event.target.id);
-    setMode(event.target.id);
+    console.log(mode);
+    setMode(mode);
     console.log(chosenMode);
   };
 
