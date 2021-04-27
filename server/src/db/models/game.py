@@ -33,9 +33,6 @@ class GameQuestion(db.Model):
     answer = db.Column(db.String(40), index=True)
     quest_num = db.Column(db.Integer)
 
-    def as_dict(self) -> Dict[str, any]:
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 class StatsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
