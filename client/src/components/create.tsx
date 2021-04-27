@@ -443,13 +443,10 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
             />
           </div>
         ) : null}
-        {operations ? (
+        {operations && game.questionType == "Arithmetic" ? (
           <OperationButtons operations={game.operations} onChange={onChangeOps} />
         ) : null}
       </DurationBase>
-      {/*<div style={{ gridArea: "error" }}>*/}
-      {/*  {error ? <Alert severity="error">{error}</Alert> : null}*/}
-      {/*</div>*/}
       <div style={{ gridArea: "start", position: "relative" }}>
         {error ? <Alert severity="error">{error}</Alert> :
         <CenteredButton

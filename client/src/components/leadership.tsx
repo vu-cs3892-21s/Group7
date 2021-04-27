@@ -230,7 +230,7 @@ export const LeadershipBoard = ({currentUser} : {currentUser:string})=> {
         setValue(newValue);
     };
 
-    const modes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
+    const modes = ["Arithmetic","Bases","Kth_biggest", "Sequence"];
     return(
         <LeaderBoardBlockBase className = {classes.backDrop}>
             <Header> LEADERSHIP BOARD </Header>

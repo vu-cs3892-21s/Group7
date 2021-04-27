@@ -241,7 +241,7 @@ export const Profile = ({
   onLoggedIn: () => void;
 }): ReactElement => {
   const defaultMode = "Arithmetic";
-  const modes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
+  const modes = ["Arithmetic","Bases","Kth_biggest", "Sequence"];
   const [mode, setMode] = useState(defaultMode);
 
   const modeChange = (mode: string) => {
