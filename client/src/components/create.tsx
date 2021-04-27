@@ -202,7 +202,7 @@ const QuestionButtons = ({
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   questionType: string;
 }) => {
-  const questionTypes = ["Normal", "Probability", "Standardized Test", "Comparison"];
+  const questionTypes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
   return (
     <QuestionsBase>
       <FormControl>
@@ -566,8 +566,6 @@ export const GameGen = (props: { history: History }) => {
     console.log(chosenMode);
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   return (
     <GameGenBase>
       <Header> Select Game Mode</Header>

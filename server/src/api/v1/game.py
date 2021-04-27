@@ -4,10 +4,12 @@ from flask_socketio import SocketIO, emit, join_room, close_room, rooms
 from flask import Blueprint, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql.expression import func
 from elo import rate_1vs1
 
 from db.models.user import User
 from db.models.game import Game, GamePlayer, GameQuestion, StatsTable
+from db.models.questions import Question
 from db.database import db, as_dict
 from .shared.api_types import Json
 
@@ -31,7 +33,7 @@ def update_game_players(game_id: str = None) -> List[Json]:
     return players
 
 
-def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tuple[str, str]]:
+def create_arithmetic_questions(operations: List[str], numberOfQuestions: int) -> List[Tuple[str, str]]:
     questions: List[Tuple[str, str]] = []
     for _ in range(numberOfQuestions):
         operation: str = random.choice(operations)
@@ -48,13 +50,22 @@ def create_questions(operations: List[str], numberOfQuestions: int) -> List[Tupl
         questions.append((question, str(answer)))
     return questions
 
-def grab_questions(question_type: str, numberOfQuestions: int) -> List[Tuple[str, str]]:
-    questions: List[Tuple[str, str]] = []
-    question_query = Question.query.filter_by(question_type=question_type)
-    for _ in range(numberOfQuestions):
-        question: Question = random.choice(question_query)
-        questions.append((question.question, question.answer))
-    return questions
+
+def pull_database_questions(question_type: Json, num_questions: int) -> List[Tuple[str, str]]:
+    questions: List[Question] = Question.query.order_by(
+        func.random()).filter_by(question_type=question_type).limit(num_questions).all()
+    question_list: List[Tuple[str, str]] = []
+    for question in questions:
+        question_list.append((question.question, question.answer))
+    return question_list
+
+
+def create_questions(game_json: Json) -> List[Tuple[str, str]]:
+    if game_json["questionType"] == "Arithmetic":
+        return create_arithmetic_questions(game_json["operations"], game_json["numberOfQuestions"])
+    else:
+        return pull_database_questions(game_json["questionType"], game_json["numberOfQuestions"])
+
 
 def join_game(game_id: str) -> None:
     join_room(game_id)
@@ -83,7 +94,8 @@ def get_game_info(game_id: str = None) -> Json:
 
 @game_api.route("/getUsers/<question_type>", methods=["GET"])
 def get_users(question_type: str = None) -> Json:
-    stats_query = StatsTable.query.filter_by(question_type=question_type).order_by('elo').limit(10)
+    stats_query = StatsTable.query.filter_by(
+        question_type=question_type).order_by('elo').limit(10)
     users: List[Json] = []
     elo: List[float] = []
     colors: List[Json] = []
@@ -109,7 +121,7 @@ def get_questions(game_id: str = None) -> Json:
     return {"questions": questions}
 
 
-def create_game_from_json(game_json) -> str:
+def create_game_from_json(game_json: Json) -> str:
 
     # Create game and questions
     game: Game = Game(status='Created', operations=','.join(
@@ -119,10 +131,7 @@ def create_game_from_json(game_json) -> str:
     db.session.add(game)
     db.session.commit()
 
-    if game_json["questionType"] == "Normal":
-        questions: List[Tuple[str, str]] = create_questions(game_json["operations"], game_json["numberOfQuestions"])
-    else:
-        questions: List[Tuple[str, str]] = grab_questions(game_json["questionType"], game_json["numberOfQuestions"])
+    questions: List[Tuple[str, str]] = create_questions(game_json)
 
     # Add questions to database
     for quest_num in range(game_json["numberOfQuestions"]):
@@ -171,7 +180,7 @@ def update_ratings(players: Annotated[List[GamePlayer], 2], game: Game):
 
     # calculate changes to elos
     stats: Annotated[List[StatsTable], 2] = [StatsTable.query.filter_by(
-        player_id=player.id, question_type=game.question_type).one_or_none() for player in players]
+        player_id=player.player_id, question_type=game.question_type).one_or_none() for player in players]
     (stats[0].elo, stats[1].elo) = rate_1vs1(stats[0].elo, stats[1].elo)
     db.session.commit()
 
@@ -216,8 +225,9 @@ def join_game_room(room_code: str) -> None:
     req_game: Game = Game.query.filter_by(
         id=room_code, mode="Group Play").one_or_none()
     if req_game is not None:
+        emit("join_response", True)
         join_game(room_code)
-        emit("join_response", True, room=room_code)
+
     else:
         print("invalid room")
         socketio.emit("join_response", False)
@@ -276,7 +286,7 @@ def find_match(game: Json) -> None:
         opponent: GamePlayer = GamePlayer.query.filter_by(
             game_id=game.id).one()
         opponent_elo: float = StatsTable.query.filter_by(
-            question_type=game.question_type, player_id=opponent.id).one().elo
+            question_type=game.question_type, player_id=opponent.player_id).one().elo
         return abs(my_elo - opponent_elo)
 
     # sort games by closest elo and remove games with differences that are too high

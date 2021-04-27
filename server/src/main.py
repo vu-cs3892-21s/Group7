@@ -6,6 +6,7 @@ from api.v1.game import (socketio, game_api, GAME_API_PREFIX)
 from flask import Flask
 from flask_login import LoginManager
 from db.database import db
+from db.question_load import load_questions
 from db.models.user import User
 from db.models.game import Game, GamePlayer, GameQuestion
 from db.models.oauth import OAuth
@@ -78,6 +79,7 @@ def drop_everything():
         con.execute(DropConstraint(fkey))
 
     for table in tables:
+        # if table.name != "question":
         con.execute(DropTable(table))
 
     trans.commit()
@@ -111,7 +113,10 @@ def create_test_data() -> None:
 with app.app_context():
     drop_everything()
     db.create_all()
-    # create_test_data()
+    create_test_data()
+
+    # loading questions takes a few minutes so we only want to load once
+    load_questions()
 
 
-socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
