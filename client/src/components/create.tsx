@@ -203,10 +203,22 @@ const QuestionButtons = ({ onChange, questionType }) => {
           value={questionType}
           onChange={onChange}
         >
-          <FormControlLabel value="SAT" control={<Radio />} label="SAT" />
-          <FormControlLabel value="ACT" control={<Radio />} label="ACT" />
-          <FormControlLabel value="GRE" control={<Radio />} label="GRE" />
-          <FormControlLabel value="Normal" control={<Radio />} label="Normal" />
+          <FormControlLabel value="Bases" control={<Radio />} label="Bases" />
+          <FormControlLabel
+            value="Kth_biggest"
+            control={<Radio />}
+            label="Kth_biggest"
+          />
+          <FormControlLabel
+            value="Sequence"
+            control={<Radio />}
+            label="Sequence"
+          />
+          <FormControlLabel
+            value="Arithmetic"
+            control={<Radio />}
+            label="Arithmetic"
+          />
         </RadioGroup>
       </FormControl>
     </QuestionsBase>
