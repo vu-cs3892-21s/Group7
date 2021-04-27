@@ -142,20 +142,19 @@ const GameModeBlock = ({ gameMode, onClick }:
 const GameInfoBase = styled.div`
   display: grid;
   grid-template-columns: "50% 50%";
-  grid-template-rows: 70% 15% 15%;
+  grid-template-rows: 80% 20%;
   grid-template-areas:
     "type duration"
-    "error error"
     "start start";
   padding: 10px;
+  background: rgb(150, 140, 204, 0.30);
   margin: 20px;
   margin-top: 0px;
   text-align: center;
   justify-content: center;
   border: 3px solid white;
   color: white;
-  min-height: 350px;
-  max-height: 375px;
+  min-height: 320px;
   width: fit-content;
   border-radius: 10px;
 `;
@@ -214,12 +213,11 @@ const QuestionButtons = ({
           name="questionType"
           value={questionType}
           onChange={onChange}
-          style={{color: "white"}}
         >
-          <FormControlLabel value={questionTypes[0]} control={<Radio />} label={questionTypes[0]} />
-          <FormControlLabel value={questionTypes[1]} control={<Radio />} label={questionTypes[1]}/>
-          <FormControlLabel value={questionTypes[2]} control={<Radio />} label={questionTypes[2]} />
-          <FormControlLabel value={questionTypes[3]} control={<Radio />} label={questionTypes[3]} />
+          <FormControlLabel value={questionTypes[0]} control={<Radio color="primary" />} label={questionTypes[0]} />
+          <FormControlLabel value={questionTypes[1]} control={<Radio color="primary" />} label={questionTypes[1]}/>
+          <FormControlLabel value={questionTypes[2]} control={<Radio color="primary" />} label={questionTypes[2]} />
+          <FormControlLabel value={questionTypes[3]} control={<Radio color="primary" />} label={questionTypes[3]} />
         </RadioGroup>
       </FormControl>
     </QuestionsBase>
@@ -240,6 +238,7 @@ const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<
               onChange={onChange}
               value="+"
               name="operations"
+              color="primary"
             />
           }
           label="+"
@@ -251,6 +250,7 @@ const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<
               onChange={onChange}
               value="-"
               name="operations"
+              color="primary"
             />
           }
           label="-"
@@ -262,6 +262,7 @@ const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<
               onChange={onChange}
               value="*"
               name="operations"
+              color="primary"
             />
           }
           label="*"
@@ -273,6 +274,7 @@ const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<
               onChange={onChange}
               value="/"
               name="operations"
+              color="primary"
             />
           }
           label="/"
@@ -414,6 +416,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
               defaultValue={20}
               aria-valuetext={"duration"}
               valueLabelDisplay="auto"
+              color="primary"
               onChange={onChangeNum}
               step={10}
               marks
@@ -431,6 +434,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
               defaultValue={20}
               aria-valuetext={"numberOfQuestions"}
               valueLabelDisplay="auto"
+              color="primary"
               onChange={onChangeNum}
               step={5}
               marks
@@ -443,10 +447,11 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
           <OperationButtons operations={game.operations} onChange={onChangeOps} />
         ) : null}
       </DurationBase>
-      <div style={{ gridArea: "error" }}>
-        {error ? <Alert severity="error">{error}</Alert> : null}
-      </div>
+      {/*<div style={{ gridArea: "error" }}>*/}
+      {/*  {error ? <Alert severity="error">{error}</Alert> : null}*/}
+      {/*</div>*/}
       <div style={{ gridArea: "start", position: "relative" }}>
+        {error ? <Alert severity="error">{error}</Alert> :
         <CenteredButton
           style={{
             fontSize: "18px",
@@ -457,7 +462,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
           onClick={onSubmit}
         >
           Start Game!
-        </CenteredButton>
+        </CenteredButton> }
       </div>
     </GameInfoBase>
   );
@@ -469,6 +474,7 @@ const JoinGameBase = styled.div`
   justify-content: center;
   border: 3px solid white;
   border-radius: 10px;
+  background: rgb(150, 140, 204, 0.30);
   color: white;
   height: fit-content;
   padding: 10px;
@@ -541,7 +547,7 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 275px 400px;
+  grid-template-rows: 75px 275px 330px;
   grid-template-areas:
     "title"
     "modes"
