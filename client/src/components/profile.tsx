@@ -205,7 +205,6 @@ const StatsBlock = ({ mode }: { mode: string }): ReactElement => {
     }
   };
 
-  //<[string, number][]>
   const [stats, updateStats] = useState<Stat[]>([
     ["Number of Games", 0],
     ["Win Ratio", 0],
@@ -223,7 +222,6 @@ const StatsBlock = ({ mode }: { mode: string }): ReactElement => {
     console.log("executed here");
     console.log(statsBoxes);
   }, [stats]);
-  //   const statsBoxes = stats.map((stat, i) => <StatBox key={i} stat={stat} />);
   return <StatsBlockBase>{statsBoxes}</StatsBlockBase>;
 };
 
@@ -246,20 +244,14 @@ export const Profile = ({
   const modes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
   const [mode, setMode] = useState(defaultMode);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const modeChange = (ev) => {
-    setMode(ev.target.id);
-    console.log(ev.target.value);
-    console.log(ev.target.id);
+  const modeChange = (mode: string) => {
+    setMode(mode);
   };
 
   const modeButtons = modes.map((m) => (
-      <span key = {m} id = {m}>
-        <Button key={m} onClick={modeChange} value = {m} id={m}>
-          {m}
-        </Button>
-      </span>
+      <Button key={m} onClick={() => modeChange(m)}>
+        {m}
+      </Button>
   ));
 
   useEffect(() => {
