@@ -137,20 +137,20 @@ def update_profile():
 def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("/#/profile")
 
 
 @ session_api.route("/google")
 def google_session() -> Response:
     if not google.authorized:
         return redirect(url_for(GOOGLE_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("/#/profile")
 
 
 @ session_api.route("/logout")
 def logout() -> Response:
     logout_user()
-    return redirect("http://localhost:7070")
+    return redirect("/")
 
 
 @ oauth_authorized.connect_via(github_blueprint)

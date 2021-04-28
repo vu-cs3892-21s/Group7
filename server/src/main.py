@@ -29,6 +29,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI: str = os.environ.get(
         'DATABASE_URI') or 'postgres:5432'
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+    FLASK_ENV: str = os.environ.get('FLASK_ENV') or 'production'
 
     # SQLALCHEMY_ECHO: bool = os.environ.get('DATABASE_LOG') or True
     # DEBUG: bool = True
@@ -37,7 +38,36 @@ class Config(object):
 
 app.config.from_object(Config)
 
-db.init_app(app)
+
+if Config.FLASK_ENV == 'development':
+    db.init_app(app)
+else:
+    db_user = os.environ["DB_USER"]
+    db_pass = os.environ["DB_PASS"]
+    db_name = os.environ["DB_NAME"]
+    db_socket_dir = os.environ.get("DB_SOCKET_DIR", "/cloudsql")
+    cloud_sql_connection_name = os.environ["CLOUD_SQL_CONNECTION_NAME"]
+    print(db_user, db_pass, db_name, db_socket_dir, cloud_sql_connection_name)
+
+    pool = db.create_engine(
+
+        # Equivalent URL:
+        # postgres+pg8000://<db_user>:<db_pass>@/<db_name>
+        #                         ?unix_sock=<socket_path>/<cloud_sql_instance_name>/.s.PGSQL.5432
+        db.engine.url.URL(
+            drivername="postgresql+pg8000",
+            username=db_user,  # e.g. "my-database-user"
+            password=db_pass,  # e.g. "my-database-password"
+            database=db_name,  # e.g. "my-database-name"
+            query={
+                "unix_sock": "{}/{}/.s.PGSQL.5432".format(
+                    db_socket_dir,  # e.g. "/cloudsql"
+                    cloud_sql_connection_name)  # i.e "<PROJECT-NAME>:<INSTANCE-REGION>:<INSTANCE-NAME>"
+            }
+        ),
+        **db_config
+    )
+
 login_manager = LoginManager(app)
 socketio.init_app(app)
 
