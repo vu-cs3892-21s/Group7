@@ -79,8 +79,8 @@ def drop_everything():
         con.execute(DropConstraint(fkey))
 
     for table in tables:
-        if table.name != "question":
-            con.execute(DropTable(table))
+#         if table.name != "question":
+        con.execute(DropTable(table))
 
     trans.commit()
 
@@ -115,8 +115,8 @@ with app.app_context():
     db.create_all()
 #     create_test_data()
 
-    # loading questions takes a few minutes so we only want to load once
-#     load_questions()
+#     loading questions takes a few minutes so we only want to load once
+    load_questions()
 
 
 socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
