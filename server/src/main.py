@@ -42,6 +42,7 @@ app.config.from_object(Config)
 if Config.FLASK_ENV == 'development':
     db.init_app(app)
 else:
+    db.init_app(app)
     db_user = os.environ["DB_USER"]
     db_pass = os.environ["DB_PASS"]
     db_name = os.environ["DB_NAME"]
