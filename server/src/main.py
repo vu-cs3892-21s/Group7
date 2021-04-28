@@ -11,10 +11,13 @@ from db.models.user import User
 from db.models.game import Game, GamePlayer, GameQuestion
 from db.models.oauth import OAuth
 
+print(os.getenv('DATABASE_URI'))
+
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.register_blueprint(github_blueprint, url_prefix="/login")
-app.register_blueprint(google_blueprint, url_prefix="/login")
+LOGIN_URL_PREFIX = "/api/login"
+app.register_blueprint(github_blueprint, url_prefix=LOGIN_URL_PREFIX)
+app.register_blueprint(google_blueprint, url_prefix=LOGIN_URL_PREFIX)
 app.register_blueprint(session_api, url_prefix=SESSION_API_PREFIX)
 
 app.register_blueprint(game_api, url_prefix=GAME_API_PREFIX)

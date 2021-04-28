@@ -1,6 +1,6 @@
 import path from "path";
 import webpack from "webpack";
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
 const config: webpack.Configuration = {
   entry: "./src/index.tsx",
@@ -48,7 +48,12 @@ const config: webpack.Configuration = {
     new ForkTsCheckerWebpackPlugin({
       async: false,
       eslint: {
-        files: "./src/*"
+        files: "./src/*",
+      },
+    }),
+    new webpack.DefinePlugin({
+      "process.env": {
+        DEPLOYMENT_ENDPOINT: JSON.stringify(process.env["DEPLOYMENT_ENDPOINT"]),
       },
     }),
   ],

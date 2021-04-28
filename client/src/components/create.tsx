@@ -356,9 +356,9 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
       }
   };
 
-  const onSubmit = async (ev: { preventDefault: () => void }) => {
-    ev.preventDefault();
-    console.log("Trying to submit!");
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit!");
 
     if (game.questionType === "") {
       setError("Select question type");
