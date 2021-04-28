@@ -11,6 +11,8 @@ from db.models.user import User
 from db.models.game import Game, GamePlayer, GameQuestion
 from db.models.oauth import OAuth
 
+print(os.getenv('DATABASE_URI'))
+
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 LOGIN_URL_PREFIX = "/api/login"
