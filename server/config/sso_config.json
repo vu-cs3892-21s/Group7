@@ -11,6 +11,11 @@
     "scope": ["read:user", "user:email"]
   },
   "google": {
+    "client_id": "242534906484-dgqq6ufslvcv6hnu784g0na18ucfk3ss.apps.googleusercontent.com",
+    "client_secret": "izDk1LIyBA2xK_SAiu8OOqyk",
+    "scope": ["profile", "email"]
+  },
+  "google-local": {
     "client_id": "490107470306-32jnil1p0nh05ghbcuiro9dgdrulfoo2.apps.googleusercontent.com",
     "client_secret": "KDejNfmIYTWiElyLlAbuRMZp",
     "scope": ["profile", "email"]

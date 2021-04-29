@@ -42,6 +42,7 @@ GOOGLE_SSO_CONFIG = SSO_CONFIG["google"]
 
 if FLASK_ENV == 'development':
     GITHUB_SSO_CONFIG = SSO_CONFIG["github-local"]
+    GOOGLE_SSO_CONFIG = SSO_CONFIG["google-local"]
 
 # Constants for SSO Handlers
 GITHUB_TOKEN_API: str = "github.login"
