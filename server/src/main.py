@@ -175,7 +175,7 @@ def drop_everything():
         con.execute(DropConstraint(fkey))
 
     for table in tables:
-#         if table.name != "question":
+        #         if table.name != "question":
         con.execute(DropTable(table))
 
     trans.commit()
@@ -206,13 +206,14 @@ def create_test_data() -> None:
     return None
 
 
-with app.app_context():
-    # drop_everything()
-    db.create_all()
-#     create_test_data()
+if FLASK_ENV == 'development':
+    with app.app_context():
+        drop_everything()
+        db.create_all()
+        create_test_data()
 
-#     loading questions takes a few minutes so we only want to load once
-    load_questions()
+    #     loading questions takes a few minutes so we only want to load once
+        load_questions()
 
 PORT = os.getenv('PORT')
 FLASK_RUN_PORT = os.getenv('FLASK_RUN_PORT')
