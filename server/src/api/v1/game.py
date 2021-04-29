@@ -71,14 +71,14 @@ def create_questions(game_json: Json) -> List[Tuple[str, str]]:
 
 def join_game(game_id: str) -> None:
     join_room(game_id)
-    game_player: GamePlayer = GamePlayer(
-        game_id=game_id, player_id=current_user.id, score=0)
-    db.session.add(game_player)
-    db.session.commit()
-
+    req_player : GamePlayer = GamePlayer.query.filter_by(game_id=game_id, player_id=current_user.id).one_or_none()
+    if req_player is None:
+        game_player: GamePlayer = GamePlayer(
+            game_id=game_id, player_id=current_user.id, score=0)
+        db.session.add(game_player)
+        db.session.commit()
     # Inform all other players of new player
     emit("update_players", update_game_players(game_id), room=game_id)
-
 
 @ game_api.route("/<game_id>", methods=["GET"])
 @ login_required
@@ -225,7 +225,12 @@ def update_stats(game_id: str = None) -> Json:
 @ socketio.on("join")
 def join_game_room(room_code: str) -> None:
     req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
-    if req_game is not None and req_game.mode != "Head to Head":
+    if req_game is not None and req_game.mode != "Head to Head" and req_game.status=="Created":
+        if req_game.mode == "Solo":
+            num_players = GamePlayer.query.filter_by(id=room_code).count()
+            if num_players != 0:
+                print("One person allowed in solo room")
+                socketio.emit("join_response", False)
         emit("join_response", True)
         join_game(room_code)
 
@@ -319,7 +324,6 @@ def cancel_match() -> None:
         if game is not None:
             game.status = "Cancelled"
     db.session.commit()
-
 
 @ socketio.on("send_chat")
 def send_chat(chat_data: Json) -> None:
