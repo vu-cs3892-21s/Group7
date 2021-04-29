@@ -225,12 +225,13 @@ def update_stats(game_id: str = None) -> Json:
 @ socketio.on("join")
 def join_game_room(room_code: str) -> None:
     req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    if req_game.mode == "Solo":
+        num_players = GamePlayer.query.filter_by(id=room_code).count()
+        if num_players != 0:
+            print("One person allowed in solo room")
+            socketio.emit("join_response", False)
+
     if req_game is not None and req_game.mode != "Head to Head" and req_game.status=="Created":
-        if req_game.mode == "Solo":
-            num_players = GamePlayer.query.filter_by(id=room_code).count()
-            if num_players != 0:
-                print("One person allowed in solo room")
-                socketio.emit("join_response", False)
         emit("join_response", True)
         join_game(room_code)
 
@@ -326,18 +327,20 @@ def cancel_match() -> None:
     db.session.commit()
 
 @socketio.on("cancel")
-def cancel(room_code: str) -> None:
-    players_query: List[GamePlayer] = GamePlayer.query.filter_by(game_id = room_code).all()
+def cancel(room_id: str) -> None:
+    players_query: List[GamePlayer] = GamePlayer.query.filter_by(game_id = room_id).all()
     if len(players_query) == 1:
         game: Game = Game.query.filter_by(
-            id=room_code, status="Created").one_or_none()
+            id=room_id, status="Created").one_or_none()
         if game is not None:
             game.status = "Cancelled"
-    game_player: GamePlayer = GamePlayer.query.filter_by(game_id = room_code, player_id=current_user.id).one_or_none()
+        db.session.commit()
+
+    game_player: GamePlayer = GamePlayer.query.filter_by(game_id = room_id, player_id=current_user.id).one_or_none()
     if game_player is not None:
         db.session.delete(game_player)
+        db.session.commit()
         emit("update_players", update_game_players(room_id), room=room_id)
-    db.session.commit()
 
 @ socketio.on("send_chat")
 def send_chat(chat_data: Json) -> None:
