@@ -214,5 +214,9 @@ with app.app_context():
     # loading questions takes a few minutes so we only want to load once
     # load_questions()
 
+PORT = os.getenv('PORT')
+FLASK_RUN_PORT = os.getenv('FLASK_RUN_PORT')
+DEBUG = (FLASK_ENV == 'development')
+print(PORT, 'hi', FLASK_RUN_PORT)
 
-socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+socketio.run(app, host="0.0.0.0", port=PORT, debug=DEBUG, use_reloader=False)
