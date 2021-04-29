@@ -235,7 +235,7 @@ def join_game_room(room_code: str) -> None:
             emit("join_response", True)
             join_game(room_code)
 
-    if req_game is not None and req_game.mode == "Group Play" and req_game.status=="Created":
+    elif req_game is not None and req_game.mode == "Group Play" and req_game.status=="Created":
         emit("join_response", True)
         join_game(room_code)
 
