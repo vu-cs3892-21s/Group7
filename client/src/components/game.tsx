@@ -17,7 +17,6 @@ import Timer from "react-compound-timer";
 import PersonIcon from "@material-ui/icons/Person";
 import { Socket } from "socket.io-client";
 import { SocketContext } from "../context/socket";
-import {Link} from "react-router-dom";
 
 interface Player {
   name: string;
@@ -143,7 +142,7 @@ const QuestionBox = ({
   };
 
   const onCancel = () : void => {
-    socket.emit("cancel_match");
+    socket.emit("cancel",gameInfo.id.toString());
     history.push("/create");
   }
 

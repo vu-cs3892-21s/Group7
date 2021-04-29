@@ -325,6 +325,20 @@ def cancel_match() -> None:
             game.status = "Cancelled"
     db.session.commit()
 
+@socketio.on("cancel")
+def cancel(room_code: str) -> None:
+    game_players: List[GamePlayer] = GamePlayer.query.filter_by(game_id = room_code).all()
+    if game_player.count() == 1:
+        game: Game = Game.query.filter_by(
+            id=game_player.game_id, status="Created").one_or_none()
+        if game is not None:
+            game.status = "Cancelled"
+    game_player: GamePlayer = game_players.query.filter_by(player_id=current_user.id).one_or_none()
+    if game_player is not None:
+        db.session.delete(game_player)
+        emit("update_players", update_game_players(game_id), room=game_id)
+    db.session.commit()
+
 @ socketio.on("send_chat")
 def send_chat(chat_data: Json) -> None:
     game_id: str = chat_data["game_id"]
