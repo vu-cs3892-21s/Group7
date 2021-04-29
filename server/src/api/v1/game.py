@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import func
+from sqlalchemy import or_
 from elo import rate_1vs1
 
 from db.models.user import User
@@ -222,9 +223,8 @@ def update_stats(game_id: str = None) -> Json:
 
 @ socketio.on("join")
 def join_game_room(room_code: str) -> None:
-    req_game: Game = Game.query.filter_by(
-        id=room_code, mode="Group Play").one_or_none()
-    if req_game is not None:
+    req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
+    if req_game is not None and req_game.mode != "Head to Head":
         emit("join_response", True)
         join_game(room_code)
 

@@ -390,7 +390,7 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
       };
       socket.emit("send_chat", { message: message, game_id: id });
       updateMessage("");
-    };
+    }
   };
 
   return (
@@ -438,10 +438,13 @@ const intToRGB = (i: number) => {
 }
 
 const chatBubble = (i: number, sender: string, text: string) => {
+  const hash = hashCode(sender);
   const userColor = intToRGB(hashCode(sender));
+  const textColor = intToRGB(0x00FFFFFF - hash);
+
   return (
       <Bubble color ={userColor} key={i}>
-        <div style = {{"paddingLeft": "7px", "paddingRight": "7px" }}>[{sender}]: {text}</div>
+        <div style = {{"paddingLeft": "7px", "paddingRight": "7px", "color": textColor}}>[{sender}]: {text}</div>
       </Bubble>
   );
 };
@@ -487,7 +490,6 @@ const SendMessageForm = ({
   return (
     <form
       style={{ position: "relative", gridArea: "type", alignContent: "right" }}
-//       style={{"backgroundColor": "rgb(204, 204, 204, 0.5)","textAlign": "right", "width": "100%"}}
       onSubmit={onSubmit}
       className="send-message-form"
     >
@@ -595,6 +597,9 @@ export const GamePage = ({
   userEmail: string;
   userName: string;
 }): ReactElement => {
+  console.log(userName);
+  console.log(userEmail);
+
   const socket: Socket = useContext(SocketContext);
   const { id } = useParams<{ id: string }>();
   const [gameInfo, setGameInfo] = useState({
@@ -648,9 +653,7 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
-        <Players players={players} />
-      ) : null}
+      <Players players={players} />
       {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
         <ChatBox name={userName} id={id} />
       ) : null}
