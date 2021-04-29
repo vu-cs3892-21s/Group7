@@ -5,7 +5,7 @@ import React, {
   ReactElement,
   SetStateAction,
 } from "react";
-import { useParams } from "react-router";
+import {useHistory, useParams} from "react-router";
 import styled from "styled-components";
 import {
   AnswerInput,
@@ -17,6 +17,7 @@ import Timer from "react-compound-timer";
 import PersonIcon from "@material-ui/icons/Person";
 import { Socket } from "socket.io-client";
 import { SocketContext } from "../context/socket";
+import {Link} from "react-router-dom";
 
 interface Player {
   name: string;
@@ -77,6 +78,7 @@ const QuestionBox = ({
   setGameInfo: React.Dispatch<SetStateAction<GameInfo>>;
   userEmail: string;
 }): ReactElement => {
+  const history = useHistory();
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
   const [endGame, setEndGame] = useState<boolean>(false); //game state
@@ -141,7 +143,8 @@ const QuestionBox = ({
   };
 
   const onCancel = () : void => {
-    socket.emit("cancel_match", gameInfo.id.toString());
+    socket.emit("cancel_match");
+    history.push("/create");
   }
 
   const endOfGame = () => {
@@ -304,7 +307,9 @@ const QuestionBox = ({
                 height: "100%",
               }}
           >
-            <CenteredButton style={{"fontSize": "15px"}} onClick={onCancel}>Cancel Game</CenteredButton>
+              <CenteredButton style={{"fontSize": "15px"}} onClick={onCancel}>
+                Cancel
+              </CenteredButton>
           </CenteredDiv>
       )}
     </QuestionBoxBase>
@@ -659,6 +664,8 @@ export const GamePage = ({
       socket.off("update_players");
     };
   }, [players, socket]);
+
+  console.log(players);
 
   return (
     <GamePageBase>

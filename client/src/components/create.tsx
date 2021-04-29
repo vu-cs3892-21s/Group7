@@ -306,7 +306,10 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     numberOfQuestions: 20,
   });
 
-  useEffect(() => setError(""), [chosenMode]);
+  useEffect(() => {
+    setError("");
+    setGame({...game, mode: chosenMode,});
+  }, [chosenMode]);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -358,7 +361,9 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
 
     const onSubmit = async (ev: { preventDefault: () => void; }) => {
         ev.preventDefault();
-        console.log("Trying to submit!");
+        console.log("Trying to submit! Chosen Mode is:");
+        console.log(chosenMode);
+        console.log(JSON.stringify(game));
 
     if (game.questionType === "") {
       setError("Select question type");
@@ -378,9 +383,6 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
       return;
     }
 
-    console.log(JSON.stringify(game));
-
-    console.log(chosenMode);
     if (chosenMode === "Head to Head") {
       socket.emit("find_match", game);
       history.push("/loading");
@@ -522,7 +524,7 @@ const JoinGame = () => {
           onChange={onChange}
         />
       </DurationBase>
-      {error ? <Alert severity="error">{error}</Alert> : null}
+      {error ? <Alert severity="error">{error}</Alert> :
       <CenteredButton
         style={{
           fontSize: "18px",
@@ -535,7 +537,7 @@ const JoinGame = () => {
         onClick={onSubmit}
       >
         Join!
-      </CenteredButton>
+      </CenteredButton>}
     </JoinGameBase>
   );
 };

@@ -71,15 +71,14 @@ def create_questions(game_json: Json) -> List[Tuple[str, str]]:
 
 def join_game(game_id: str) -> None:
     join_room(game_id)
-    req_player: GamePlayer.filter_by(game_id=game_id, player_id=current_user.id).one_or_none()
+    req_player : GamePlayer = GamePlayer.query.filter_by(game_id=game_id, player_id=current_user.id).one_or_none()
     if req_player is None:
         game_player: GamePlayer = GamePlayer(
             game_id=game_id, player_id=current_user.id, score=0)
         db.session.add(game_player)
         db.session.commit()
-        # Inform all other players of new player
-        emit("update_players", update_game_players(game_id), room=game_id)
-
+    # Inform all other players of new player
+    emit("update_players", update_game_players(game_id), room=game_id)
 
 @ game_api.route("/<game_id>", methods=["GET"])
 @ login_required
