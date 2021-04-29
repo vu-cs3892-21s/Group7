@@ -43,11 +43,23 @@ app.config.from_object(Config)
 
 print(Config.SQLALCHEMY_DATABASE_URI, Config.FLASK_ENV)
 
-db.init_app(app)
-
 
 # if Config.FLASK_ENV == 'development':
-#     db.init_app(app)
+db.init_app(app)
+
+# else:
+#     db_user = os.environ["DB_USER"]
+#     db_pass = os.environ["DB_PASS"]
+#     db_name = os.environ["DB_NAME"]
+#     db_port = os.environ["DB_PORT"]
+#     db_host = os.environ["DB_HOST"]
+
+#     db_url = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(
+#         db_user, db_pass, db_host, db_port, db_name)
+
+#     engine = sqlalchemy.create_engine(db_url)
+
+#     conn = engine.connect()
 
 # else:
 #     def init_connection_engine():
@@ -195,12 +207,12 @@ def create_test_data() -> None:
 
 
 with app.app_context():
-    # drop_everything()
+    drop_everything()
     db.create_all()
     # create_test_data()
 
     # loading questions takes a few minutes so we only want to load once
-    # load_questions()
+    load_questions()
 
 
 socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
