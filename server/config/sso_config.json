@@ -5,6 +5,11 @@
     "client_secret": "1bb8c755f3e8c3f6853db16b869fb236a24a2a23",
     "scope": ["read:user", "user:email"]
   },
+  "github-local": {
+    "client_id": "ba66cf6468d8d3b43409",
+    "client_secret": "6722ba46c52bbd66ef8deb52e77376f5649d4cc5",
+    "scope": ["read:user", "user:email"]
+  },
   "google": {
     "client_id": "490107470306-32jnil1p0nh05ghbcuiro9dgdrulfoo2.apps.googleusercontent.com",
     "client_secret": "KDejNfmIYTWiElyLlAbuRMZp",
