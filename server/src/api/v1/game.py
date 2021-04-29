@@ -225,13 +225,17 @@ def update_stats(game_id: str = None) -> Json:
 @ socketio.on("join")
 def join_game_room(room_code: str) -> None:
     req_game: Game = Game.query.filter_by(id=room_code).one_or_none()
+
     if req_game.mode == "Solo":
         num_players = GamePlayer.query.filter_by(id=room_code).count()
         if num_players != 0:
             print("One person allowed in solo room")
             socketio.emit("join_response", False)
+        else:
+            emit("join_response", True)
+            join_game(room_code)
 
-    if req_game is not None and req_game.mode != "Head to Head" and req_game.status=="Created":
+    elif req_game is not None and req_game.mode == "Group Play" and req_game.status=="Created":
         emit("join_response", True)
         join_game(room_code)
 
