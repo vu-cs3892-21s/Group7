@@ -140,7 +140,7 @@ const QuestionBox = ({
     }
   };
 
-  const onCancel = () => {
+  const onCancel = () : void => {
     socket.emit("cancel_match", gameInfo.id.toString());
   }
 
@@ -301,6 +301,7 @@ const QuestionBox = ({
                 position: "relative",
                 gridArea: "answer",
                 alignItems: "center",
+                height: "100%",
               }}
           >
             <CenteredButton style={{"fontSize": "15px"}} onClick={onCancel}>Cancel Game</CenteredButton>
