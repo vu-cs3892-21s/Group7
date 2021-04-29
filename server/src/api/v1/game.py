@@ -15,7 +15,7 @@ from db.database import db, as_dict
 from .shared.api_types import Json
 
 
-GAME_API_PREFIX = "/v1/game"
+GAME_API_PREFIX = "/api/v1/game"
 
 socketio: SocketIO = SocketIO(cors_allowed_origins='*')
 game_api: Blueprint = Blueprint(
@@ -89,7 +89,7 @@ def get_game_info(game_id: str = None) -> Json:
         "status": game.status,
         "mode": game.mode,
         "maxTime": game.duration,
-        "totalQuestions": game.num_questionsfit
+        "totalQuestions": game.num_questions
     }
 
 

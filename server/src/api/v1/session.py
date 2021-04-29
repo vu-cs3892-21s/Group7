@@ -24,6 +24,7 @@ sys.path.append("...")  # Necessary to import beyond top-level package
 # temporarily allow http and relax scope
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
+FLASK_ENV: str = os.getenv("FLASK_ENV")
 
 
 SESSION_API_PREFIX: str = "/api/v1/session"
@@ -38,6 +39,9 @@ SECRET_KEY: str = SSO_CONFIG["secret_key"]
 # SSO Config variables
 GITHUB_SSO_CONFIG: Json = SSO_CONFIG["github"]
 GOOGLE_SSO_CONFIG = SSO_CONFIG["google"]
+
+if FLASK_ENV == 'development':
+    GITHUB_SSO_CONFIG = SSO_CONFIG["github-local"]
 
 # Constants for SSO Handlers
 GITHUB_TOKEN_API: str = "github.login"
@@ -137,20 +141,20 @@ def update_profile():
 def github_session() -> Response:
     if not github.authorized:
         return redirect(url_for(GITHUB_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("/#/profile")
 
 
 @ session_api.route("/google")
 def google_session() -> Response:
     if not google.authorized:
         return redirect(url_for(GOOGLE_TOKEN_API))
-    return redirect("http://localhost:7070/#/profile")
+    return redirect("/#/profile")
 
 
 @ session_api.route("/logout")
 def logout() -> Response:
     logout_user()
-    return redirect("http://localhost:7070")
+    return redirect("/")
 
 
 @ oauth_authorized.connect_via(github_blueprint)

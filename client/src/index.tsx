@@ -74,7 +74,7 @@ const App = () => {
     target: { offsetParent: { id: string } };
   }) => {
     ev.preventDefault();
-    const endpoint = `http://${redirectEndpoint}:7070/api/login/${ev.target.offsetParent.id}`;
+    const endpoint = `/api/login/${ev.target.offsetParent.id}`;
     try {
       window.location.href = endpoint;
       const user = {
@@ -105,7 +105,7 @@ const App = () => {
   const logOut = (): void => {
     // Wipe localStorage
     localStorage.removeItem("user");
-    window.location.href = "http://localhost:7070/api/v1/session/logout";
+    window.location.href = "/api/v1/session/logout";
     // Reset user state
     setState(defaultUser);
   };
