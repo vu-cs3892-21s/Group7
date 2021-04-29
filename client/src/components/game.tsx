@@ -140,6 +140,10 @@ const QuestionBox = ({
     }
   };
 
+  const onCancel = () => {
+    socket.emit("cancel_match", gameInfo.id.toString());
+  }
+
   const endOfGame = () => {
     setGameInfo({
       ...gameInfo,
@@ -291,7 +295,17 @@ const QuestionBox = ({
       <Status>{status}</Status>
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
-      ) : null}
+      ) : (
+          <CenteredDiv
+              style={{
+                position: "relative",
+                gridArea: "answer",
+                alignItems: "center",
+              }}
+          >
+            <CenteredButton style={{"fontSize": "15px"}} onClick={onCancel}>Cancel Game</CenteredButton>
+          </CenteredDiv>
+      )}
     </QuestionBoxBase>
   );
 };
