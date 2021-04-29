@@ -210,7 +210,7 @@ if FLASK_ENV == 'development':
     with app.app_context():
         drop_everything()
         db.create_all()
-        create_test_data()
+        # create_test_data()
 
     #     loading questions takes a few minutes so we only want to load once
         load_questions()
