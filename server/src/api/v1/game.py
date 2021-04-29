@@ -38,12 +38,13 @@ def create_arithmetic_questions(operations: List[str], numberOfQuestions: int) -
     questions: List[Tuple[str, str]] = []
     for _ in range(numberOfQuestions):
         operation: str = random.choice(operations)
-        operand_range = 12
-        if operation == "+" or operation == "-":
-            operand_range = 100
+        first_operand_range: int = 100
+        second_operand_range: int = 100
+        if operation == "*" or operation == "/":
+            second_operand_range = 12
 
-        operand1: int = random.randint(1, operand_range)
-        operand2: int = random.randint(1, operand_range)
+        operand1: int = random.randint(2, first_operand_range)
+        operand2: int = random.randint(2, second_operand_range)
         if operation == "/":
             operand1 = operand2 * operand1
         question: str = f"{operand1} {operation} {operand2}"
@@ -286,6 +287,9 @@ def find_match(game: Json) -> None:
         question_type=game["questionType"], mode=game["mode"], status="Created").all()
     game_id: str
 
+    def only_one_opponent(game: Game) -> bool:
+        return GamePlayer.query.filter_by(game_id=game.id).count() == 1
+
     def get_elo_difference(game: Game) -> float:
         my_elo: float = StatsTable.query.filter_by(
             question_type=game.question_type, player_id=current_user.id).one().elo
@@ -295,9 +299,10 @@ def find_match(game: Json) -> None:
             question_type=game.question_type, player_id=opponent.player_id).one().elo
         return abs(my_elo - opponent_elo)
 
-    # sort games by closest elo and remove games with differences that are too high
+    # filter out unfair games and games with too many players and sort by closest elo
+    games = list(filter(lambda game: (only_one_opponent(game)
+                                      and get_elo_difference(game) < 200), games))
     games.sort(key=get_elo_difference)
-    filter(lambda game: get_elo_difference(game) < 200, games)
     if len(games) == 0:  # No matches, create our own game
         game_id = create_game_from_json(game)
     else:  # Other players waiting for game
