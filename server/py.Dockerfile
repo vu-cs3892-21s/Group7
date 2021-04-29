@@ -10,7 +10,7 @@ ENV FLASK_APP=src/main.py
 ENV FLASK_RUN_HOST=${HOST:-0.0.0.0}
 ENV FLASK_RUN_PORT=${PORT:-5000}
 ENV FLASK_ENV=${FLASK_ENV:-production}
-# ENV DATABASE_URI=${DATABASE_URI:-postgres+pg8000://postgres:postgres@postgres?unix_sock=/cloudsql/seventh-atom-311914:us-central1:postgres-db/.s.PGSQL.5432}
+ENV DATABASE_URI=${DATABASE_URI:-postgresql://postgres:postgres@35.224.144.168/postgres?host=/cloudsql/seventh-atom-311914:us-central1:postgres-db}
 ENV DB_USER=${DB_USER:-postgres}
 ENV DB_PASS=${DB_PASS:-postgres}
 ENV DB_NAME=${DB_NAME:-postgres}
