@@ -297,7 +297,7 @@ const QuestionBox = ({
       <Status>{status}</Status>
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
-      ) : !endGame ? (
+      ) : !endGame && gameInfo.mode != "Head to Head" ? (
         <CenteredDiv
           style={{
             position: "relative",
