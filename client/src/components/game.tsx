@@ -143,7 +143,7 @@ const QuestionBox = ({
   };
 
   const onCancel = () : void => {
-    socket.emit("cancel_match");
+    socket.emit("cancel",gameInfo.id.toString());
     history.push("/create");
   }
 

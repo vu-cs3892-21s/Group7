@@ -1,6 +1,6 @@
 "use strict";
 
-import React, {useState, useContext, useEffect, ChangeEvent, MouseEventHandler} from "react";
+import React, {useState, useContext, useEffect, ChangeEvent} from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
@@ -61,7 +61,7 @@ const GameMode = ({ onClick})  => {
       name: "Solo",
       description: "Practice Math On Your Own",
       icon: (
-        <PersonIcon
+        <PersonIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -70,7 +70,7 @@ const GameMode = ({ onClick})  => {
       name: "Head to Head",
       description: "Play With A Randomly Matched Foe",
       icon: (
-        <GroupIcon
+        <GroupIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -79,7 +79,7 @@ const GameMode = ({ onClick})  => {
       name: "Group Play",
       description: "Play With 2+ Friends In A Private Room",
       icon: (
-        <GroupAddIcon
+        <GroupAddIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -505,6 +505,7 @@ const JoinGame = () => {
     target: { value: React.SetStateAction<string> };
   }) => {
     setCode(ev.target.value);
+    setError("");
   };
 
   const onSubmit = async (ev: { preventDefault: () => void }) => {
