@@ -214,12 +214,11 @@ const createData = (rank: number, name: string, elo: number, color: string) => (
 
 const makeRows = (ques_type: string) => {
     const leadershipInfo = LeadershipData(ques_type);
-    let i = 0, j = leadershipInfo.users.length - 1;
+    let i = 0;
     const rows = [];
     while(i < leadershipInfo.users.length){
-        rows.push(createData(i + 1,leadershipInfo.users[j], leadershipInfo.elo[j], leadershipInfo.colors[j]));
+        rows.push(createData(i + 1,leadershipInfo.users[i], leadershipInfo.elo[i], leadershipInfo.colors[i]));
         i++;
-        j--;
     }
     return rows;
 };
