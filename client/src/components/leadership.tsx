@@ -91,6 +91,12 @@ const useStyles = makeStyles((theme: Theme) => ({
             fontSize: "25px",
             fontFamily: "'Revalia', 'sans-serif'",
         },
+        maxHeight: "59vh",
+        overflow: "auto",
+        '&::-webkit-scrollbar': {
+            width: '0',
+            background: 'transparent',
+        },
     },
     tableHeader: {
         backgroundColor: "rgb(204, 204, 204, 0.1)",
