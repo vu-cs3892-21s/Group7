@@ -27,6 +27,7 @@ interface Player {
   color: string;
 }
 
+
 interface GameInfo {
   id: string;
   status: string;
@@ -511,6 +512,7 @@ const SendMessageForm = ({
   return (
     <form
       style={{ position: "relative", gridArea: "type", alignContent: "right" }}
+//       style={{"backgroundColor": "rgb(204, 204, 204, 0.5)","textAlign": "right", "width": "100%"}}
       onSubmit={onSubmit}
       className="send-message-form"
     >
