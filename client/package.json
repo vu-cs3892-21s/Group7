@@ -50,6 +50,6 @@
   },
   "scripts": {
     "start": "webpack serve --host 0.0.0.0 --port 8000 --open",
-    "build": "webpack --mode production --watch"
+    "build": "webpack --mode production"
   }
 }

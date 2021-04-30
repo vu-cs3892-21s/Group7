@@ -15,6 +15,9 @@ import { CenteredDiv } from "./components/shared";
 import { SocketContext, socket } from "./context/socket";
 import { Theme } from "@material-ui/core/styles";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { config } from "./environment";
+
+const redirectEndpoint = config.endpoint;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,7 +74,7 @@ const App = () => {
     target: { offsetParent: { id: string } };
   }) => {
     ev.preventDefault();
-    const endpoint = `http://localhost:5000/login/${ev.target.offsetParent.id}`;
+    const endpoint = `/api/login/${ev.target.offsetParent.id}`;
     try {
       window.location.href = endpoint;
       const user = {
@@ -102,7 +105,7 @@ const App = () => {
   const logOut = (): void => {
     // Wipe localStorage
     localStorage.removeItem("user");
-    window.location.href = "http://localhost:7070/api/v1/session/logout";
+    window.location.href = "/api/v1/session/logout";
     // Reset user state
     setState(defaultUser);
   };

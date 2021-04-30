@@ -1,11 +1,21 @@
 {
   "secret_key": "temp secret key",
   "github": {
-    "client_id": "5f635dbbf813c841603a",
-    "client_secret": "c2307406d0aa37e8a7f0d8eaf2d97d547784baed",
+    "client_id": "6d3dc9b493b40eabbe2e",
+    "client_secret": "1bb8c755f3e8c3f6853db16b869fb236a24a2a23",
+    "scope": ["read:user", "user:email"]
+  },
+  "github-local": {
+    "client_id": "ba66cf6468d8d3b43409",
+    "client_secret": "6722ba46c52bbd66ef8deb52e77376f5649d4cc5",
     "scope": ["read:user", "user:email"]
   },
   "google": {
+    "client_id": "242534906484-dgqq6ufslvcv6hnu784g0na18ucfk3ss.apps.googleusercontent.com",
+    "client_secret": "izDk1LIyBA2xK_SAiu8OOqyk",
+    "scope": ["profile", "email"]
+  },
+  "google-local": {
     "client_id": "490107470306-32jnil1p0nh05ghbcuiro9dgdrulfoo2.apps.googleusercontent.com",
     "client_secret": "KDejNfmIYTWiElyLlAbuRMZp",
     "scope": ["profile", "email"]

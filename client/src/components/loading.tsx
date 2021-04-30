@@ -26,11 +26,12 @@ export const Loading = (): ReactElement => {
 
   return (
     <CenteredDiv>
-      <HeaderWrap>Waiting for match</HeaderWrap>
-      <CircularProgress />
-      <CircularProgress color="secondary" />
+      <HeaderWrap style={{ color: "white"}}>Waiting for match</HeaderWrap>
+      <CircularProgress style= {{"width": "80px", "height": "80px", "padding": "15px"}}/>
       <CenteredButton>
-        <Link to="/create" onClick={onCancel}>
+        <Link to="/create"
+              style={{ color: "white"}}
+              onClick={onCancel}>
           Cancel
         </Link>
       </CenteredButton>

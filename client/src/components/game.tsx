@@ -5,7 +5,7 @@ import React, {
   ReactElement,
   SetStateAction,
 } from "react";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 import styled from "styled-components";
 import {
   AnswerInput,
@@ -17,6 +17,7 @@ import Timer from "react-compound-timer";
 import PersonIcon from "@material-ui/icons/Person";
 import { Socket } from "socket.io-client";
 import { SocketContext } from "../context/socket";
+import { Link } from "react-router-dom";
 
 interface Player {
   name: string;
@@ -77,6 +78,7 @@ const QuestionBox = ({
   setGameInfo: React.Dispatch<SetStateAction<GameInfo>>;
   userEmail: string;
 }): ReactElement => {
+  const history = useHistory();
   const [status, setStatus] = useState<string>("");
   const [answer, setAnswer] = useState<string>(""); //user answer
   const [endGame, setEndGame] = useState<boolean>(false); //game state
@@ -138,6 +140,11 @@ const QuestionBox = ({
       // game should start for all players
       socket.emit("start", gameInfo.id.toString());
     }
+  };
+
+  const onCancel = (): void => {
+    socket.emit("cancel", gameInfo.id.toString());
+    history.push("/create");
   };
 
   const endOfGame = () => {
@@ -291,6 +298,19 @@ const QuestionBox = ({
       <Status>{status}</Status>
       {gameInfo.start ? (
         <AnswerBox onChange={onChange} onKeyDown={onKeyDown} answer={answer} />
+      ) : !endGame && gameInfo.mode != "Head to Head" ? (
+        <CenteredDiv
+          style={{
+            position: "relative",
+            gridArea: "answer",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CenteredButton style={{ fontSize: "15px" }} onClick={onCancel}>
+            Cancel
+          </CenteredButton>
+        </CenteredDiv>
       ) : null}
     </QuestionBoxBase>
   );
@@ -383,14 +403,14 @@ const ChatBox = ({ name, id }: { name: string; id: string }): ReactElement => {
   }): Promise<void> => {
     ev.preventDefault();
 
-    if(myMessage !== "") {
+    if (myMessage !== "") {
       const message: Message = {
         sender: name,
         text: myMessage,
       };
       socket.emit("send_chat", { message: message, game_id: id });
       updateMessage("");
-    };
+    }
   };
 
   return (
@@ -410,68 +430,73 @@ interface Props {
   align?: string;
 }
 
-const Bubble = styled.div<Props> `
-    background-color: ${(props) => props.color};
-    border-radius: 6px; 
-    margin: 2px; 
-    // maxWidth: 75%;
-    width: fit-content;
-    float: left;
+const Bubble = styled.div<Props>`
+  background-color: ${(props) => props.color};
+  border-radius: 6px;
+  margin: 2px;
+  // maxWidth: 75%;
+  width: fit-content;
+  float: left;
 `;
 
 //create hash code for hex color
-const hashCode = (str:string) => {
+const hashCode = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   return 125 * hash;
-}
+};
 
 //compute random hex color code
 const intToRGB = (i: number) => {
-  const c = (i & 0x00FFFFFF)
-      .toString(16)
-      .toUpperCase();
+  const c = (i & 0x00ffffff).toString(16).toUpperCase();
 
   return "#" + "00000".substring(0, 6 - c.length) + c;
-}
+};
 
 const chatBubble = (i: number, sender: string, text: string) => {
+  const hash = hashCode(sender);
   const userColor = intToRGB(hashCode(sender));
+  const textColor = intToRGB(0x00ffffff - hash);
+
   return (
-      <Bubble color ={userColor} key={i}>
-        <div style = {{"paddingLeft": "7px", "paddingRight": "7px" }}>[{sender}]: {text}</div>
-      </Bubble>
+    <Bubble color={userColor} key={i}>
+      <div
+        style={{ paddingLeft: "7px", paddingRight: "7px", color: textColor }}
+      >
+        [{sender}]: {text}
+      </div>
+    </Bubble>
   );
 };
 const MessageList = ({ messages }: { messages: Message[] }): ReactElement => {
   const messageBox = messages.map(
-      (message: { sender: string; text: string }, i: number) => (
-          <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "5px",
-                margin: "2px",
-                maxWidth: "95%",
-              }}
-              key={i}
-          >
-            {chatBubble(i, message.sender, message.text)}
-          </div>
-      )
+    (message: { sender: string; text: string }, i: number) => (
+      <div
+        style={{
+          backgroundColor: "white",
+          borderRadius: "5px",
+          margin: "2px",
+          maxWidth: "95%",
+        }}
+        key={i}
+      >
+        {chatBubble(i, message.sender, message.text)}
+      </div>
+    )
   );
   return (
-      <div
-          style={{
-            overflow: "auto",
-            gridArea: "chat",
-            display: "flex",
-            flexDirection: "column-reverse",
-          }}
-      >
-        {messageBox}
-      </div>
+    <div
+      style={{
+        overflow: "auto",
+        gridArea: "chat",
+        display: "flex",
+        flexDirection: "column-reverse",
+      }}
+    >
+      {messageBox}
+    </div>
   );
 };
 
@@ -595,6 +620,9 @@ export const GamePage = ({
   userEmail: string;
   userName: string;
 }): ReactElement => {
+  console.log(userName);
+  console.log(userEmail);
+
   const socket: Socket = useContext(SocketContext);
   const { id } = useParams<{ id: string }>();
   const [gameInfo, setGameInfo] = useState({
@@ -640,6 +668,8 @@ export const GamePage = ({
     };
   }, [players, socket]);
 
+  console.log(players);
+
   return (
     <GamePageBase>
       <QuestionBox
@@ -648,9 +678,7 @@ export const GamePage = ({
         setGameInfo={setGameInfo}
         userEmail={userEmail}
       />
-      {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
-        <Players players={players} />
-      ) : null}
+      <Players players={players} />
       {gameInfo.mode === "Group Play" || gameInfo.mode === "Head to Head" ? (
         <ChatBox name={userName} id={id} />
       ) : null}

@@ -139,7 +139,7 @@ const SideBarOptions = ({loggedIn, username}: {loggedIn:boolean, username:string
             </ListItem>
             </Link>: null}
             {loggedIn ?
-                <Link to={`/profile/${username}`}>
+                <Link to={`/profile`}>
                     <ListItem button key = {"profile"}>
                         <ListItemText classes = {{primary: classes.listFormat}} primary={"Profile"} />
                     </ListItem>

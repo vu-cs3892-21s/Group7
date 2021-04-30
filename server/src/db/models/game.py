@@ -17,7 +17,6 @@ class Game(db.Model):
     create_time = db.Column(db.DateTime, nullable=False,
                             default=datetime.utcnow)
 
-
 class GamePlayer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey(Game.id), nullable=False)
@@ -32,10 +31,6 @@ class GameQuestion(db.Model):
     question = db.Column(db.String(120), index=True)
     answer = db.Column(db.String(40), index=True)
     quest_num = db.Column(db.Integer)
-
-    def as_dict(self) -> Dict[str, any]:
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 class StatsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)

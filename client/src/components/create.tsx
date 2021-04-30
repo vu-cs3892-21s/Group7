@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useState, useContext, useEffect } from "react";
+import React, {useState, useContext, useEffect, ChangeEvent} from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
@@ -40,19 +40,28 @@ const GameModeBase = styled.div`
   padding-left: 60px;
 `;
 
-//event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}})
-// type Icon = typeof PersonIcon | typeof GroupIcon
-//: {onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
+interface GameMode {
+  name: string;
+  description: string;
+  icon: any
+}
+
+interface Event1 {
+  target: {
+    name: string;
+    value: string;
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const GameMode = ({ onClick }) => {
-  const gameModes: { name: string; description: string; icon: any }[] = [
+const GameMode = ({ onClick})  => {
+  const gameModes: GameMode[] = [
     {
       name: "Solo",
       description: "Practice Math On Your Own",
       icon: (
-        <PersonIcon
-          onClick={onClick}
+        <PersonIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -61,8 +70,7 @@ const GameMode = ({ onClick }) => {
       name: "Head to Head",
       description: "Play With A Randomly Matched Foe",
       icon: (
-        <GroupIcon
-          onClick={onClick}
+        <GroupIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
@@ -71,16 +79,17 @@ const GameMode = ({ onClick }) => {
       name: "Group Play",
       description: "Play With 2+ Friends In A Private Room",
       icon: (
-        <GroupAddIcon
-          onClick={onClick}
+        <GroupAddIcon onClick={onClick}
           style={{ fill: "#00538F", width: "100%", height: "100%" }}
         />
       ),
     },
   ];
+
   const modeBoxes = gameModes.map((gameMode, i) => (
     <GameModeBlock key={i} gameMode={gameMode} onClick={onClick} />
   ));
+
   return <GameModeBase>{modeBoxes}</GameModeBase>;
 };
 
@@ -99,18 +108,18 @@ const GameModeBlockBase = styled.button`
   background-color: #b5cef3;
   text-align: center;
 `;
-//{gameMode: { name: string, description: string, icon: any },
-//onClick: {event: {preventDefault: () => void, target: {id: React.SetStateAction<string>}}}}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const GameModeBlock = ({ gameMode, onClick }) => {
-  console.log(gameMode);
+
+const GameModeBlock = ({ gameMode, onClick }:
+{
+  gameMode: GameMode;
+  onClick: (mode: string) => void
+}
+) => {
   return (
-    <GameModeBlockBase id={gameMode.name} onClick={onClick}>
+    <GameModeBlockBase id={gameMode.name} onClick={() => onClick(gameMode.name)}>
       {gameMode.icon}
       <div
         id={gameMode.name}
-        onClick={onClick}
         style={{
           zIndex: 0,
           gridArea: "name",
@@ -122,7 +131,6 @@ const GameModeBlock = ({ gameMode, onClick }) => {
       </div>
       <div
         id={gameMode.name}
-        onClick={onClick}
         style={{ zIndex: 0, gridArea: "description", fontSize: "18px" }}
       >
         {gameMode.description}
@@ -134,21 +142,19 @@ const GameModeBlock = ({ gameMode, onClick }) => {
 const GameInfoBase = styled.div`
   display: grid;
   grid-template-columns: "50% 50%";
-  grid-template-rows: 70% 15% 15%;
+  grid-template-rows: 80% 20%;
   grid-template-areas:
     "type duration"
-    "error error"
     "start start";
   padding: 10px;
+  background: rgb(150, 140, 204, 0.30);
   margin: 20px;
   margin-top: 0px;
   text-align: center;
   justify-content: center;
-  border: 3px solid black;
-  color: black;
-  background-color: #b5cef3;
-  min-height: 350px;
-  max-height: 375px;
+  border: 3px solid white;
+  color: white;
+  min-height: 320px;
   width: fit-content;
   border-radius: 10px;
 `;
@@ -162,7 +168,7 @@ const QuestionsBase = styled.div`
 const DurationInput = styled.input`
   height: 50px;
   width: 100px;
-  border: 2px solid black;
+  border: 2px solid white;
   background-color: white;
 `;
 
@@ -187,14 +193,19 @@ const OperationBase = styled.div`
   justify-items: center;
   padding: 0px;
 `;
-//{questionType:string}), onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const QuestionButtons = ({ onChange, questionType }) => {
+
+const QuestionButtons = ({
+  onChange,
+  questionType,
+}: {
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  questionType: string;
+}) => {
+  const questionTypes = ["Bases","Kth_biggest", "Sequence", "Arithmetic"];
   return (
     <QuestionsBase>
       <FormControl>
-        <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+        <FormLabel style={{ fontSize: "1.25rem", color: "white" }}>
           Question Type
         </FormLabel>
         <RadioGroup
@@ -203,25 +214,23 @@ const QuestionButtons = ({ onChange, questionType }) => {
           value={questionType}
           onChange={onChange}
         >
-          <FormControlLabel value="SAT" control={<Radio />} label="SAT" />
-          <FormControlLabel value="ACT" control={<Radio />} label="ACT" />
-          <FormControlLabel value="GRE" control={<Radio />} label="GRE" />
-          <FormControlLabel value="Normal" control={<Radio />} label="Normal" />
+          <FormControlLabel value={questionTypes[0]} control={<Radio color="primary" />} label={questionTypes[0]} />
+          <FormControlLabel value={questionTypes[1]} control={<Radio color="primary" />} label={questionTypes[1]}/>
+          <FormControlLabel value={questionTypes[2]} control={<Radio color="primary" />} label={questionTypes[2]} />
+          <FormControlLabel value={questionTypes[3]} control={<Radio color="primary" />} label={questionTypes[3]} />
         </RadioGroup>
       </FormControl>
     </QuestionsBase>
   );
 };
-//{onChange: {ev: { target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}}, operations:string[]}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const OperationButtons = ({ onChange, operations }) => {
+
+const OperationButtons = ({ onChange, operations }: {onChange: (ev: ChangeEvent<HTMLInputElement>) => void, operations: string[]}) => {
   return (
     <OperationBase>
-      <FormLabel style={{ fontSize: "1.25rem", color: "black" }}>
+      <FormLabel style={{ fontSize: "1.25rem", color: "white" }}>
         Operation Type
       </FormLabel>
-      <FormGroup style={{ flexDirection: "row" }}>
+      <FormGroup style={{ flexDirection: "row", color: "white"}}>
         <FormControlLabel
           control={
             <Checkbox
@@ -229,6 +238,7 @@ const OperationButtons = ({ onChange, operations }) => {
               onChange={onChange}
               value="+"
               name="operations"
+              color="primary"
             />
           }
           label="+"
@@ -240,6 +250,7 @@ const OperationButtons = ({ onChange, operations }) => {
               onChange={onChange}
               value="-"
               name="operations"
+              color="primary"
             />
           }
           label="-"
@@ -251,6 +262,7 @@ const OperationButtons = ({ onChange, operations }) => {
               onChange={onChange}
               value="*"
               name="operations"
+              color="primary"
             />
           }
           label="*"
@@ -262,6 +274,7 @@ const OperationButtons = ({ onChange, operations }) => {
               onChange={onChange}
               value="/"
               name="operations"
+              color="primary"
             />
           }
           label="/"
@@ -272,7 +285,6 @@ const OperationButtons = ({ onChange, operations }) => {
 };
 
 const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
-  const questionType = ["SAT", "ACT", "GRE", "Normal"];
   const duration = chosenMode !== "Head to Head";
   const numberOfQuestions = chosenMode !== "Head to Head";
   const operations = chosenMode !== "Head to Head";
@@ -294,57 +306,64 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     numberOfQuestions: 20,
   });
 
-  useEffect(() => setError(""), [chosenMode]);
-  //{ target: { name: string; value: string; ariaValueText: string; ariaValueNow: string; }}
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const onChange = (ev) => {
+  useEffect(() => {
     setError("");
-    console.log(ev);
-    if (ev.target.name === "questionType") {
-      if (ev.target.value === game.questionType) {
+    setGame({...game, mode: chosenMode,});
+  }, [chosenMode]);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+    const onChangeNum = (ev) : void => {
+    setError("");
+    setGame({
+      ...game,
+      [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow),
+    });
+    console.log(game);
+  };
+
+  const onChangeOps = (ev: ChangeEvent<HTMLInputElement>) : void => {
+    if (game.operations.includes(ev.target.value)) {
+      console.log("already includes");
+      const newArr = [...game.operations];
+      console.log(newArr);
+      newArr.splice(
+          newArr.findIndex((item) => item === ev.target.value),
+          1
+      );
+      console.log("removed");
+      setGame({
+        ...game,
+        [ev.target.name]: newArr,
+      });
+    } else {
+      setGame({
+        ...game,
+        [ev.target.name]: [...game.operations, ev.target.value],
+      });
+    }
+  };
+
+  const onChangeQType = (ev: Event1) : void => {
+    setError("");
+    if (ev.target.value === game.questionType) {
         setGame({
           ...game,
           questionType: "",
         });
-      } else {
+    } else {
         setGame({
           ...game,
           [ev.target.name]: ev.target.value,
         });
       }
-    } else if (ev.target.name === "operations") {
-      if (game.operations.includes(ev.target.value)) {
-        console.log("already includes");
-        const newArr = [...game.operations];
-        console.log(newArr);
-        newArr.splice(
-          newArr.findIndex((item) => item === ev.target.value),
-          1
-        );
-        console.log("removed");
-        setGame({
-          ...game,
-          [ev.target.name]: newArr,
-        });
-      } else {
-        setGame({
-          ...game,
-          [ev.target.name]: [...game.operations, ev.target.value],
-        });
-      }
-    } else {
-      setGame({
-        ...game,
-        [ev.target.ariaValueText]: parseInt(ev.target.ariaValueNow),
-      });
-    }
-    console.log(game);
   };
 
-  const onSubmit = async (ev: { preventDefault: () => void }) => {
-    ev.preventDefault();
-    console.log("Trying to submit!");
+    const onSubmit = async (ev: { preventDefault: () => void; }) => {
+        ev.preventDefault();
+        console.log("Trying to submit! Chosen Mode is:");
+        console.log(chosenMode);
+        console.log(JSON.stringify(game));
 
     if (game.questionType === "") {
       setError("Select question type");
@@ -364,9 +383,6 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
       return;
     }
 
-    console.log(JSON.stringify(game));
-
-    console.log(chosenMode);
     if (chosenMode === "Head to Head") {
       socket.emit("find_match", game);
       history.push("/loading");
@@ -389,39 +405,39 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
     }
   };
 
-  return (
+    return (
     <GameInfoBase>
-      {questionType ? (
-        <QuestionButtons onChange={onChange} questionType={game.questionType} />
-      ) : null}
+      <QuestionButtons onChange={onChangeQType} questionType={game.questionType} />
       <DurationBase>
         {duration ? (
           <div>
-            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+            <Typography style={{ fontSize: "1.25rem", color: "white"}} gutterBottom>
               Duration
             </Typography>
             <Slider
               defaultValue={20}
               aria-valuetext={"duration"}
               valueLabelDisplay="auto"
-              onChange={onChange}
-              step={5}
+              color="primary"
+              onChange={onChangeNum}
+              step={10}
               marks
-              min={5}
-              max={40}
+              min={10}
+              max={60}
             />
           </div>
         ) : null}
         {numberOfQuestions ? (
           <div>
-            <Typography style={{ fontSize: "1.25rem" }} gutterBottom>
+            <Typography style={{ fontSize: "1.25rem", color: "white"}} gutterBottom>
               Number of Questions
             </Typography>
             <Slider
               defaultValue={20}
               aria-valuetext={"numberOfQuestions"}
               valueLabelDisplay="auto"
-              onChange={onChange}
+              color="primary"
+              onChange={onChangeNum}
               step={5}
               marks
               min={10}
@@ -429,14 +445,12 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
             />
           </div>
         ) : null}
-        {operations ? (
-          <OperationButtons operations={game.operations} onChange={onChange} />
+        {operations && game.questionType == "Arithmetic" ? (
+          <OperationButtons operations={game.operations} onChange={onChangeOps} />
         ) : null}
       </DurationBase>
-      <div style={{ gridArea: "error" }}>
-        {error ? <Alert severity="error">{error}</Alert> : null}
-      </div>
       <div style={{ gridArea: "start", position: "relative" }}>
+        {error ? <Alert severity="error">{error}</Alert> :
         <CenteredButton
           style={{
             fontSize: "18px",
@@ -447,7 +461,7 @@ const GameInfo = ({ chosenMode }: { chosenMode: string }) => {
           onClick={onSubmit}
         >
           Start Game!
-        </CenteredButton>
+        </CenteredButton> }
       </div>
     </GameInfoBase>
   );
@@ -457,10 +471,10 @@ const JoinGameBase = styled.div`
   text-align: center;
   position: relative;
   justify-content: center;
-  border: 3px solid black;
+  border: 3px solid white;
   border-radius: 10px;
-  color: black;
-  background-color: #b5cef3;
+  background: rgb(150, 140, 204, 0.30);
+  color: white;
   height: fit-content;
   padding: 10px;
   margin: 20px;
@@ -491,6 +505,7 @@ const JoinGame = () => {
     target: { value: React.SetStateAction<string> };
   }) => {
     setCode(ev.target.value);
+    setError("");
   };
 
   const onSubmit = async (ev: { preventDefault: () => void }) => {
@@ -510,7 +525,7 @@ const JoinGame = () => {
           onChange={onChange}
         />
       </DurationBase>
-      {error ? <Alert severity="error">{error}</Alert> : null}
+      {error ? <Alert severity="error">{error}</Alert> :
       <CenteredButton
         style={{
           fontSize: "18px",
@@ -523,7 +538,7 @@ const JoinGame = () => {
         onClick={onSubmit}
       >
         Join!
-      </CenteredButton>
+      </CenteredButton>}
     </JoinGameBase>
   );
 };
@@ -532,7 +547,7 @@ const GameGenBase = styled.div`
   grid-area: main;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 75px 275px 400px;
+  grid-template-rows: 75px 275px 330px;
   grid-template-areas:
     "title"
     "modes"
@@ -550,20 +565,13 @@ const OptionsBase = styled.div`
 export const GameGen = (props: { history: History }) => {
   const [chosenMode, setMode] = useState<string>("");
 
-  //event: { preventDefault: () => void; target: { id: React.SetStateAction<string>; }; }
-  const onClick = (event: {
-    preventDefault: () => void;
-    target: { id: React.SetStateAction<string> };
-  }) => {
-    event.preventDefault();
+  const onClick = (mode: string) : void => {
     console.log("calling onClick");
-    console.log(event.target.id);
-    setMode(event.target.id);
+    console.log(mode);
+    setMode(mode);
     console.log(chosenMode);
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   return (
     <GameGenBase>
       <Header> Select Game Mode</Header>
