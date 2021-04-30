@@ -76,7 +76,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     table: {
         width: '80%',
-        // marginTop: "0vh",
         marginLeft: "auto",
         marginRight: "auto",
         borderSpacing: '0 10px',
